@@ -342,16 +342,34 @@ def _clean(t):
     t = re.sub(r'^[━─]{4,}.*$', '', t, flags=re.M)
     t = re.sub(r'^✅\s*回复完成\s*$', '', t, flags=re.M)
     # Remove LLM internal reasoning / meta-commentary
-    reasoning_patterns = [
-        r'^(让我先|让我看看|先读|继续读|全部完成|所有工作|好的，|我来|我将|我需要|我直接|我看看).*$',
-        r'^(上次|用户(再次|指出|查询)).*$',
-        r'^(搜索工具|浏览器|web工具|DDGS).*(返回|结果|没开|不可用|为空|更名).*$',
-        r'^(抱歉|对不起).*(搜索|工具|浏览器|结果).*$',
-        r'^(还是|需要|应该)(优化|调整|修复|改用|用Python).*$',
-        r'^那(备份|我|就).*$',
-    ]
-    for rp in reasoning_patterns:
-        t = re.sub(rp, '', t, flags=re.M)
+    # 用逐行 startswith 过滤，避免 ^$ + 多分组交替在 code_run 子进程 Python 中的匹配异常
+    _reasoning_prefixes = (
+        '让我先', '让我看看', '先读', '继续读', '全部完成', '所有工作',
+        '好的，', '我来', '我将', '我需要', '我直接', '我看看',
+        '上次', '用户再次', '用户指出', '用户查询',
+        '搜索工具', '浏览器', 'web工具', 'DDGS',
+        '抱歉', '对不起',
+        '还是需要', '还是需要优化', '还是需要调整', '还是需要修复',
+        '还是优化', '还是需要', '应该优化', '应该调整', '应该修复', '应该改用',
+        '那备份', '那我', '那就',
+    )
+    _reasoning_contains = (
+        ('搜索', '返回'), ('搜索', '结果'), ('搜索', '为空'),
+        ('浏览器', '没开'), ('浏览器', '不可用'),
+        ('工具', '返回'), ('工具', '结果'), ('工具', '不可用'),
+        ('DDGS', '更名'), ('DDGS', '包名'),
+        ('返回', '为空'), ('返回', '结果'),
+    )
+    lines = t.split('\n')
+    filtered = []
+    for line in lines:
+        s = line.strip()
+        if any(s.startswith(p) for p in _reasoning_prefixes):
+            continue
+        if any(kw1 in s and kw2 in s for kw1, kw2 in _reasoning_contains):
+            continue
+        filtered.append(line)
+    t = '\n'.join(filtered)
 
     # === Phase 4: 删除代码行（宽泛匹配，循环5次） ===
     # 覆盖所有 Python/JS/Shell 代码模式，不以特定关键词开头也能匹配
