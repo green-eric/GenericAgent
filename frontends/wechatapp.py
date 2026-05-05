@@ -342,44 +342,54 @@ def _strip_md(t):
     """兼容旧调用，转调 _fmt_wx。"""
     return _fmt_wx(t)
 
-def _clean(t):
-    # === Phase 1: 删除大块结构 ===
-    # Remove <summary>...</summary> blocks
+def _fmt_wx(t):
+    """格式化 LLM 输出为微信友好的纯文本：去掉 Markdown、保留 emoji、结构清晰。"""
+    # === Phase 1: 删除内部/代码大块结构 ===
     t = re.sub(r'<summary>.*?</summary>', '', t, flags=re.DOTALL)
-    # Remove fenced code blocks ```...```
     t = re.sub(r'```[\w]*\n.*?```', '', t, flags=re.DOTALL)
-    # Remove inline code spans with 3+ chars (likely code fragments)
     t = re.sub(r'`[^`\n]{3,}`', '', t)
-    # Remove tool result JSON blocks (multi-line, e.g. code_run output)
     t = re.sub(r'\{\s*["\']status["\'].*?\}', '', t, flags=re.DOTALL)
-    # Remove === Response === / === Prompt === markers
     t = re.sub(r'^\s*={3,}\s*(Response|Prompt)\s*={3,}\s*$', '', t, flags=re.M)
-
-    # === Phase 2: 删除工具调用行 ===
-    # Remove 🛠️ tool call lines (multi-line JSON args)
     t = re.sub(r'^\s*🛠️\s*\w+\(.*', '', t, flags=re.M | re.DOTALL)
-    # Remove 🔧 web tool call lines
     t = re.sub(r'^\s*🔧\s*\w+\(.*', '', t, flags=re.M | re.DOTALL)
-    # Remove "调用工具xxx" / "读取文件 xxx" etc.
     t = re.sub(r'^\s*(调用工具\w+|读取文件\s+\S+|写入文件\s+\S+|执行脚本\s+\S+).*$', '', t, flags=re.M)
-    # Remove args: lines
     t = re.sub(r'^\s*args:\s*\{.*$', '', t, flags=re.M)
-
-    # === Phase 3: 删除内部标记行 ===
     t = re.sub(r'^\s*LLM Running \(Turn \d+\) \.{3}\s*$', '', t, flags=re.M)
     t = re.sub(r'^\s*(\[Driver\].*|\[CDP\].*|\[Timeout.*\].*|Executing:.*|Timeout Error.*|Error:.*|Traceback.*)$', '', t, flags=re.M)
     for p in _TAG_PATS:
         t = re.sub(p, '', t, flags=re.DOTALL)
     t = re.sub(r'^\s*["\'](exit_code|stdout|stderr)["\'].*$', '', t, flags=re.M)
-    # Remove progress hints (⏳ with bar chars and turn counts)
     t = re.sub(r'^\s*⏳\s*思考中\s*[█░]+\s*\d+/\d+\s*$', '', t, flags=re.M)
-    t = re.sub(r'⏳.*', '', t)  # catch-all for any ⏳ line
-    t = re.sub(r'^[━─]{4,}.*$', '', t, flags=re.M)
+    t = re.sub(r'⏳.*', '', t)
     t = re.sub(r'^✅\s*回复完成\s*$', '', t, flags=re.M)
-    # Remove LLM-generated "贴心提醒" summary lines (e.g. ⚠️ 注意防晒, 💡 建议补水)
-    t = re.sub(r'^[⚠️💡].*(?:注意|记得|建议|提醒).*$', '', t, flags=re.M)
-    # Remove LLM internal reasoning / meta-commentary
-    # 用逐行 startswith 过滤，避免 ^$ + 多分组交替在 code_run 子进程 Python 中的匹配异常
+
+    # === Phase 2: 去掉 Markdown 格式标记，保留文字内容 ===
+    # 去掉标题标记 # ## ###
+    t = re.sub(r'^#{1,6}\s+', '', t, flags=re.M)
+    # 去掉表格行 | xxx | yyy | → 保留内容用空格分隔
+    def _table_row(m):
+        cells = [c.strip() for c in m.group(0).split('|') if c.strip()]
+        if not cells: return ''
+        # 如果全是分隔符 (---)，跳过
+        if all(re.match(r'^[-:]+$', c) for c in cells): return ''
+        return ' '.join(cells)
+    t = re.sub(r'^\|.*\|$', _table_row, t, flags=re.M)
+    # 去掉分隔线 ━━━━ ━━━━━ ---- ====
+    t = re.sub(r'^[━─=\-]{4,}\s*$', '', t, flags=re.M)
+    # 去掉列表标记 - * ▪ • ● → 保留内容
+    t = re.sub(r'^(\s*)[-*▪•●]\s+', r'\1', t, flags=re.M)
+    # 去掉有序列表 1. 2. → 保留内容
+    t = re.sub(r'^(\s*)\d+\.\s+', r'\1', t, flags=re.M)
+    # 去掉加粗 **xxx** __xxx__
+    t = re.sub(r'\*\*(.+?)\*\*', r'\1', t)
+    t = re.sub(r'__(.+?)__', r'\1', t)
+    # 去掉斜体 *xxx* _xxx_
+    t = re.sub(r'\*(.+?)\*', r'\1', t)
+    t = re.sub(r'(?<!\w)_(.+?)_(?!\w)', r'\1', t)
+    # 去掉行内代码 `xxx`
+    t = re.sub(r'`([^`]+)`', r'\1', t)
+
+    # === Phase 3: 删除 LLM 内部推理/元评论 ===
     _reasoning_prefixes = (
         '让我先', '让我看看', '先读', '继续读', '全部完成', '所有工作',
         '好的，', '我来', '我将', '我需要', '我直接', '我看看',
@@ -408,37 +418,23 @@ def _clean(t):
         filtered.append(line)
     t = '\n'.join(filtered)
 
-    # === Phase 4: 删除代码行（宽泛匹配，循环5次） ===
-    # 覆盖所有 Python/JS/Shell 代码模式，不以特定关键词开头也能匹配
+    # === Phase 4: 删除代码行 ===
     code_patterns = [
-        r'import\s+[\w,. ]+',           # import xxx
-        r'from\s+[\w.]+',                # from xxx
-        r'def\s+\w+',                    # def xxx
-        r'class\s+\w+',                  # class xxx
-        r'if\s+\w+.*:',                  # if xxx:
-        r'for\s+\w+.*:',                 # for xxx:
-        r'while\s+.*:',                  # while:
-        r'try:',                         # try:
-        r'except\b',                     # except
-        r'else:',                        # else:
-        r'elif\s+.*:',                   # elif:
-        r'with\s+.*:',                   # with:
-        r'return\s+',                    # return
-        r'^\s*#\s+',                     # comments
-        r'console\.\w+\(',               # console.xxx(
-        r'window\.\w+',                  # window.xxx
-        r'^\s*\w+\s*=\s*(urllib|requests|http|json|re|os|sys|subprocess)\b',  # var = module
-        r'^\s*\w+\s*=\s*\w+\.(get|post|put|delete|findall|search|sub|match)\(',  # var = obj.method(
-        r'^\s*\w+\s*=\s*[\w.]+\(.*\)\s*$',  # var = func(...)
-        r'^\s*\w+\.\w+\(.*\)\s*$',       # obj.method(...)
-        r'^\s*print\(.*\)\s*$',          # print(...)
+        r'import\s+[\w,. ]+', r'from\s+[\w.]+', r'def\s+\w+', r'class\s+\w+',
+        r'if\s+\w+.*:', r'for\s+\w+.*:', r'while\s+.*:', r'try:', r'except\b',
+        r'else:', r'elif\s+.*:', r'with\s+.*:', r'return\s+', r'^\s*#\s+',
+        r'console\.\w+\(', r'window\.\w+',
+        r'^\s*\w+\s*=\s*(urllib|requests|http|json|re|os|sys|subprocess)\b',
+        r'^\s*\w+\s*=\s*\w+\.(get|post|put|delete|findall|search|sub|match)\(',
+        r'^\s*\w+\s*=\s*[\w.]+\(.*\)\s*$', r'^\s*\w+\.\w+\(.*\)\s*$',
+        r'^\s*print\(.*\)\s*$',
     ]
     combined = '|'.join(code_patterns)
     for _ in range(5):
         t = re.sub(r'^(' + combined + r').*$', '', t, flags=re.M)
 
-    # === Phase 5: 清理格式 ===
-    t = re.sub(r'\n{3,}', '\n\n', _strip_md(t)).strip()
+    # === Phase 5: 清理空行 ===
+    t = re.sub(r'\n{3,}', '\n\n', t).strip()
     return t
 
 def _turn_parts(t):
@@ -574,7 +570,15 @@ def on_message(bot, msg):
 
     def _handle():
         try:
-            prompt = text if text.startswith('/') else f"If you need to show files to user, use [FILE:filepath] in your response.\n\n{text}"
+            _wx_fmt_hint = (
+                "【微信格式要求】\n"
+                "- 输出纯文本+emoji，禁止 Markdown（无表格、无|分隔线、无**加粗**、无##标题）\n"
+                "- 用 emoji 作为分区标记（如 📊🔥📰），用换行分隔段落\n"
+                "- 列表用 emoji 序号（①②③）或简单换行，不用 - * ▪ •\n"
+                "- 分隔线用短横线（────────────）或空行，不用 ━━━━ ====\n"
+                "- 简洁明了，避免冗余的「今日焦点」「财经快讯」等小标题重复\n"
+            )
+            prompt = text if text.startswith('/') else f"{_wx_fmt_hint}\nIf you need to show files to user, use [FILE:filepath] in your response.\n\n{text}"
             dq = agent.put_task(prompt, source="wechat")
             try: bot.send_typing(uid)
             except: pass
@@ -597,12 +601,12 @@ def on_message(bot, msg):
                 return False
             try:
                 while True:
-                    item = dq.get(timeout=30)
+                    item = dq.get(timeout=120)
                     if 'done' in item: result = item['done']; break
                     raw = item.get('next', '')
                     done, partial = _turn_parts(raw)
                     if len(done) > sent:
-                        merged = _clean('\n\n'.join(done[sent:]))
+                        merged = _fmt_wx('\n\n'.join(done[sent:]))
                         print(f'[WX] turns={len(done)}/{len(done)+1} sent={sent} sending={len(done)-sent}', file=sys.__stdout__)
                         if _send(merged):
                             sent = len(done)
@@ -615,10 +619,10 @@ def on_message(bot, msg):
             else:
                 # Build final response (clean output, no internal artifacts)
                 rest = '\n\n'.join(done[sent:] + [partial])
-                rest_clean = _clean(rest)
+                rest_clean = _fmt_wx(rest)
                 # If _turn_parts returned empty turns, send result directly
                 if not done and not partial and result.strip():
-                    rest_clean = _clean(result)
+                    rest_clean = _fmt_wx(result)
                 # Ensure we don't exceed 2000 chars; if so, trim smartly
                 final = rest_clean[-1900:] if len(rest_clean) > 1900 else rest_clean
                 if final.strip(): _wx_send(final)
