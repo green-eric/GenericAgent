@@ -96,8 +96,11 @@ def main():
                         changed = True; break
             last_files = current_files
             if changed:
-                last_change_time = time.time()
-                log.info("📝 文件变更")
+                if last_change_time is None:
+                    last_change_time = time.time()
+                    log.info("📝 文件变更 (首次)")
+                else:
+                    log.debug("📝 文件变更 (持续中)")
             if last_change_time and (time.time() - last_change_time) >= COMMIT_INTERVAL:
                 if do_commit():
                     last_commit_time = time.time()
