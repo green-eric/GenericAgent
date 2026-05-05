@@ -182,3 +182,13 @@
 - 当前状态：已安装但未配置使用
 - 关联TODO：为GA Agent编写LLM调用链追踪装饰器(@trace_llm_call)
 - 参考：R5规划中"研究langfuse+opentelemetry在Agent框架中的集成方案"
+
+## [微信Bot性能优化] (2026-05-05)
+- 根因：context_win=28000太小(阈值84K)，compress_history_tags每5次才执行一次(max_len=800)，tool_result网页结果5K-10K字符直接存入history导致膨胀
+- 修复1：context_win 28K→60K（阈值180K），compress改每次执行+max_len 800→2000
+- 修复2：tool_result截断3000字符（agent_loop.py:91 + llmcore.py:994两处）
+- 修复3：wechatapp.py timeout 30→120s，fmt_wx格式化（禁Markdown标记），微信格式约束prompt
+- 关键参数：context_win=60000, max_len=2000, tool_result截断=3000, timeout=120s
+- 诊断：Get-Content temp/wechatapp.log -Tail 50 | Select-String "Current context"
+- SOP：memory/wechat_bot_perf_sop.md
+- Git：4a162f1, 1974fbe, 36f132e

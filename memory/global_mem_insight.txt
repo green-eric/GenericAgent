@@ -9,6 +9,7 @@ L3: memory_cleanup_sop(记忆整理) | ui_detect.py | ocr_utils.py | subagent | 
 | mini_sop_env_scan(环境扫描) | mini_sop_tool_wrapping(工具封装) | mini_sop_memory_update(记忆更新)
 || otel_trace.py(@trace_llm_call装饰器:LLM调用OTel追踪)
 | auto_git_commit.py(自动git提交守护进程) | restore_patches.py(GA更新后恢复补丁)
+| wechat_bot_perf_sop(微信Bot性能优化)
 L4: L4_raw_sessions/ 历史会话
 
 浏览器特殊操作: tmwebdriver_sop(文件上传/图搜/PDF blob/物理坐标/HttpOnly Cookie/autofill突破/跨域iframe/CDP/跨tab/隐身离屏) | cdp_bridge_sop(CDP直连/WebSocket/return提取/离屏隐身)
