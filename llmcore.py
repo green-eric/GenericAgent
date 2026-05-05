@@ -977,6 +977,7 @@ class NativeToolClient:
         if combined != self.backend.system: print(f"[Debug] Updated system prompt, length {len(combined)} chars.")
         self.backend.system = combined
     def chat(self, messages, tools=None):
+        from plugins.otel_trace import llm_span
         if tools: self.backend.tools = tools
         if not self.backend.history: self._pending_tool_ids = []
         combined_content = []; resp = None; tool_results = []
@@ -999,11 +1000,24 @@ class NativeToolClient:
         self._pending_tool_ids = []
         merged = {"role": "user", "content": tool_result_blocks + combined_content}
         _write_llm_log('Prompt', json.dumps(merged, ensure_ascii=False, indent=2))
+        # OTel trace: record input before yielding, record output after completion
+        span = llm_span(model=self.backend.model, operation="chat",
+                        llm_input_messages=json.dumps(merged, ensure_ascii=False))
+        span.__enter__()
         gen = self.backend.ask(merged)
         try:
-            while True: 
+            while True:
                 chunk = next(gen); yield chunk
         except StopIteration as e: resp = e.value
-        if resp: _write_llm_log('Response', resp.raw)
+        if resp:
+            output_text = getattr(resp, 'content', '') or str(resp.raw or '')
+            span._span.set_attribute("llm.output.content", output_text[:2000])
+            usage = getattr(resp, 'usage', None)
+            if usage:
+                span._span.set_attribute("llm.usage.input_tokens", getattr(usage, 'input_tokens', 0) or 0)
+                span._span.set_attribute("llm.usage.output_tokens", getattr(usage, 'output_tokens', 0) or 0)
+                span._span.set_attribute("llm.usage.total_tokens", getattr(usage, 'total_tokens', 0) or 0)
+            _write_llm_log('Response', resp.raw)
+        span.__exit__(None, None, None)
         if resp and hasattr(resp, 'tool_calls') and resp.tool_calls: self._pending_tool_ids = [tc.id for tc in resp.tool_calls]
         return resp
