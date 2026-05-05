@@ -1,18 +1,24 @@
 import os, sys, re, threading, queue, time, socket, json, struct, base64, uuid, webbrowser, hashlib, math
 from pathlib import Path
 from urllib.parse import quote
+
 import requests, qrcode
+import socket as _socket
+
+_API_HOST = 'ilinkai.weixin.qq.com'
+
+# Use system proxy (verge-mihomo at 127.0.0.1:7897) — do NOT clear proxy env vars.
+# The proxy handles DNS resolution and SNI correctly, avoiding WFP hijacking.
+
 from Crypto.Cipher import AES
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 _TEMP_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'temp')
 from agentmain import GeneraticAgent
 
 # ── WxBotClient (inline from wx_bot_client.py) ──
-for _k in ('HTTPS_PROXY', 'https_proxy'):
-    os.environ.pop(_k, None)  # avoid inherited proxy breaking WeChat long-poll SSL
-API = 'https://ilinkai.weixin.qq.com'
-TOKEN_FILE = Path.home() / '.wxbot' / 'token.json'
-TOKEN_FILE.parent.mkdir(exist_ok=True)
+API     = f'https://{_API_HOST}'
+TOKEN_FILE = Path(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) / 'temp' / 'wxbot_token.json'
+TOKEN_FILE.parent.mkdir(parents=True, exist_ok=True)
 VER, MSG_USER, MSG_BOT, ITEM_TEXT, STATE_FINISH = '2.1.10', 1, 2, 1, 2
 ILINK_APP_ID = 'bot'
 ILINK_APP_CLIENT_VERSION = (2 << 16) | (1 << 8) | 10
@@ -82,13 +88,13 @@ class WxBotClient:
         try:
             resp = self._post('ilink/bot/getupdates',
                               {'get_updates_buf': self._buf or '',
-                               'base_info': {'channel_version': VER}},
+                               'base_info': {}},
                               timeout=timeout + 5)
         except requests.exceptions.ReadTimeout:
             return []
         if resp.get('errcode'):
             print(f'[getUpdates] err: {resp.get("errcode")} {resp.get("errmsg","")}')
-            if resp['errcode'] == -14: self._buf = ''; self._save()
+            if resp['errcode'] == -14: self._save()
             return []
         nb = resp.get('get_updates_buf', '')
         if nb: self._buf = nb; self._save()
@@ -260,9 +266,9 @@ _TAG_PATS = [r'<' + t + r'>.*?</' + t + r'>' for t in ('thinking', 'tool_use')]
 _TAG_PATS.append(r'<file_content>.*?</file_content>')
 
 def _strip_md(t):
-    """Filter markdown for WeChat rich-text rendering.
+    """Enhance & filter markdown for WeChat rich-text rendering.
     WeChat natively renders: code fences, inline code, bold, italic,
-    H1-H4 headings, horizontal rules, tables. We only strip unsupported syntax."""
+    H1-H4 headings, horizontal rules, tables. We add emoji markers and visual separators."""
     def _trunc_code(m):
         full = m.group()
         fence = re.match(r'`{3,}', full).group()
@@ -270,27 +276,68 @@ def _strip_md(t):
         if '\n' not in rest: return full  # single-line, keep as-is
         lang_line, _, body = rest.partition('\n')
         lines = body.split('\n')
-        if len(lines) > 10:
-            return f'{fence}{lang_line}\n' + '\n'.join(lines[:10]) + '\n...\n' + fence
+        if len(lines) > 15:
+            kept = lines[:12]
+            return f'{fence}{lang_line}\n' + '\n'.join(kept) + f'\n⋯ ({len(lines)-12} 行省略)\n' + fence
         return full  # keep intact
     t = re.sub(r'(`{3,})[\s\S]*?\1', _trunc_code, t)
     # inline code: keep (WeChat renders it)
     # bold/italic (*/**/***): keep (WeChat renders it)
-    t = re.sub(r'!\[.*?\]\(.*?\)', '', t)                        # images: remove
-    t = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', t)              # links: text only
-    t = re.sub(r'^#{5,6}\s+', '', t, flags=re.M)                 # H5-H6: strip (H1-H4 kept)
-    t = re.sub(r'^\s*[-*+]\s+', '• ', t, flags=re.M)             # unordered list: bullet
-    t = re.sub(r'^\s*\d+\.\s+', '', t, flags=re.M)               # ordered list: strip num
-    t = re.sub(r'^\s*>\s?', '', t, flags=re.M)                   # blockquote: strip
-    # horizontal rules (---): keep (WeChat renders it)
+    # images: replace with emoji marker
+    t = re.sub(r'!\[([^\]]*)\]\([^\)]+\)', r'🖼️ [\1]', t)
+    # links: text + 🔗
+    t = re.sub(r'\[([^\]]+)\]\(([^\)]+)\)', r'\1 🔗', t)
+    # H1-H4: add emoji prefix for visual hierarchy
+    t = re.sub(r'^#{1}\s+(.+)', r'📌 \1', t, flags=re.M)
+    t = re.sub(r'^#{2}\s+(.+)', r'🔹 \1', t, flags=re.M)
+    t = re.sub(r'^#{3}\s+(.+)', r'▪️ \1', t, flags=re.M)
+    t = re.sub(r'^#{4}\s+(.+)', r'• \1', t, flags=re.M)
+    t = re.sub(r'^#{5,6}\s+', '', t, flags=re.M)                 # H5-H6: strip (too small on mobile)
+    # unordered list: bullet with slight indent
+    t = re.sub(r'^\s*[-*+]\s+', '  • ', t, flags=re.M)
+    # ordered list: keep number but add spacing
+    t = re.sub(r'^(\s*)(\d+)\.\s+', r'\1\2. ', t, flags=re.M)
+    # blockquote: replace with indented style + vertical bar
+    t = re.sub(r'^\s*>\s?(.+)', r'│ \1', t, flags=re.M)
+    # horizontal rules: enhance with double line
+    t = re.sub(r'^\s*[-*_]{3,}\s*$', '─' * 20, t, flags=re.M)
+    # Add emoji to common keywords (case-insensitive, only if not already prefixed)
+    t = re.sub(r'(?<!📌 )(?<!🔹 )(?<!▪️ )\b(注意|警告|错误|失败)\b', r'⚠️ \1', t)
+    t = re.sub(r'(?<!\w)(成功|完成|通过|OK|done)\b', r'✅ \1', t, flags=re.I)
+    t = re.sub(r'(?<!\w)(提示|说明|备注|Note)\b', r'💡 \1', t, flags=re.I)
     return re.sub(r'\n{3,}', '\n\n', t).strip()
 
 def _clean(t):
+    # Remove <summary>...</summary> blocks entirely (including content)
+    t = re.sub(r'<summary>.*?</summary>', '', t, flags=re.DOTALL)
+    # Remove internal agent artifacts
     t = re.sub(r'^\s*LLM Running \(Turn \d+\) \.{3}\s*$', '', t, flags=re.M)
-    t = re.sub(r'^\s*🛠️\s*[A-Za-z_][A-Za-z0-9_]*\(.*$', '', t, flags=re.M)
+    # Remove tool call lines: "调用工具xxx", "读取文件 xxx", "写入文件 xxx"
+    t = re.sub(r'^\s*(调用工具\w+|读取文件\s+\S+|写入文件\s+\S+|执行脚本\s+\S+).*$', '', t, flags=re.M)
+    # Remove 🔧 web tool call lines (web_scan, web_execute_js, etc.)
+    t = re.sub(r'^\s*🔧\s*\w+\(.*$', '', t, flags=re.M)
+    # Remove driver/CDP/executing/timeout/error log lines (match anywhere in line start)
+    t = re.sub(r'^\s*(\[Driver\].*|\[CDP\].*|\[Timeout.*\].*|Executing:.*|Timeout Error.*|Error:.*|Traceback.*)$', '', t, flags=re.M)
+    # Remove args: lines (tool call parameters)
+    t = re.sub(r'^\s*args:\s*\{.*$', '', t, flags=re.M)
+    # Remove 🛠️ tool call summary lines
+    t = re.sub(r'^\s*🛠️\s*\w+\(.*$', '', t, flags=re.M)
+    # Remove code_run/file_read/file_patch tool result JSON blocks
+    t = re.sub(r'^\s*\{["\']status["\'].*$', '', t, flags=re.M)
+    # Remove === Response === / === Prompt === token markers
+    t = re.sub(r'^\s*={3,}\s*(Response|Prompt)\s*={3,}\s*$', '', t, flags=re.M)
     for p in _TAG_PATS:
         t = re.sub(p, '', t, flags=re.DOTALL)
-    t = re.sub(r'</?summary>', '', t)
+    # Remove lines that are just tool metadata
+    t = re.sub(r'^\s*["\'](exit_code|stdout|stderr)["\'].*$', '', t, flags=re.M)
+    # Remove ⏳ progress bar lines (keep only the first one per response, remove duplicates)
+    # First, remove all but the first ⏳ line
+    progress_lines = [(m.start(), m.group()) for m in re.finditer(r'^⏳.*$', t, flags=re.M)]
+    if len(progress_lines) > 1:
+        # Keep first, remove rest (reverse order to preserve offsets)
+        for pos, text in reversed(progress_lines[1:]):
+            t = t[:pos] + t[pos + len(text):]
+    # Remove excessive blank lines but keep paragraph separation
     return re.sub(r'\n{3,}', '\n\n', _strip_md(t)).strip()
 
 def _turn_parts(t):
@@ -301,6 +348,15 @@ def _turn_parts(t):
     if len(parts) < 4: return [], t
     turns = [parts[i] + (parts[i+1] if i+1 < len(parts) else '') for i in range(1, len(parts), 2)]
     return (([parts[0]] if parts[0].strip() else []) + turns[:-1], turns[-1])
+
+def _progress_hint(turn_idx, total_turns):
+    """Generate a brief progress hint for multi-turn responses."""
+    if total_turns <= 1:
+        return ''
+    bar_len = 10
+    filled = min(bar_len, int((turn_idx / total_turns) * bar_len))
+    bar = '█' * filled + '░' * (bar_len - filled)
+    return f'⏳ 思考中 {bar} {turn_idx}/{total_turns}'
 
 def on_message(bot, msg):
     text = bot.extract_text(msg).strip()
@@ -331,69 +387,120 @@ def on_message(bot, msg):
         return
 
     def _handle():
-        prompt = text if text.startswith('/') else f"If you need to show files to user, use [FILE:filepath] in your response.\n\n{text}"
-        dq = agent.put_task(prompt, source="wechat")
-        try: bot.send_typing(uid)
-        except: pass
-        result = ''; sent = 0; mi = 0; last_send = 0
-        def _wx_send(text):
-            s = text.strip(); t0 = time.time()
-            try:
-                bot.send_text(uid, s, context_token=ctx)
-                print(f'[WX] send ok len={len(s)} dt={time.time()-t0:.1f}s', file=sys.__stdout__)
-                return True
-            except Exception as e:
-                print(f'[WX] send err len={len(s)} dt={time.time()-t0:.1f}s {type(e).__name__}: {e}', file=sys.__stdout__)
-                return False
-        def _send(show):
-            nonlocal mi, last_send
-            now = time.time()
-            if mi >= 9 or not show.strip(): return False
-            if mi and now - last_send < 6 * mi: return None
-            if _wx_send(show[:2000]): mi += 1; last_send = time.time(); return True
-            return False
         try:
-            while True:
-                item = dq.get(timeout=300)
-                if 'done' in item: result = item['done']; break
-                raw = item.get('next', '')
-                done, partial = _turn_parts(raw)
-                if len(done) > sent:
-                    merged = _clean('\n\n'.join(done[sent:]))
-                    print(f'[WX] turns={len(done)}/{len(done)+1} sent={sent} sending={len(done)-sent}', file=sys.__stdout__)
-                    if _send(merged):
-                        sent = len(done)
-        except queue.Empty: result = '[超时]'
-        done, partial = _turn_parts(result)
-        rest = '\n\n'.join(done[sent:] + [partial] + ['\n\n[任务已完成]'])
-        if rest.strip(): _wx_send((_clean(rest))[-2000:])
-        files = re.findall(r'\[FILE:([^\]]+)\]', result)
-        bad = {'filepath', '<filepath>', 'path', '<path>', 'file_path', '<file_path>', '...'}
-        files = [f for f in files if f.strip().lower() not in bad and (f if os.path.isabs(f) else os.path.join(_TEMP_DIR, f)) not in media_paths]
-        for fpath in set(files):
-            if not os.path.isabs(fpath): fpath = os.path.join(_TEMP_DIR, fpath)
+            prompt = text if text.startswith('/') else f"If you need to show files to user, use [FILE:filepath] in your response.\n\n{text}"
+            dq = agent.put_task(prompt, source="wechat")
+            try: bot.send_typing(uid)
+            except: pass
+            result = ''; sent = 0; mi = 0; last_send = 0
+            def _wx_send(text):
+                s = text.strip(); t0 = time.time()
+                try:
+                    bot.send_text(uid, s, context_token=ctx)
+                    print(f'[WX] send ok len={len(s)} dt={time.time()-t0:.1f}s', file=sys.__stdout__)
+                    return True
+                except Exception as e:
+                    print(f'[WX] send err len={len(s)} dt={time.time()-t0:.1f}s {type(e).__name__}: {e}', file=sys.__stdout__)
+                    return False
+            def _send(show):
+                nonlocal mi, last_send
+                now = time.time()
+                if mi >= 9 or not show.strip(): return False
+                if mi and now - last_send < 6 * mi: return None
+                if _wx_send(show[:2000]): mi += 1; last_send = time.time(); return True
+                return False
             try:
-                if not os.path.exists(fpath): raise FileNotFoundError(f"文件不存在: {fpath}")
-                ext = os.path.splitext(fpath)[1].lower()
-                sender = bot.send_video if ext in {'.mp4', '.mov', '.m4v', '.webm'} else \
-                         bot.send_image if ext in {'.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp'} else bot.send_file
-                sender(uid, fpath, context_token=ctx)
-                print(f'[WX] sent media: {fpath}', file=sys.__stdout__)
-            except Exception as e: print(f'[WX] send media err: {e}', file=sys.__stdout__)
+                while True:
+                    item = dq.get(timeout=300)
+                    if 'done' in item: result = item['done']; break
+                    raw = item.get('next', '')
+                    done, partial = _turn_parts(raw)
+                    if len(done) > sent:
+                        merged = _clean('\n\n'.join(done[sent:]))
+                        # Prepend progress hint only for the first message
+                        if mi == 0:
+                            hint = _progress_hint(len(done), len(done) + 1)
+                            if hint:
+                                merged = f'{hint}\n\n{merged}'
+                        print(f'[WX] turns={len(done)}/{len(done)+1} sent={sent} sending={len(done)-sent}', file=sys.__stdout__)
+                        if _send(merged):
+                            sent = len(done)
+            except queue.Empty: result = '⏰ 响应超时，请稍后重试'
+            done, partial = _turn_parts(result)
+            # Build final response with completion marker
+            tail = '\n\n━━━━━━━━━━━━\n✅ 回复完成'
+            rest = '\n\n'.join(done[sent:] + [partial])
+            rest_clean = _clean(rest)
+            # Ensure we don't exceed 2000 chars; if so, trim smartly
+            final = rest_clean[-1900:] + tail if len(rest_clean) > 1900 else rest_clean + tail
+            if final.strip(): _wx_send(final)
+            files = re.findall(r'\[FILE:([^\]]+)\]', result)
+            bad = {'filepath', '<filepath>', 'path', '<path>', 'file_path', '<file_path>', '...'}
+            files = [f for f in files if f.strip().lower() not in bad and (f if os.path.isabs(f) else os.path.join(_TEMP_DIR, f)) not in media_paths]
+            for fpath in set(files):
+                if not os.path.isabs(fpath): fpath = os.path.join(_TEMP_DIR, fpath)
+                try:
+                    if not os.path.exists(fpath): raise FileNotFoundError(f"文件不存在: {fpath}")
+                    ext = os.path.splitext(fpath)[1].lower()
+                    sender = bot.send_video if ext in {'.mp4', '.mov', '.m4v', '.webm'} else \
+                             bot.send_image if ext in {'.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp'} else bot.send_file
+                    sender(uid, fpath, context_token=ctx)
+                    print(f'[WX] sent media: {fpath}', file=sys.__stdout__)
+                except Exception as e: print(f'[WX] send media err: {e}', file=sys.__stdout__)
+        except Exception as e:
+            import traceback
+            print(f'[WX] _handle 未捕获异常: {type(e).__name__}: {e}', file=sys.__stdout__)
+            traceback.print_exc(file=sys.__stdout__)
 
     threading.Thread(target=_handle, daemon=True).start()
 
 if __name__ == '__main__':
-    try: _lock = socket.socket(socket.AF_INET, socket.SOCK_STREAM); _lock.bind(('127.0.0.1', 19531))
-    except OSError: print('[WeChat] Another instance running, exiting.'); sys.exit(1)
+    # Prevent multiple instances: check for other wechatapp.py processes via PowerShell
+    _my_pid = os.getpid()
+    _dup = False
+    try:
+        import subprocess as _sp
+        _out = _sp.check_output(
+            ['powershell', '-NoProfile', '-Command',
+             'Get-Process python -ErrorAction SilentlyContinue | '
+             'Select-Object Id, @{Name="Cmd";Expression={(Get-CimInstance Win32_Process -Filter "ProcessId=$($_.Id)").CommandLine}} | '
+             'Where-Object { $_.Cmd -like "*wechatapp*" } | ForEach-Object { "$($_.Id) $($_.Cmd)" }'],
+            timeout=8
+        ).decode('utf-8', errors='replace').strip()
+        if _out:
+            for _line in _out.split('\n'):
+                _line = _line.strip()
+                if _line:
+                    try:
+                        _other_pid = int(_line.split()[0])
+                        if _other_pid != _my_pid:
+                            _dup = True
+                            print(f'[WeChat] Found another instance (PID {_other_pid}): {_line[:120]}')
+                    except (ValueError, IndexError):
+                        pass
+    except Exception as _e:
+        print(f'[WeChat] Process check skipped: {_e}')
+    if _dup:
+        print('[WeChat] Another instance running, exiting.')
+        sys.exit(1)
     _logf = open(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'temp', 'wechatapp.log'), 'a', encoding='utf-8', buffering=1)
     sys.stdout = sys.stderr = _logf
     print(f'[NEW] Process starting {time.strftime("%m-%d %H:%M")}')
     bot = WxBotClient()
     if not bot.token:
-        sys.stdout = sys.stderr = sys.__stdout__  # restore for QR display
+        _stdout_save = sys.__stdout__ if sys.__stdout__ else _logf
+        sys.stdout = sys.stderr = _stdout_save  # restore for QR display
         bot.login_qr()
         sys.stdout = sys.stderr = _logf
-    threading.Thread(target=agent.run, daemon=True).start()
+    # Start agent in a supervised daemon thread that auto-restarts on crash
+    def _agent_wrapper():
+        while True:
+            try:
+                print('[Bot] agent.run() 启动', file=sys.__stdout__)
+                agent.run()
+            except Exception as e:
+                print(f'[Bot] agent.run() 异常退出: {e}，5s后重启', file=sys.__stdout__)
+                time.sleep(5)
+    threading.Thread(target=_agent_wrapper, daemon=True).start()
     print(f'WeChat Bot 已启动 (bot_id={bot.bot_id})', file=sys.__stdout__)
     bot.run_loop(on_message)
