@@ -1,7 +1,7 @@
 
 """
 Auto Git Commit Watcher
-监控 D:\GenericAgent 下源码文件变更，自动 git add + commit
+监控 D:\GenericAgent 下源码文件变更，自动 git add + commit + push 到 user-patches 分支
 """
 
 import os, sys, time, subprocess, logging
@@ -10,6 +10,7 @@ from datetime import datetime
 WATCH_ROOT = r"D:\GenericAgent"
 COMMIT_INTERVAL = 30
 LOG_FILE = os.path.join(WATCH_ROOT, "temp", "auto_git_commit.log")
+BRANCH = "user-patches"
 EXCLUDE_DIRS = {".git", "__pycache__", "node_modules", "L4_raw_sessions"}
 EXCLUDE_EXTS = {".pyc", ".pyo", ".bak", ".tmp", ".log"}
 EXCLUDE_FILES = {"auto_git_commit.py"}
@@ -41,6 +42,27 @@ def should_watch(filepath):
         if d in parts: return False
     return True
 
+def ensure_branch():
+    """确保在 user-patches 分支上"""
+    out, _, rc = git("rev-parse", "--abbrev-ref", "HEAD")
+    if rc == 0 and out == BRANCH:
+        return True
+    _, _, rc2 = git("rev-parse", "--verify", BRANCH)
+    if rc2 == 0:
+        _, err, rc3 = git("checkout", BRANCH)
+        if rc3 == 0:
+            log.info(f"✅ 切换到 {BRANCH} 分支")
+            return True
+        log.error(f"❌ 切换分支失败: {err}")
+        return False
+    else:
+        _, err, rc3 = git("checkout", "-b", BRANCH, "main")
+        if rc3 == 0:
+            log.info(f"✅ 创建并切换到 {BRANCH} 分支")
+            return True
+        log.error(f"❌ 创建分支失败: {err}")
+        return False
+
 def do_commit():
     out, _, rc = git("status", "--porcelain")
     if rc != 0 or not out: return False
@@ -52,18 +74,25 @@ def do_commit():
         fullpath = os.path.join(WATCH_ROOT, filepath)
         if should_watch(fullpath): changed.append(filepath)
     if not changed: return False
+    if not ensure_branch():
+        log.error("❌ 无法切换到 user-patches 分支，跳过提交")
+        return False
     for f in changed: git("add", f)
     ts = datetime.now().strftime("%Y-%m-%d %H:%M")
     files_summary = ", ".join(changed[:5])
     if len(changed) > 5: files_summary += f" +{len(changed)-5}"
     msg = f"[auto] {files_summary} ({ts})"
     _, err, rc = git("commit", "-m", msg)
-    if rc == 0:
-        log.info(f"✅ {msg}")
-        return True
-    else:
-        log.warning(f"❌ {err}")
+    if rc != 0:
+        log.warning(f"❌ commit 失败: {err}")
         return False
+    log.info(f"✅ {msg}")
+    _, err, rc = git("push", "origin", BRANCH)
+    if rc == 0:
+        log.info(f"✅ 已推送到 origin/{BRANCH}")
+    else:
+        log.warning(f"❌ push 失败: {err}")
+    return True
 
 def scan_files():
     files = {}
@@ -77,7 +106,7 @@ def scan_files():
     return files
 
 def main():
-    log.info("🚀 Auto Git 启动，监控 %s", WATCH_ROOT)
+    log.info("🚀 Auto Git 启动，监控 %s → %s 分支", WATCH_ROOT, BRANCH)
     last_files = scan_files()
     log.info("   监控 %d 个文件", len(last_files))
     last_change_time = None
