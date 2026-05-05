@@ -991,7 +991,8 @@ class NativeToolClient:
         for tr in tool_results:
             tool_use_id, content = tr.get("tool_use_id", ""), tr.get("content", "")
             tr_id_set.add(tool_use_id)
-            if tool_use_id: tool_result_blocks.append({"type": "tool_result", "tool_use_id": tool_use_id, "content": tr.get("content", "")})
+            if len(content) > 3000: content = content[:3000] + '\n...[截断]'
+            if tool_use_id: tool_result_blocks.append({"type": "tool_result", "tool_use_id": tool_use_id, "content": content})
             else: combined_content = [{"type": "text", "text": f'<tool_result>{content}</tool_result>'}] + combined_content
         for tid in self._pending_tool_ids:
             if tid not in tr_id_set: tool_result_blocks.append({"type": "tool_result", "tool_use_id": tid, "content": ""})
