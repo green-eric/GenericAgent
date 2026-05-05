@@ -1,3 +1,5 @@
+R15 | 2026-05-05 | 环境 | 实测D:/Other/bigdata中Hadoop/Spark环境可用性
+R14 | 2026-05-05 | 工程 | 将OTel llm_span集成到MixinSession.chat()，自动追踪LLM调用的input/output/duration/tokens
 R13 | 2026-05-05 | 记忆 | polars/langfuse/otel关键发现写入global_mem.txt | 从R2/R5/R9提取发现，新增两个发现区块
 R12 | 2026-05-05 | 工程 | 微信Bot处理机制深度评估 | 完成全链路分析，定位5个核心问题，提出P0-P3改进方案
 R11 | 2026-05-05 | 环境 | ruff代码质量检查 | 3项目1689个.py，修复7个，剩余8个需手动(f-string+import位置)

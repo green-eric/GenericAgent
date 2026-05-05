@@ -24,8 +24,8 @@
 
 ### 深度利用（从"广度"转向"深度"）
 [ ] 产出 | 为ScoreSys构建自动化回测框架 | 用历史数据验证五维评分模型的选股效果，计算IC/回撤/夏普比率
-[ ] 环境 | 实测D:/Other/bigdata中Hadoop/Spark环境可用性 | 尝试启动本地Spark，用pyspark读取bigdata数据，验证大数据管道可运行
+[x] R15 | 环境 | 实测D:/Other/bigdata中Hadoop/Spark环境可用性 | 探测结论：bigdata目录为历史学习资料备份，本机未安装Java/Hadoop/Spark，无法本地运行
 
 ### 记忆与知识管理
 [x] R13 | 记忆 | 将polars/langfuse/otel关键发现写入global_mem.txt | 确保高价值技术发现持久化到L2记忆
-[ ] 产出 | 为GA Agent编写LLM调用链追踪装饰器 | 基于langfuse+otel方案，实现一个@trace_llm_call装饰器，自动追踪每次LLM调用的输入/输出/延迟/token
+[x] R14 | 产出 | 为GA Agent编写LLM调用链追踪装饰器 | 基于langfuse+otel方案，将llm_span集成到MixinSession.chat()，自动追踪每次LLM调用的输入/输出/延迟/token

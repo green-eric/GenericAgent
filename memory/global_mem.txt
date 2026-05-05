@@ -10,15 +10,6 @@
 - auto_git_commit 守护进程会自动检测文件变更并重启 bot
 2. 任务完成后务必更新记忆，特别是 L1 层索引（global_mem_insight.txt）
 
-## [Everything CLI] (2026-05-04 配置完成)
-- es.py: D:\GenericAgent\es.py (Python + Everything SDK ctypes 封装)
-- es.bat: D:\GenericAgent\es.bat (cmd wrapper)
-- SDK DLL: temp/everything-sdk/dll/Everything64.dll
-- 用法: es mykey.py / es *.xlsx -n 5 / es D:\Other\xc -n 3
-- 参数: -n(最大结果数) -c(区分大小写) -w(全词匹配) -p(仅路径)
-- 注意: 需要 Everything 后台运行 (C:\Program Files\Everything\Everything.exe)
-- D:\GenericAgent 已在 PATH 中
-
 ## [Vision API] (2026-05-04 配置完成)
 - 脚本: memory/vision_api.py (从 template 复制)
 - 默认后端: modelscope (Qwen/Qwen3-VL-235B-A22B-Instruct)
@@ -182,6 +173,13 @@
 - 当前状态：已安装但未配置使用
 - 关联TODO：为GA Agent编写LLM调用链追踪装饰器(@trace_llm_call)
 - 参考：R5规划中"研究langfuse+opentelemetry在Agent框架中的集成方案"
+
+## [es.exe 修复] (2026-05-05)
+- 问题: es.exe 不在 PATH 中，搜索工具不可用
+- 位置: D:\GenericAgent\temp\es_extract\es.exe (138KB, ES 1.1.0.27)
+- 修复: setx 添加 D:\GenericAgent\temp\es_extract 到用户 PATH
+- 注意: setx 只影响新进程，已打开终端需重新打开
+- 验证: where es.exe 返回正确路径，搜索功能正常
 
 ## [微信Bot性能优化] (2026-05-05)
 - 根因：context_win=28000太小(阈值84K)，compress_history_tags每5次才执行一次(max_len=800)，tool_result网页结果5K-10K字符直接存入history导致膨胀
