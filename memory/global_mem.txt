@@ -165,3 +165,20 @@
 |- 快速通道天气查询仍用 \u2028 手动拼，经 _fmt_wx 后无破坏性影响
 |- 未实测：需要在微信端实际发送消息验证换行效果
 |- 教训：不要在 send_text 之前预处理，要在 send_text 内部统一处理
+
+## [polars 关键发现] (2026-05-05)
+- 已安装版本：polars 1.40.1（R2环境扫描确认）
+- 核心优势：Rust编写，比pandas快5-50倍，惰性求值(lazy API)，内存效率高
+- 用法：import polars as pl; df = pl.read_csv("file.csv")
+- 验证状态：R9已验证 Redis→polars DataFrame 处理逻辑全部正常
+- 建议：ScoreSys calculator.py 可用 polars 替代 pandas（TODO待执行）
+- 关联TODO：用polars替代pandas重写脚本并对比性能
+
+## [langfuse + opentelemetry 关键发现] (2026-05-05)
+- 已安装版本：langfuse 4.5.1, opentelemetry-api 1.41.1（R2环境扫描确认）
+- langfuse：LLM应用监控框架，原生支持opentelemetry协议
+- opentelemetry：分布式追踪标准，可追踪LLM调用链（输入/输出/延迟/token）
+- 集成方案：langfuse本地部署 + otel Collector → 自动追踪所有LLM调用
+- 当前状态：已安装但未配置使用
+- 关联TODO：为GA Agent编写LLM调用链追踪装饰器(@trace_llm_call)
+- 参考：R5规划中"研究langfuse+opentelemetry在Agent框架中的集成方案"

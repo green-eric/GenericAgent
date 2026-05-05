@@ -27,5 +27,5 @@
 [ ] 环境 | 实测D:/Other/bigdata中Hadoop/Spark环境可用性 | 尝试启动本地Spark，用pyspark读取bigdata数据，验证大数据管道可运行
 
 ### 记忆与知识管理
-[ ] 记忆 | 将polars/langfuse/otel关键发现写入global_mem.txt | 确保高价值技术发现持久化到L2记忆
+[x] R13 | 记忆 | 将polars/langfuse/otel关键发现写入global_mem.txt | 确保高价值技术发现持久化到L2记忆
 [ ] 产出 | 为GA Agent编写LLM调用链追踪装饰器 | 基于langfuse+otel方案，实现一个@trace_llm_call装饰器，自动追踪每次LLM调用的输入/输出/延迟/token
