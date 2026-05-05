@@ -302,7 +302,7 @@ def _strip_md(t):
     # horizontal rules: enhance with double line
     t = re.sub(r'^\s*[-*_]{3,}\s*$', '─' * 20, t, flags=re.M)
     # Add emoji to common keywords (case-insensitive, only if not already prefixed)
-    t = re.sub(r'(?<!📌 )(?<!🔹 )(?<!▪️ )\b(注意|警告|错误|失败)\b', r'⚠️ \1', t)
+    t = re.sub(r'(?<!📌 )(?<!🔹 )(?<!▪️ )\b(警告|错误|失败)\b', r'⚠️ \1', t)
     t = re.sub(r'(?<!\w)(成功|完成|通过|OK|done)\b', r'✅ \1', t, flags=re.I)
     t = re.sub(r'(?<!\w)(提示|说明|备注|Note)\b', r'💡 \1', t, flags=re.I)
     return re.sub(r'\n{3,}', '\n\n', t).strip()
@@ -341,6 +341,8 @@ def _clean(t):
     t = re.sub(r'⏳.*', '', t)  # catch-all for any ⏳ line
     t = re.sub(r'^[━─]{4,}.*$', '', t, flags=re.M)
     t = re.sub(r'^✅\s*回复完成\s*$', '', t, flags=re.M)
+    # Remove LLM-generated "贴心提醒" summary lines (e.g. ⚠️ 注意防晒, 💡 建议补水)
+    t = re.sub(r'^[⚠️💡].*(?:注意|记得|建议|提醒).*$', '', t, flags=re.M)
     # Remove LLM internal reasoning / meta-commentary
     # 用逐行 startswith 过滤，避免 ^$ + 多分组交替在 code_run 子进程 Python 中的匹配异常
     _reasoning_prefixes = (
@@ -481,11 +483,6 @@ def on_message(bot, msg):
                     done, partial = _turn_parts(raw)
                     if len(done) > sent:
                         merged = _clean('\n\n'.join(done[sent:]))
-                        # Prepend progress hint only for the first message
-                        if mi == 0:
-                            hint = _progress_hint(len(done), len(done) + 1)
-                            if hint:
-                                merged = f'{hint}\n\n{merged}'
                         print(f'[WX] turns={len(done)}/{len(done)+1} sent={sent} sending={len(done)-sent}', file=sys.__stdout__)
                         if _send(merged):
                             sent = len(done)
