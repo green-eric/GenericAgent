@@ -1,4 +1,4 @@
-import os, sys, re, threading, queue, time, socket, json, struct, base64, uuid, webbrowser, hashlib, math
+import os, sys, re, threading, queue, time, socket, json, struct, base64, uuid, webbrowser, hashlib, math, urllib.request
 from pathlib import Path
 from urllib.parse import quote
 
@@ -101,6 +101,8 @@ class WxBotClient:
         return resp.get('msgs') or []
 
     def send_text(self, to_user_id, text, context_token=''):
+        # 统一微信格式化：去 Markdown 符号 + \n → \u2028 换行
+        text = _fmt_wx(text) if text else text
         msg = {'from_user_id': '', 'to_user_id': to_user_id,
                'client_id': f'pyclient-{uuid.uuid4().hex[:16]}',
                'message_type': MSG_BOT, 'message_state': STATE_FINISH,
@@ -265,47 +267,80 @@ agent.verbose = False
 _TAG_PATS = [r'<' + t + r'>.*?</' + t + r'>' for t in ('thinking', 'tool_use')]
 _TAG_PATS.append(r'<file_content>.*?</file_content>')
 
-def _strip_md(t):
-    """Enhance & filter markdown for WeChat rich-text rendering.
-    WeChat natively renders: code fences, inline code, bold, italic,
-    H1-H4 headings, horizontal rules, tables. We add emoji markers and visual separators."""
-    def _trunc_code(m):
-        full = m.group()
-        fence = re.match(r'`{3,}', full).group()
-        rest = full[len(fence):-len(fence)]
-        if '\n' not in rest: return full  # single-line, keep as-is
-        lang_line, _, body = rest.partition('\n')
-        lines = body.split('\n')
-        if len(lines) > 15:
-            kept = lines[:12]
-            return f'{fence}{lang_line}\n' + '\n'.join(kept) + f'\n⋯ ({len(lines)-12} 行省略)\n' + fence
-        return full  # keep intact
-    t = re.sub(r'(`{3,})[\s\S]*?\1', _trunc_code, t)
-    # inline code: keep (WeChat renders it)
-    # bold/italic (*/**/***): keep (WeChat renders it)
-    # images: replace with emoji marker
+def _fmt_wx(t, already_has_unicode_nl=False):
+    """统一微信消息格式化：把任意文本转成微信友好的纯文本格式。
+    参数：
+        already_has_unicode_nl: 如果文本已包含 \u2028 换行，就不再转换 \n
+    处理：
+    1. 去掉 Markdown 符号（**粗体**、`代码`、~~删除线~~）
+    2. 表格 → 列表形式
+    3. 标题加 emoji 前缀
+    4. \n → \u2028（微信唯一有效的换行符）
+    """
+    if not t:
+        return ''
+    # 去掉代码块（微信不渲染）
+    t = re.sub(r'```[\s\S]*?```', '[代码已省略]', t)
+    # 去掉行内代码反引号，保留内容
+    t = re.sub(r'`([^`\n]+)`', r'\1', t)
+    # 去掉粗体/斜体符号
+    t = re.sub(r'\*{1,3}([^*]+)\*{1,3}', r'\1', t)
+    t = re.sub(r'_{1,3}([^_]+)_{1,3}', r'\1', t)
+    # 删除线
+    t = re.sub(r'~~([^~]+)~~', r'\1', t)
+    # 图片 → emoji
     t = re.sub(r'!\[([^\]]*)\]\([^\)]+\)', r'🖼️ [\1]', t)
-    # links: text + 🔗
+    # 链接 → 文字+🔗
     t = re.sub(r'\[([^\]]+)\]\(([^\)]+)\)', r'\1 🔗', t)
-    # H1-H4: add emoji prefix for visual hierarchy
+    # 标题加 emoji
     t = re.sub(r'^#{1}\s+(.+)', r'📌 \1', t, flags=re.M)
     t = re.sub(r'^#{2}\s+(.+)', r'🔹 \1', t, flags=re.M)
     t = re.sub(r'^#{3}\s+(.+)', r'▪️ \1', t, flags=re.M)
-    t = re.sub(r'^#{4}\s+(.+)', r'• \1', t, flags=re.M)
-    t = re.sub(r'^#{5,6}\s+', '', t, flags=re.M)                 # H5-H6: strip (too small on mobile)
-    # unordered list: bullet with slight indent
+    t = re.sub(r'^#{4,6}\s+(.+)', r'• \1', t, flags=re.M)
+    # 无序列表
     t = re.sub(r'^\s*[-*+]\s+', '  • ', t, flags=re.M)
-    # ordered list: keep number but add spacing
+    # 有序列表保持
     t = re.sub(r'^(\s*)(\d+)\.\s+', r'\1\2. ', t, flags=re.M)
-    # blockquote: replace with indented style + vertical bar
+    # 引用
     t = re.sub(r'^\s*>\s?(.+)', r'│ \1', t, flags=re.M)
-    # horizontal rules: enhance with double line
-    t = re.sub(r'^\s*[-*_]{3,}\s*$', '─' * 20, t, flags=re.M)
-    # Add emoji to common keywords (case-insensitive, only if not already prefixed)
-    t = re.sub(r'(?<!📌 )(?<!🔹 )(?<!▪️ )\b(警告|错误|失败)\b', r'⚠️ \1', t)
-    t = re.sub(r'(?<!\w)(成功|完成|通过|OK|done)\b', r'✅ \1', t, flags=re.I)
-    t = re.sub(r'(?<!\w)(提示|说明|备注|Note)\b', r'💡 \1', t, flags=re.I)
-    return re.sub(r'\n{3,}', '\n\n', t).strip()
+    # 水平线
+    t = re.sub(r'^\s*[-*_]{3,}\s*$', '━' * 15, t, flags=re.M)
+    # 表格处理：把 | col1 | col2 | 行转成 "col1: col2" 格式
+    lines = t.split('\n')
+    result = []
+    for line in lines:
+        stripped = line.strip()
+        # 跳过分隔行 |---|---|
+        if re.match(r'^\|?[\s\-:|]+\|?$', stripped):
+            result.append('─' * 10)
+            continue
+        # 表格行 | a | b | c |
+        if stripped.startswith('|') and stripped.endswith('|'):
+            cells = [c.strip() for c in stripped.strip('|').split('|')]
+            cells = [c for c in cells if c]
+            if cells:
+                if len(cells) == 2:
+                    result.append(f'{cells[0]}: {cells[1]}')
+                else:
+                    result.append(' │ '.join(cells))
+            continue
+        result.append(line)
+    t = '\n'.join(result)
+    # 清理多余空行
+    t = re.sub(r'\n{3,}', '\n\n', t).strip()
+    # ★ 关键：\n → \u2028（微信唯一有效换行）
+    # 如果文本已经包含 \u2028（如快速通道天气），只转换剩余的 \n
+    if already_has_unicode_nl:
+        # 已经有 \u2028 的文本，把剩余的普通 \n 也转掉
+        t = t.replace('\n', '\u2028')
+    else:
+        t = t.replace('\n', '\u2028')
+    return t
+
+
+def _strip_md(t):
+    """兼容旧调用，转调 _fmt_wx。"""
+    return _fmt_wx(t)
 
 def _clean(t):
     # === Phase 1: 删除大块结构 ===
@@ -434,6 +469,91 @@ def on_message(bot, msg):
         text = (text + '\n' if text else '') + '\n'.join(f'[用户发送文件: {p}]' for p in media_paths)
     print(f'[WX] 收到: {text[:80]}', file=sys.__stdout__)
 
+    # === 快速天气通道（免费 API，跳过 LLM） ===
+    _weather_match = re.match(r'^(.+?)(?:的)?天气$', text.strip())
+    if _weather_match:
+        _city = _weather_match.group(1).strip()
+        # 常见中文城市名映射（wttr.in 对中文支持不好，用英文名或拼音更准）
+        _city_alias = {
+            '北京': 'Beijing', '上海': 'Shanghai', '广州': 'Guangzhou', '深圳': 'Shenzhen',
+            '杭州': 'Hangzhou', '南京': 'Nanjing', '武汉': 'Wuhan', '成都': 'Chengdu',
+            '西安': 'Xian', '重庆': 'Chongqing', '天津': 'Tianjin', '苏州': 'Suzhou',
+            '郑州': 'Zhengzhou', '长沙': 'Changsha', '青岛': 'Qingdao', '沈阳': 'Shenyang',
+            '哈尔滨': 'Harbin', '昆明': 'Kunming', '厦门': 'Xiamen', '济南': 'Jinan',
+            '合肥': 'Hefei', '福州': 'Fuzhou', '南昌': 'Nanchang', '贵阳': 'Guiyang',
+            '太原': 'Taiyuan', '石家庄': 'Shijiazhuang', '长春': 'Changchun', '兰州': 'Lanzhou',
+            '海口': 'Haikou', '南宁': 'Nanning', '呼和浩特': 'Hohhot', '乌鲁木齐': 'Urumqi',
+            '西宁': 'Xining', '银川': 'Yinchuan', '拉萨': 'Lasa',
+            # 省份映射到省会
+            '甘肃': 'Lanzhou', '安徽': 'Hefei', '广东': 'Guangzhou', '福建': 'Fuzhou',
+            '贵州': 'Guiyang', '海南': 'Haikou', '河北': 'Shijiazhuang', '河南': 'Zhengzhou',
+            '黑龙江': 'Harbin', '湖北': 'Wuhan', '湖南': 'Changsha', '江苏': 'Nanjing',
+            '江西': 'Nanchang', '吉林': 'Changchun', '辽宁': 'Shenyang', '内蒙古': 'Hohhot',
+            '宁夏': 'Yinchuan', '青海': 'Xining', '山东': 'Jinan', '山西': 'Taiyuan',
+            '陕西': 'Xian', '四川': 'Chengdu', '云南': 'Kunming', '浙江': 'Hangzhou',
+            '西藏': 'Lasa', '新疆': 'Urumqi', '广西': 'Nanning',
+        }
+        _query_city = _city_alias.get(_city, _city)
+        try:
+            _url = f"https://wttr.in/{quote(_query_city)}?format=j1&lang=zh"
+            _req = urllib.request.Request(_url, headers={'User-Agent': 'curl/7.68.0'})
+            with urllib.request.urlopen(_req, timeout=8) as _resp:
+                _j = json.loads(_resp.read().decode('utf-8'))
+            _cur = _j['current_condition'][0]
+            _area = _j['nearest_area'][0]
+            _city_name = _city
+            _desc = _cur['lang_zh'][0]['value'] if _cur.get('lang_zh') else _cur.get('weatherDesc', [{}])[0].get('value', '')
+            _temp = _cur['temp_C']
+            _feels = _cur['FeelsLikeC']
+            _humidity = _cur['humidity']
+            _wind = _cur['windspeedKmph']
+            _wind_dir_en = _cur.get('winddir16Point', '')
+            _wind_dir_cn = {'N':'北风','NNE':'北东北风','NE':'东北风','ENE':'东东北风',
+                'E':'东风','ESE':'东南东风','SE':'东南风','SSE':'南东南风',
+                'S':'南风','SSW':'南西南风','SW':'西南风','WSW':'西西南风',
+                'W':'西风','WNW':'西西北风','NW':'西北风','NNW':'北西北风'}.get(_wind_dir_en, _wind_dir_en)
+            _today = _j['weather'][0]
+            _date = _today['date']
+            _max_t = _today['maxtempC']
+            _min_t = _today['mintempC']
+            _hourly = _today.get('hourly', [])
+            
+            # 风向 emoji
+            _dir_emoji = {'N':'⬆️','NNE':'⬆️','NE':'↗️','ENE':'↗️',
+                'E':'➡️','ESE':'↘️','SE':'↘️','SSE':'↘️',
+                'S':'⬇️','SSW':'⬇️','SW':'↙️','WSW':'↙️',
+                'W':'⬅️','WNW':'⬅️','NW':'↖️','NNW':'↖️'}.get(_wind_dir_en, '🌀')
+            
+            # 只取白天关键时段 (6:00, 9:00, 12:00, 15:00, 18:00, 21:00)
+            _slots = []
+            for _h in _hourly:
+                _hour = int(_h['time']) // 100
+                if _hour not in (6, 9, 12, 15, 18, 21):
+                    continue
+                _h_desc = _h['lang_zh'][0]['value'] if _h.get('lang_zh') else _h.get('weatherDesc', [{}])[0].get('value', '')
+                _rain = _h.get('chanceofrain', '0')
+                _rain_str = f" 🌧{_rain}%" if int(_rain) > 20 else ""
+                _slots.append(f"  {_hour:02d}:00  {_h_desc}  {_h['tempC']}°C{_rain_str}")
+            
+            # 用 \u2028 (Unicode 行分隔符) 替代 \n 实现换行
+            # 微信 JSON 协议中 \n 被转义为字面量，\u2028 不被转义
+            _NL = '\u2028'
+            _slots_text = " ┃ ".join(_slots)
+            _msg = (
+                f"📍 {_city_name} │ {_desc} {_temp}°C 体感{_feels}°{_NL}"
+                f"━━━━━━{_NL}"
+                f"🔺{_max_t}° 🔻{_min_t}° │ 💧{_humidity}% │ {_dir_emoji}{_wind_dir_cn} {_wind}km/h{_NL}"
+                f"━━━━━━{_NL}"
+                f"{_slots_text}"
+            )
+            bot.send_text(uid, _msg, context_token=ctx)
+            print(f'[WX] 天气快速通道: {_city_name} send ok', file=sys.__stdout__)
+        except Exception as _we:
+            print(f'[WX] 天气快速通道失败: {_we}', file=sys.__stdout__)
+            # 失败时降级走 LLM
+        else:
+            return  # 成功则直接返回，不走 LLM
+
     # Commands
     if text in ('/stop', '/abort'):
         agent.abort()
@@ -472,7 +592,7 @@ def on_message(bot, msg):
                 nonlocal mi, last_send
                 now = time.time()
                 if mi >= 9 or not show.strip(): return False
-                if mi and now - last_send < 6 * mi: return None
+                if mi and now - last_send < 2: return None
                 if _wx_send(show[:2000]): mi += 1; last_send = time.time(); return True
                 return False
             try:
