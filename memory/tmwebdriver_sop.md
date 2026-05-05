@@ -8,6 +8,15 @@
 - ⚠web_execute_js里使用`await`时需**显式`return`**才能拿到返回值（底层async包裹，不写return则返回null）
 - ✅web_scan自动穿透同源iframe；跨域iframe需CDP或postMessage（见下方章节）
 
+## 隐身操作（离屏窗口）
+- ⚠️隐身≠`--incognito`：隐身模式下扩展不注入content script，CDP bridge无法工作
+- ✅正确做法：**非隐身Chrome + 离屏窗口** `--window-position=-32000,-32000 --window-size=300,300`
+- 启动命令（VBS最小化窗口7）：`chrome.exe --window-position=-32000,-32000 --window-size=300,300 https://www.baidu.com`
+- 启动脚本：`temp/start_cdp_stealth.py [start|stop|status]`
+- 验证：`web_scan` 应返回tabs，JS中 `window.screenX/Y` 应为负值，`visibilityState` 为 `hidden`
+- 扩展路径：`D:\GenericAgent\assets\tmwd_cdp_bridge\`，TID: `__ljq_2562fc`
+- 端口：18765(TMWebDriver WS) / 18766(CDP bridge)
+
 ## 限制(isTrusted)
 - JS事件`isTrusted=false`，敏感操作（如文件上传/部分按钮）可能被拦截；这类场景首选**CDP桥**
 - ⚠JS点击按钮打不开新tab→可能是浏览器弹窗拦截，换CDP点击试试

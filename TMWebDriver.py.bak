@@ -282,10 +282,3 @@ class TMWebDriver:
     
 if __name__ == "__main__":
     driver = TMWebDriver(host='127.0.0.1', port=18765)
-    print("TMWebDriver master running. Press Ctrl+C to stop.")
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        print("\nShutting down...")
-        driver.server.close_server()

@@ -868,3 +868,12 @@ def execute_js_rich(script, driver, no_monitor=False):
             diff_summary = "页面变化监控不可用"
         rr['diff'] = diff_summary
     return rr
+
+def smart_format(text, max_str_len=3000, omit_str='\n\n[omitted]\n\n'):
+    """截断长文本：超过 max_str_len 时保留头尾各一半，中间插入 omit_str。"""
+    if not text or len(text) <= max_str_len:
+        return text
+    half = (max_str_len - len(omit_str)) // 2
+    if half <= 0:
+        return text[:max_str_len]
+    return text[:half] + omit_str + text[-half:]
