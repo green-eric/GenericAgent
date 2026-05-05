@@ -336,10 +336,22 @@ def _clean(t):
     for p in _TAG_PATS:
         t = re.sub(p, '', t, flags=re.DOTALL)
     t = re.sub(r'^\s*["\'](exit_code|stdout|stderr)["\'].*$', '', t, flags=re.M)
-    t = re.sub(r'^⏳.*$', '', t, flags=re.M)
+    # Remove progress hints (⏳ with bar chars and turn counts)
+    t = re.sub(r'^\s*⏳\s*思考中\s*[█░]+\s*\d+/\d+\s*$', '', t, flags=re.M)
+    t = re.sub(r'⏳.*', '', t)  # catch-all for any ⏳ line
     t = re.sub(r'^[━─]{4,}.*$', '', t, flags=re.M)
     t = re.sub(r'^✅\s*回复完成\s*$', '', t, flags=re.M)
-    t = re.sub(r'^\s*(上次|用户(再次|指出|查询)|让我先|让我看看|先读|继续读|全部完成|所有工作).*$', '', t, flags=re.M)
+    # Remove LLM internal reasoning / meta-commentary
+    reasoning_patterns = [
+        r'^(让我先|让我看看|先读|继续读|全部完成|所有工作|好的，|我来|我将|我需要|我直接|我看看).*$',
+        r'^(上次|用户(再次|指出|查询)).*$',
+        r'^(搜索工具|浏览器|web工具|DDGS).*(返回|结果|没开|不可用|为空|更名).*$',
+        r'^(抱歉|对不起).*(搜索|工具|浏览器|结果).*$',
+        r'^(还是|需要|应该)(优化|调整|修复|改用|用Python).*$',
+        r'^那(备份|我|就).*$',
+    ]
+    for rp in reasoning_patterns:
+        t = re.sub(rp, '', t, flags=re.M)
 
     # === Phase 4: 删除代码行（宽泛匹配，循环5次） ===
     # 覆盖所有 Python/JS/Shell 代码模式，不以特定关键词开头也能匹配
