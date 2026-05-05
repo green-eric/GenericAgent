@@ -1,0 +1,167 @@
+# [Global Memory - L2]
+
+## [用户规则] (2026-05-05)
+0. 源码修改: 不轻易改 → 确需改 → git commit 后再改动（无需 .bak 备份）
+1. 任务完成后务必更新记忆，特别是 L1 层索引（global_mem_insight.txt）
+
+## [VBS提权教训] (2026-05-05)
+- VBS ShellExecute 提权（runas）在 code_run 里会超时（UAC弹窗无法自动确认）
+- 不要用 VBS 提权来重启服务，改用 sc 命令或直接让用户手动确认
+- auto_git_commit 守护进程会自动检测文件变更并重启 bot
+2. 任务完成后务必更新记忆，特别是 L1 层索引（global_mem_insight.txt）
+
+## [Everything CLI] (2026-05-04 配置完成)
+- es.py: D:\GenericAgent\es.py (Python + Everything SDK ctypes 封装)
+- es.bat: D:\GenericAgent\es.bat (cmd wrapper)
+- SDK DLL: temp/everything-sdk/dll/Everything64.dll
+- 用法: es mykey.py / es *.xlsx -n 5 / es D:\Other\xc -n 3
+- 参数: -n(最大结果数) -c(区分大小写) -w(全词匹配) -p(仅路径)
+- 注意: 需要 Everything 后台运行 (C:\Program Files\Everything\Everything.exe)
+- D:\GenericAgent 已在 PATH 中
+
+## [Vision API] (2026-05-04 配置完成)
+- 脚本: memory/vision_api.py (从 template 复制)
+- 默认后端: modelscope (Qwen/Qwen3-VL-235B-A22B-Instruct)
+- API Base: https://api-inference.modelscope.cn
+- MODELSCOPE_API_KEY: 已配置
+- 用法: from vision_api import ask_vision; ask_vision(image_path, prompt, backend='modelscope')
+- 支持: 本地图片路径 / PIL Image 对象
+- 备后端: claude/openai (需 mykey 中有对应配置且模型支持多模态)
+
+## [API 多模态探测] (2026-05-04)
+- 主 API: LongCat-2.0-Preview (https://api.longcat.chat/anthropic)
+  - 认证: Authorization: Bearer (非 x-api-key)
+  - 端点: /anthropic/v1/messages (非 /anthropic/messages → 404)
+  - 多模态 image: ❌ 不支持（回复"无法查看图片"）
+- 备 API: DeepSeek V4 Flash (https://api.deepseek.com/anthropic)
+  - 认证: x-api-key + anthropic-version: 2023-06-01
+  - 端点: /anthropic/messages
+  - 多模态 image: ❌ 不支持（thinking 显示 [Unsupported Image]）
+  - OpenAI 格式 /chat/completions: ❌ image_url 不被识别
+- 结论: 当前两个 API 均不支持多模态，图片识别用本地 OCR (rapidocr)
+
+## [OCR]
+- 引擎: rapidocr-onnxruntime (已安装，RapidOCR() 实例化即用)
+- 工具脚本: memory/ocr_utils.py
+- 函数: ocr_screen(bbox, enhance=False) / ocr_window(hwnd) / ocr_image(img)
+- 返回: {'text': str, 'lines': [str], 'details': [{'bbox':..., 'text':..., 'conf': float}]}
+- 注意: conf 原为 str 需 float() 转换；无文字时 result 为 None
+- 注意: enhance(放大+高对比度) 对清晰文字有害，默认关闭
+- 注意: RDP 断开后 ImageGrab 全黑，用 ocr_window(hwnd) 代替 ocr_screen
+
+## [微信Bot] (2026-05-04 已修复 + 服务化)
+- 源码: frontends/wechatapp.py
+- token 文件: ~/.wxbot/token.json
+- API: https://ilinkai.weixin.qq.com
+- 当前 bot_id: a33716bee2d6@im.bot
+- 根因: getupdates 请求 body 中 base_info.channel_version=537147478 导致服务端返回 ret=-1
+- 修复: wechatapp.py line85, 将 {'channel_version': VER} 改为空 {}，已验证 API 返回有效数据
+- 已排除: token 格式、token 过期、Authorization 头格式、X-WECHAT-UIN 值
+- 注意: code_run 里用 threading.Thread 会导致 GA 进程退出，记忆丢失
+- 修复日期: 2026-05-04
+## [微信Bot Windows服务] (2026-05-04 已配置)
+- 服务名: wechatbot
+- 状态: RUNNING (开机自启 AUTO_START)
+- 崩溃恢复: 5s/10s/30s 自动重启，60s 重置失败计数
+- NSSM: ../tools/nssm.exe
+- 日志: ../temp/wechatapp.log
+- 管理命令: sc start/stop/query wechatbot
+- 桌面快捷方式: C:\Users\green\Desktop\微信bot启动.lnk
+  - 指向: temp/run_wxbot.vbs (Shell.Application ShellExecute runas 提权)
+  - 启动脚本: temp/start_service.py (encoding=gbk 修复中文乱码)
+  - 安装脚本: temp/install_service.py (服务被卸载后重新安装用)
+  - 注意: sc命令输出为GBK编码，Python捕获必须用encoding='gbk'
+
+## [ScoreSys Polars Calculator] (2026-05-05 验证完成)
+- 项目路径: D:/Project/ScoreSys/
+- 文件: calculator_polars.py (polars版财务指标计算器)
+- 修复: str.slice(4,2) → str.slice(5,2) (line 45, "2025-03-31" index 4是"-"不是"0")
+  - 导致_month=0, _quarter=0, Q1行走otherwise(None) → q_revenue=None → 所有指标为None
+- 验证: 与原版calculator.py(pandas)对比，核心指标全匹配(roe_ttm/net_margin_ttm/current_ratio/ocf_ttm/fcf_ttm/同比等)
+- 性能: polars比pandas快2.9x (100 symbols, 内存过滤)
+- 已知边界差异:
+  - 002310: 最近季度资产负债表全NaN，polars过滤后取不到值(pandas用last_valid_index取前值)
+  - 002639: fin_expense=0时interest_cover精度差异
+- DB: D:/Project/ScoreSys/stock_data.db (SQLite, 4344 symbols, 192991行)
+
+## 微信修复 (2026-05-04)
+- 问题: DNS解析 ilinkai.weixin.qq.com 失败导致微信断连
+- 修复: hosts绑定 36.155.182.76 + 清除代理干扰
+- 状态: 已恢复，PID 19448 运行中
+- 详情: memory/wechat_fix.md
+
+## [输出格式优化] (2026-05-05)
+- sys_prompt.txt 新增「输出格式规范」（最高优先级）：emoji、图表、简洁、不输出过程
+- wechatapp.py _clean 增强：过滤 summary/调用工具/Driver/CDP/Timeout/Error/Traceback/args/🛠️/JSON结果/===Response===
+- wechatapp.py _strip_md 增强：新增👍🔥📈📉💡 emoji 映射
+- 备份：*.bak_fmt_20260505_102330
+- 详情：memory/output_format_sop.md
+
+## [自动 Git 提交] (2026-05-05 更新)
+- auto_git_commit.py：监控源码变更 → 自动 commit + push 到 user-patches 分支
+- 新增 restore_patches.py：GA 更新后恢复用户补丁（cherry-pick user-patches 提交）
+- GitHub fork: green-eric/GenericAgent (origin=SSH), upstream=lsdefine/GenericAgent
+- 分支: main（同步上游）+ user-patches（用户自定义调整）
+- SSH key: ~/.ssh/id_ed25519 已配置到 GitHub
+- 监控 .py/.md/.txt/.json/.yaml/.yml/.toml/.cfg/.ini/.bat/.ps1/.vbs 文件
+- 排除 .git/__pycache__/node_modules/L4_raw_sessions/temp 及 .pyc/.pyo/.bak/.tmp/.log
+- 变更后30秒自动 commit，格式: "[auto] file1, file2 (2026-05-05 HH:MM)"
+- 后台 pythonw 守护进程 + 开机自启 VBS（Startup 文件夹）
+- 日志: temp/auto_git_commit.log
+
+## [微信输出优化] (2026-05-05)
+- _clean() 新增过滤: 🔧 web工具调用行、🛠️ code_run 工具调用行
+- 进度条去重: 只在首条消息前加 _progress_hint，后续消息不加
+- 备份: frontends/wechatapp.py.bak
+
+## [微信代码泄露修复] (2026-05-05)
+- 问题: LLM生成的Python代码片段通过微信回复泄露给用户
+- 根因: _clean() 逐行正则只匹配特定关键词开头(import/url/req/print)，
+  遗漏变量赋值类代码行(如 html = urllib.request.urlopen(req).read())
+- 修复: _clean() 完全重写为5阶段过滤
+  Phase1: 删除大块结构(code blocks ```...```、inline code、JSON tool results、=== markers)
+  Phase2: 删除工具调用行(🛠️/🔧/调用工具/args)
+  Phase3: 删除内部标记(LLM Running/⏳/✅/━)
+  Phase4: 宽泛代码模式匹配20+种(import/from/def/class/if/for/while/try/except/
+        var=func()/obj.method()/print()/赋值语句等)，循环5次确保嵌套清除
+  Phase5: 格式清理(空行压缩+markdown strip)
+- 验证: 3种泄露场景(直接嵌入代码/JSON块/多轮对话)全部通过
+- git: c4554b0
+- 关键教训: 过滤代码不能用"关键词黑名单"思路，必须用"大块删除+宽泛模式+多轮迭代"
+
+## [自主行动 R11] (2026-05-05)
+- ruff 代码质量检查：3项目(ScoreSys/AnnualScorer/BullishForMonitoring)共1689个.py文件
+- 自动修复7个问题(6个F401 unused import + 1个F401 json)
+- 剩余8个需手动：ScoreSys 3个f-string引号嵌套语法错误 + BfM 5个import位置问题(E402)
+- ruff 0.15.8, D:/Project 下 AtomCode 无 .py 文件
+
+## [CDP 修复] (2026-05-05)
+- 问题：WebSocket 连接返回 403 Forbidden
+- 原因：Chrome 缺少 --remote-allow-origins=* 参数
+- 修复：启动命令需包含 --remote-debugging-port=9222 --remote-allow-origins=* --window-position=-32000,-32000
+- 验证：端口9222 HTTP/WS 均正常，JS执行和页面导航均OK
+- 注意：旧Chrome进程拒绝访问无法kill，新Chrome在离屏位置运行
+
+## [CDP Bridge] (2026-05-05 创建)
+- 文件: cdp_bridge.py (CDPDriver + CDPSession, WebSocket 直连 Chrome DevTools Protocol)
+- 用途: web_scan/web_execute_js 的备用 driver（TMWebDriver 不可用时回退）
+- 隐身模式: --window-position=-32000,-32000 离屏窗口（非 --incognito）
+- 默认端口: 9222
+- 返回值: execute_js 返回 {"data": result}，web_scan 返回 {"content": html}，web_execute_js 返回 {"js_return": result}
+- 关键修复: execute_js 支持顶层 return 提取（function+return 模式自动拆分为定义+表达式求值）
+- 依赖: websocket-client (pip install websocket-client)
+- 验证: 百度/GitHub 页面扫描、JS执行、导航均正常
+
+## [微信Bot 统一格式化 _fmt_wx] (2026-05-05)
+|- 核心问题：微信纯文本不渲染 \n 换行和 Markdown（**粗体**、## 标题等）
+|- 错误做法：每个功能单独调格式 → 永远改不完
+|- 正确做法：在 send_text() 出口统一处理
+|- 改动1: 新增 _fmt_wx() 函数（frontends/wechatapp.py ~line 268）
+  - 去 Markdown 符号（**粗体**→纯文本、`代码`→纯文本、~~删除线~~→纯文本）
+  - 表格 → 列表形式
+  - \n → \u2028（微信唯一有效换行符）
+|- 改动2: send_text() 内部加 text = _fmt_wx(text)，所有调用点自动生效
+|- 改动3: _strip_md() 改为 _fmt_wx() 的 wrapper（向后兼容）
+|- 快速通道天气查询仍用 \u2028 手动拼，经 _fmt_wx 后无破坏性影响
+|- 未实测：需要在微信端实际发送消息验证换行效果
+|- 教训：不要在 send_text 之前预处理，要在 send_text 内部统一处理
