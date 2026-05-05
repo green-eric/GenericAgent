@@ -316,12 +316,12 @@ def _clean(t):
     t = re.sub(r'^\s*(调用工具\w+|读取文件\s+\S+|写入文件\s+\S+|执行脚本\s+\S+).*$', '', t, flags=re.M)
     # Remove 🔧 web tool call lines (web_scan, web_execute_js, etc.)
     t = re.sub(r'^\s*🔧\s*\w+\(.*$', '', t, flags=re.M)
-    # Remove driver/CDP/executing/timeout/error log lines (match anywhere in line start)
+    # Remove driver/CDP/executing/timeout/error log lines
     t = re.sub(r'^\s*(\[Driver\].*|\[CDP\].*|\[Timeout.*\].*|Executing:.*|Timeout Error.*|Error:.*|Traceback.*)$', '', t, flags=re.M)
     # Remove args: lines (tool call parameters)
     t = re.sub(r'^\s*args:\s*\{.*$', '', t, flags=re.M)
-    # Remove 🛠️ tool call summary lines
-    t = re.sub(r'^\s*🛠️\s*\w+\(.*$', '', t, flags=re.M)
+    # Remove 🛠️ tool call lines (DOTALL to match multi-line JSON args)
+    t = re.sub(r'^\s*🛠️\s*\w+\(.+?\}\)\s*$', '', t, flags=re.M | re.DOTALL)
     # Remove code_run/file_read/file_patch tool result JSON blocks
     t = re.sub(r'^\s*\{["\']status["\'].*$', '', t, flags=re.M)
     # Remove === Response === / === Prompt === token markers
@@ -330,13 +330,33 @@ def _clean(t):
         t = re.sub(p, '', t, flags=re.DOTALL)
     # Remove lines that are just tool metadata
     t = re.sub(r'^\s*["\'](exit_code|stdout|stderr)["\'].*$', '', t, flags=re.M)
-    # Remove ⏳ progress bar lines (keep only the first one per response, remove duplicates)
-    # First, remove all but the first ⏳ line
-    progress_lines = [(m.start(), m.group()) for m in re.finditer(r'^⏳.*$', t, flags=re.M)]
-    if len(progress_lines) > 1:
-        # Keep first, remove rest (reverse order to preserve offsets)
-        for pos, text in reversed(progress_lines[1:]):
-            t = t[:pos] + t[pos + len(text):]
+    # Remove ALL ⏳ progress bar lines — they are internal artifacts, not user-facing
+    t = re.sub(r'^⏳.*$', '', t, flags=re.M)
+    # Remove ━━━━━━━━ separator lines and ✅ 回复完成 tail
+    t = re.sub(r'^[━─]{4,}.*$', '', t, flags=re.M)
+    t = re.sub(r'^✅\s*回复完成\s*$', '', t, flags=re.M)
+    # Remove "上次已经..." / "用户再次指出..." / "用户查询..." internal monologue lines
+    t = re.sub(r'^\s*(上次|用户(再次|指出|查询)|让我先|让我看看|先读|继续读|全部完成|所有工作).*$', '', t, flags=re.M)
+    # Remove orphaned script fragment lines (leftover after tool call removal)
+    # Loop 3 times to catch fragments that become isolated after prior removals
+    for _ in range(3):
+        t = re.sub(
+            r'^\s*('
+            r'import\s+\w[\w,. ]*'
+            r'|from\s+\w+'
+            r'|url\s*='
+            r'|req\s*='
+            r'|resp\s*='
+            r'|print\('
+            r'|data\s*='
+            r'|result\s*='
+            r'|json\.(loads|dumps)'
+            r'|requests\.\w+\('
+            r'|urllib\.request\.\w+\('
+            r'|subprocess\.\w+\('
+            r'|os\.\w+\('
+            r'|sys\.\w+\('
+            r')\s*$', '', t, flags=re.M)
     # Remove excessive blank lines but keep paragraph separation
     return re.sub(r'\n{3,}', '\n\n', _strip_md(t)).strip()
 
@@ -427,12 +447,11 @@ def on_message(bot, msg):
                             sent = len(done)
             except queue.Empty: result = '⏰ 响应超时，请稍后重试'
             done, partial = _turn_parts(result)
-            # Build final response with completion marker
-            tail = '\n\n━━━━━━━━━━━━\n✅ 回复完成'
+            # Build final response (clean output, no internal artifacts)
             rest = '\n\n'.join(done[sent:] + [partial])
             rest_clean = _clean(rest)
             # Ensure we don't exceed 2000 chars; if so, trim smartly
-            final = rest_clean[-1900:] + tail if len(rest_clean) > 1900 else rest_clean + tail
+            final = rest_clean[-1900:] if len(rest_clean) > 1900 else rest_clean
             if final.strip(): _wx_send(final)
             files = re.findall(r'\[FILE:([^\]]+)\]', result)
             bad = {'filepath', '<filepath>', 'path', '<path>', 'file_path', '<file_path>', '...'}
