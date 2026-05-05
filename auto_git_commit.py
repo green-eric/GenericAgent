@@ -98,7 +98,7 @@ def main():
             if changed:
                 last_change_time = time.time()
                 log.info("📝 文件变更")
-            if last_change_time and (time.time() - max(last_change_time, last_commit_time)) >= COMMIT_INTERVAL:
+            if last_change_time and (time.time() - last_change_time) >= COMMIT_INTERVAL:
                 if do_commit():
                     last_commit_time = time.time()
                     last_change_time = None
