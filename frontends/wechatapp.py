@@ -308,57 +308,71 @@ def _strip_md(t):
     return re.sub(r'\n{3,}', '\n\n', t).strip()
 
 def _clean(t):
-    # Remove <summary>...</summary> blocks entirely (including content)
+    # === Phase 1: 删除大块结构 ===
+    # Remove <summary>...</summary> blocks
     t = re.sub(r'<summary>.*?</summary>', '', t, flags=re.DOTALL)
-    # Remove internal agent artifacts
-    t = re.sub(r'^\s*LLM Running \(Turn \d+\) \.{3}\s*$', '', t, flags=re.M)
-    # Remove tool call lines: "调用工具xxx", "读取文件 xxx", "写入文件 xxx"
-    t = re.sub(r'^\s*(调用工具\w+|读取文件\s+\S+|写入文件\s+\S+|执行脚本\s+\S+).*$', '', t, flags=re.M)
-    # Remove 🔧 web tool call lines (web_scan, web_execute_js, etc.)
-    t = re.sub(r'^\s*🔧\s*\w+\(.*$', '', t, flags=re.M)
-    # Remove driver/CDP/executing/timeout/error log lines
-    t = re.sub(r'^\s*(\[Driver\].*|\[CDP\].*|\[Timeout.*\].*|Executing:.*|Timeout Error.*|Error:.*|Traceback.*)$', '', t, flags=re.M)
-    # Remove args: lines (tool call parameters)
-    t = re.sub(r'^\s*args:\s*\{.*$', '', t, flags=re.M)
-    # Remove 🛠️ tool call lines (DOTALL to match multi-line JSON args)
-    t = re.sub(r'^\s*🛠️\s*\w+\(.+?\}\)\s*$', '', t, flags=re.M | re.DOTALL)
-    # Remove code_run/file_read/file_patch tool result JSON blocks
-    t = re.sub(r'^\s*\{["\']status["\'].*$', '', t, flags=re.M)
-    # Remove === Response === / === Prompt === token markers
+    # Remove fenced code blocks ```...```
+    t = re.sub(r'```[\w]*\n.*?```', '', t, flags=re.DOTALL)
+    # Remove inline code spans with 3+ chars (likely code fragments)
+    t = re.sub(r'`[^`\n]{3,}`', '', t)
+    # Remove tool result JSON blocks (multi-line, e.g. code_run output)
+    t = re.sub(r'\{\s*["\']status["\'].*?\}', '', t, flags=re.DOTALL)
+    # Remove === Response === / === Prompt === markers
     t = re.sub(r'^\s*={3,}\s*(Response|Prompt)\s*={3,}\s*$', '', t, flags=re.M)
+
+    # === Phase 2: 删除工具调用行 ===
+    # Remove 🛠️ tool call lines (multi-line JSON args)
+    t = re.sub(r'^\s*🛠️\s*\w+\(.*', '', t, flags=re.M | re.DOTALL)
+    # Remove 🔧 web tool call lines
+    t = re.sub(r'^\s*🔧\s*\w+\(.*', '', t, flags=re.M | re.DOTALL)
+    # Remove "调用工具xxx" / "读取文件 xxx" etc.
+    t = re.sub(r'^\s*(调用工具\w+|读取文件\s+\S+|写入文件\s+\S+|执行脚本\s+\S+).*$', '', t, flags=re.M)
+    # Remove args: lines
+    t = re.sub(r'^\s*args:\s*\{.*$', '', t, flags=re.M)
+
+    # === Phase 3: 删除内部标记行 ===
+    t = re.sub(r'^\s*LLM Running \(Turn \d+\) \.{3}\s*$', '', t, flags=re.M)
+    t = re.sub(r'^\s*(\[Driver\].*|\[CDP\].*|\[Timeout.*\].*|Executing:.*|Timeout Error.*|Error:.*|Traceback.*)$', '', t, flags=re.M)
     for p in _TAG_PATS:
         t = re.sub(p, '', t, flags=re.DOTALL)
-    # Remove lines that are just tool metadata
     t = re.sub(r'^\s*["\'](exit_code|stdout|stderr)["\'].*$', '', t, flags=re.M)
-    # Remove ALL ⏳ progress bar lines — they are internal artifacts, not user-facing
     t = re.sub(r'^⏳.*$', '', t, flags=re.M)
-    # Remove ━━━━━━━━ separator lines and ✅ 回复完成 tail
     t = re.sub(r'^[━─]{4,}.*$', '', t, flags=re.M)
     t = re.sub(r'^✅\s*回复完成\s*$', '', t, flags=re.M)
-    # Remove "上次已经..." / "用户再次指出..." / "用户查询..." internal monologue lines
     t = re.sub(r'^\s*(上次|用户(再次|指出|查询)|让我先|让我看看|先读|继续读|全部完成|所有工作).*$', '', t, flags=re.M)
-    # Remove orphaned script fragment lines (leftover after tool call removal)
-    # Loop 3 times to catch fragments that become isolated after prior removals
-    for _ in range(3):
-        t = re.sub(
-            r'^\s*('
-            r'import\s+\w[\w,. ]*'
-            r'|from\s+\w+'
-            r'|url\s*='
-            r'|req\s*='
-            r'|resp\s*='
-            r'|print\('
-            r'|data\s*='
-            r'|result\s*='
-            r'|json\.(loads|dumps)'
-            r'|requests\.\w+\('
-            r'|urllib\.request\.\w+\('
-            r'|subprocess\.\w+\('
-            r'|os\.\w+\('
-            r'|sys\.\w+\('
-            r')\s*$', '', t, flags=re.M)
-    # Remove excessive blank lines but keep paragraph separation
-    return re.sub(r'\n{3,}', '\n\n', _strip_md(t)).strip()
+
+    # === Phase 4: 删除代码行（宽泛匹配，循环5次） ===
+    # 覆盖所有 Python/JS/Shell 代码模式，不以特定关键词开头也能匹配
+    code_patterns = [
+        r'import\s+[\w,. ]+',           # import xxx
+        r'from\s+[\w.]+',                # from xxx
+        r'def\s+\w+',                    # def xxx
+        r'class\s+\w+',                  # class xxx
+        r'if\s+\w+.*:',                  # if xxx:
+        r'for\s+\w+.*:',                 # for xxx:
+        r'while\s+.*:',                  # while:
+        r'try:',                         # try:
+        r'except\b',                     # except
+        r'else:',                        # else:
+        r'elif\s+.*:',                   # elif:
+        r'with\s+.*:',                   # with:
+        r'return\s+',                    # return
+        r'^\s*#\s+',                     # comments
+        r'console\.\w+\(',               # console.xxx(
+        r'window\.\w+',                  # window.xxx
+        r'^\s*\w+\s*=\s*(urllib|requests|http|json|re|os|sys|subprocess)\b',  # var = module
+        r'^\s*\w+\s*=\s*\w+\.(get|post|put|delete|findall|search|sub|match)\(',  # var = obj.method(
+        r'^\s*\w+\s*=\s*[\w.]+\(.*\)\s*$',  # var = func(...)
+        r'^\s*\w+\.\w+\(.*\)\s*$',       # obj.method(...)
+        r'^\s*print\(.*\)\s*$',          # print(...)
+    ]
+    combined = '|'.join(code_patterns)
+    for _ in range(5):
+        t = re.sub(r'^(' + combined + r').*$', '', t, flags=re.M)
+
+    # === Phase 5: 清理格式 ===
+    t = re.sub(r'\n{3,}', '\n\n', _strip_md(t)).strip()
+    return t
 
 def _turn_parts(t):
     _ph = []
