@@ -597,7 +597,7 @@ def on_message(bot, msg):
                 return False
             try:
                 while True:
-                    item = dq.get(timeout=300)
+                    item = dq.get(timeout=30)
                     if 'done' in item: result = item['done']; break
                     raw = item.get('next', '')
                     done, partial = _turn_parts(raw)
@@ -606,11 +606,21 @@ def on_message(bot, msg):
                         print(f'[WX] turns={len(done)}/{len(done)+1} sent={sent} sending={len(done)-sent}', file=sys.__stdout__)
                         if _send(merged):
                             sent = len(done)
+                    elif not done and raw.strip():
+                        # Fallback: _turn_parts returned empty (no Turn markers), send raw directly
+                        cleaned = _clean(raw)
+                        print(f'[WX] fallback send len={len(cleaned)}', file=sys.__stdout__)
+                        if cleaned.strip():
+                            _wx_send(cleaned[:2000])
+                            sent = 1
             except queue.Empty: result = '⏰ 响应超时，请稍后重试'
             done, partial = _turn_parts(result)
             # Build final response (clean output, no internal artifacts)
             rest = '\n\n'.join(done[sent:] + [partial])
             rest_clean = _clean(rest)
+            # If _turn_parts returned empty turns, send result directly
+            if not done and not partial and result.strip():
+                rest_clean = _clean(result)
             # Ensure we don't exceed 2000 chars; if so, trim smartly
             final = rest_clean[-1900:] if len(rest_clean) > 1900 else rest_clean
             if final.strip(): _wx_send(final)
