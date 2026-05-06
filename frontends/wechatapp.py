@@ -479,7 +479,16 @@ def on_message(bot, msg):
 
     def _handle():
         try:
-            prompt = text if text.startswith('/') else f"If you need to show files to user, use [FILE:filepath] in your response.\n\n{text}"
+            # 优化 prompt：约束 agent 减少轮次，直接输出最终结果
+            sys_hint = (
+                "【回复规则】\n"
+                "1. 直接给出最终答案，不要分步输出中间思考过程\n"
+                "2. 搜索/工具调用尽量合并，减少轮次\n"
+                "3. 回复格式：用 emoji 分段，表格用对齐文本，适合手机阅读\n"
+                "4. 股票推荐：给出代码+名称+理由，简洁明了\n"
+                "5. 如果需要 K 线图，用 [FILE:filepath] 标记\n"
+            )
+            prompt = text if text.startswith('/') else f"{sys_hint}\n\n{text}"
             dq = agent.put_task(prompt, source="wechat")
             try: bot.send_typing(uid)
             except: pass
@@ -501,8 +510,8 @@ def on_message(bot, msg):
                 nonlocal mi, last_send
                 now = time.time()
                 if mi >= 9 or not show.strip(): return False
-                # 限速：第一条立即发，后续每条间隔 2 秒
-                if mi and now - last_send < 2: return None
+                # 限速：第一条立即发，后续每条间隔 1 秒（从 2 秒优化）
+                if mi and now - last_send < 1: return None
                 if _wx_send(show[:2000]): mi += 1; last_send = time.time(); return True
                 return False
             try:
@@ -513,23 +522,18 @@ def on_message(bot, msg):
                     done, partial = _turn_parts(raw)
                     if len(done) > sent:
                         merged = _clean('\n\n'.join(done[sent:]))
-                        # Prepend progress hint only for the first message
-                        if mi == 0:
-                            hint = _progress_hint(len(done), len(done) + 1)
-                            if hint:
-                                merged = f'{hint}\n\n{merged}'
                         print(f'[WX] turns={len(done)}/{len(done)+1} sent={sent} sending={len(done)-sent}', file=sys.__stdout__)
                         if _send(merged):
                             sent = len(done)
             except queue.Empty: result = '⏰ 响应超时，请稍后重试'
             done, partial = _turn_parts(result)
-            # Build final response with completion marker
-            tail = '\n\n━━━━━━━━━━━━\n✅ 回复完成'
+            # Build final response - 手机端友好格式
             rest = '\n\n'.join(done[sent:] + [partial])
             rest_clean = _clean(rest)
-            # Ensure we don't exceed 2000 chars; if so, trim smartly
-            final = rest_clean[-1900:] + tail if len(rest_clean) > 1900 else rest_clean + tail
-            if final.strip(): _wx_send(final)
+            # 截断到 2000 字符以内
+            if len(rest_clean) > 1900:
+                rest_clean = rest_clean[-1900:]
+            if rest_clean.strip(): _wx_send(rest_clean)
             files = re.findall(r'\[FILE:([^\]]+)\]', result)
             bad = {'filepath', '<filepath>', 'path', '<path>', 'file_path', '<file_path>', '...'}
             files = [f for f in files if f.strip().lower() not in bad and (f if os.path.isabs(f) else os.path.join(_TEMP_DIR, f)) not in media_paths]
