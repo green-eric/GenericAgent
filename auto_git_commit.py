@@ -28,7 +28,12 @@ logging.basicConfig(
 log = logging.getLogger("auto-git")
 
 def git(*args):
-    r = subprocess.run(["git"] + list(args), capture_output=True, text=True, encoding="utf-8", cwd=WATCH_ROOT)
+    r = subprocess.run(
+        ["git"] + list(args),
+        capture_output=True, text=True, encoding="utf-8",
+        cwd=WATCH_ROOT,
+        creationflags=subprocess.CREATE_NO_WINDOW,
+    )
     return r.stdout.strip(), r.stderr.strip(), r.returncode
 
 def should_watch(filepath):

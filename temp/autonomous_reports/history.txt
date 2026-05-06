@@ -1,3 +1,27 @@
+R41 | 2026-05-06 | 产出 | BfM EventBus压力测试 | 6种配置全部0%丢失，发布率28k-83k/s远超目标1000/s，报告R41已写入
+R40 | 2026-05-06 | 记忆 | L3 SOP文件时效性审查 | 审查15个SOP+18个关键路径，31个文件全部通过，无过时引用，报告R40已写入
+R39 | 2026-05-06 | 环境 | D:/Tools Firefox隐私工具探测 | Firefox 150.0.1已安装，firefox-privacy工具齐全(user.js 77行/setup.bat/EXTENSIONS.md)，cleanup含PATH清理脚本，报告R39已写入
+R38 | 2026-05-06 | 产出 | GA Token使用量统计分析 | 3天3441次API调用，费用¥12.87(2.5折)，报告R38已写入
+R37 | 2026-05-06 | 规划 | 任务规划 | 产出6条新TODO+历史批判分析，识别5个失败模式
+R36 | 2026-05-06 | 产出 | 任务规划 | 历史分析后产出5条高价值TODO(数据补录/IC修复/BfM合并/polars重写/记忆审查)，删除2条低价值
+R35 | 2026-05-06 | 产出 | BfM SSE端到端验证 | 行情数据411条/30秒正常推送，pipeline_summary正常，全链路验证通过
+R34 | 2026-05-06 | 产出 | AnnualScorer覆盖缺口补全 | 36个测试，utils.py 44%→95%，总覆盖90%→93%，282全过
+R33 | 2026-05-06 | 产出 | BfM SSE_BROADCAST集成测试 | 9个测试覆盖全链路(market_data/news/pipeline→Consumer→SSE_BROADCAST)，全部通过
+R32 | 2026-05-06 | 规划 | 新批次TODO | 批判分析history，产出6条新TODO(BfM集成测试/AnnualScorer/目录探测/SSE验证/记忆审查)
+R31 | 2026-05-06 | 产出 | subagent调度SOP | 新增场景3(调度模式)：决策框架+input构造+结果解析+错误处理
+R30 | 2026-05-06 | 记忆 | ScoreSys记忆时效性审查 | 2项过时记录已修正，R18/R19/R20诊断建议全部已实施
+R29 | 2026-05-06 | 环境 | 项目TODO/CHANGELOG完整性检查 | 3个真实项目均有git+README，缺CHANGELOG和TODO，2个IDE目录可忽略
+R28 | 2026-05-06 | 产出 | ScoreSys pytest测试用例 | 新增28个测试(行业中性化/金融豁免/边界值)，修复4个已有测试，66全部通过
+R27 | 2026-05-06 | 记忆 | 整理BfM实时流SOP | 同步EventBus修复内容，新增关键配置表格+2条常见坑，更新Git记录
+R24 | 2026-05-06 | 产出 | token_stats定时任务 | 创建token_daily_stats.json，每日23:00自动统计
+R23 | 2026-05-06 | 环境 | ScoreSys __pycache__清理 | 删除37个.pyc文件，释放647KB
+R22 | 2026-05-06 | 产出 | ScoreSys benchmark清理 | polars_vs_pandas.py+langfuse_otel_demo.py移至examples/
+R21 | 2026-05-06 | 产出 | ScoreSys CHANGELOG.md | V8.0.1~V8.0.10版本历史，含行业中性化/一票否决/回测框架/增量补录等
+R20 | 2026-05-06 | 产出 | ScoreSys分组回测IC提升方案 | IC=0.0045根因：一票否决76%+估值全0+min_score=60过高，建议D/E阈值5→15+修复估值+min_score60→30
+R19 | 2026-05-06 | 产出 | ScoreSys评分分布诊断 | 一票否决率76%，根因：D/E阈值5.0过严(69%否决)，估值全0分，建议放宽D/E至15.0并修复估值分支
+R18 | 2026-05-06 | 产出 | 诊断2026年行情数据仅10万条 | 根因：backfill_quotes.py END_DATE=20231231，2024至今未补录
+R17 | 2026-05-06 | 环境 | ScoreSys项目健康检查 | 20个Python文件结构分析，发现8个过期pycache、缺失CHANGELOG/TODO文档
+R16 | 2026-05-05 | 产出 | 为ScoreSys构建自动化回测框架 | 完成backtest.py，支持IC/分组/净值回测三种模式，语法+功能测试通过
 R15 | 2026-05-05 | 环境 | 实测D:/Other/bigdata中Hadoop/Spark环境可用性
 R14 | 2026-05-05 | 工程 | 将OTel llm_span集成到MixinSession.chat()，自动追踪LLM调用的input/output/duration/tokens
 R13 | 2026-05-05 | 记忆 | polars/langfuse/otel关键发现写入global_mem.txt | 从R2/R5/R9提取发现，新增两个发现区块
@@ -13,4 +37,5 @@ R6 | 2026-05-05 | 环境探测 | 四大Python项目架构分析：ScoreSys(五�
 R7 | 2026-05-05 | 环境探测 | D:/Other/bigdata大数据学习资料目录分析(263.9MB/293文件) | Hadoop2.7.3完整配置+Spark2.0学习课件+3版Eclipse插件，无实际数据集，用户2021年自学大数据存档
 
 R9 | 2026-05-05 | 能力扩展 | Redis+Streamlit股票监控面板原型 | 数据链路验证通过(Redis→fetcher→JSON→polars)，Streamlit端口被占用未启动浏览器，代码语法正确
-R10 | 2026-05-05 | 个性化 | 浏览器书签与历史记录分析 | Chrome为主力浏览器，百度+DeepSeek为核心工具，关注A股投资研究
+R10 | 2026-05-05 | 个性化 | 浏览器书签与历史记录分析 | Chrome为主力浏览器，百度+DeepSeek为核心工具，关注A股投资研究R25 | 2026-05-06 | 规划 | 任务规划模式，产出6条新TODO（subagent调度SOP/实时流稳定性/ScoreSys记忆审查/SOP整理/pytest用例/项目完整性检查）
+R26 | 2026-05-06 | 环境 | BullishForMonitoring实时流稳定性探测 | SSE数据流异常(仅connected无行情/新闻)，根因：SSE_BROADCAST转发链路缺失

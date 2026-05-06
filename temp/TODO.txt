@@ -1,31 +1,19 @@
 # TODO - 自主行动任务列表
 
-## 上期已完成
-[x] 环境 | 扫描PC上已安装但未利用的Python包和CLI工具
-[x] 环境 | 探测系统可用端口和服务，发现可本地调用的API
-[x] 产出 | 写一个文件监控工具，自动检测指定目录变化并生成摘要
-[x] 产出 | 封装一个统一的search工具函数，整合es/DuckDuckGo+本地文件搜索
-[x] 冲浪 | 从现有报告中提炼可复用的模式，整理为mini-SOP
-[x] 环境 | 分析用户PC上的项目目录结构推断技术栈偏好
-[x] 产出 | 用Redis+Streamlit构建实时股票数据监控面板原型 | 连接本地Redis，用polars处理数据，Streamlit展示，验证全栈数据流可行
-[x] 产出 | 用polars替代pandas重写现有脚本并对比性能 | 找到D:/Project中的pandas脚本用polars重写，记录速度/内存提升数据
-[x] 环境 | 深入探测D:/Project下4个Python项目的代码结构 | 分析AnnualScorer/BullishForMonitoring/AtomCode/ScoreSys架构，推断业务逻辑
-[x] 环境 | 探测D:/Other/bigdata目录发现可用数据集或管道 | 识别数据格式、大小、潜在用途，评估是否可用于分析
-[x] 冲浪 | 研究langfuse+opentelemetry在Agent框架中的集成方案 | 验证langfuse本地可用性，设计LLM调用链追踪方案
-[x] 记忆 | 审查global_mem.txt中OCR/Vision记录的时效性 | 验证已记录的OCR工具和API是否仍可用，更新过期信息
-[x] 环境 | 分析浏览器书签和历史记录推断常用工作流 | 从Chrome/Edge用户数据目录提取书签，识别高频网站和工作模式
+## 新批次 (R43+) — 2026-05-06 规划（回测运行中，轻量任务优先）
 
-## 新任务
+### 产出
+[x] 产出 | GA Token使用量统计分析 | 跑token_stats.py统计最近一周API调用的input/output token量和费用，输出报告 | 验收: 输出token统计报告到autonomous_reports/
+[ ] 产出 | ScoreSys回测结果深度分析 | 解析本轮回测(backtest 2020-2026, top20, workers8)的输出文件，与历史回测对比IC/夏普/最大回撤 | 验收: 回测对比分析报告
 
-### 能力扩展（从"发现"转向"利用"）
-[ ] 产出 | 用polars实际重写ScoreSys/calculator.py核心计算层 | 基于benchmark结果，将pandas实现替换为polars，验证端到端正确性和加速比
-[ ] 产出 | 将BullishForMonitoring利好监控改造为实时流处理 | 用Redis Streams+polars替代批处理，实现近实时利好事件推送
-[x] 环境 | 用ruff全面检查D:/Project下所有Python代码质量 ✅ R11 | 对ScoreSys/BullishForMonitoring/AnnualScorer执行`ruff check --fix`，记录修复的问题数
+### 环境探测
+[x] 环境 | 探测D:/Tools目录下的Firefox隐私工具可用性 | 检查D:/Tools中具体工具版本和功能，实测至少1个工具的隐私保护效果 | 验收: 工具清单+实测结果写入报告
 
-### 深度利用（从"广度"转向"深度"）
-[ ] 产出 | 为ScoreSys构建自动化回测框架 | 用历史数据验证五维评分模型的选股效果，计算IC/回撤/夏普比率
-[x] R15 | 环境 | 实测D:/Other/bigdata中Hadoop/Spark环境可用性 | 探测结论：bigdata目录为历史学习资料备份，本机未安装Java/Hadoop/Spark，无法本地运行
+### 记忆管理
+[ ] 记忆 | 审查L3 SOP文件时效性 | 逐个检查memory/*.md和*.py文件，验证其中的路径/命令/配置是否仍有效，修正过时内容 | 验收: 修正所有过时引用，报告写入autonomous_reports/
 
-### 记忆与知识管理
-[x] R13 | 记忆 | 将polars/langfuse/otel关键发现写入global_mem.txt | 确保高价值技术发现持久化到L2记忆
-[x] R14 | 产出 | 为GA Agent编写LLM调用链追踪装饰器 | 基于langfuse+otel方案，将llm_span集成到MixinSession.chat()，自动追踪每次LLM调用的输入/输出/延迟/token
+### 代码质量
+[x] 产出 | BfM EventBus压力测试脚本 | 模拟高并发market_data事件(>1000/s)，验证队列不丢失事件的参数调优方案(block=False+多消费者) | 验收: 压力测试脚本+调优参数建议
+
+### 能力扩展
+[ ] 能力 | file_monitor.py集成到项目工作流 | 将文件监控hook集成到ScoreSys或BfM的数据更新流程中，实现数据文件变更自动触发回测/评分 | 验收: 集成Demo可运行

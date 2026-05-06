@@ -60,3 +60,73 @@
   "dependencies": ["paper_info.txt必须存在"]
 }
 ```
+
+## 场景3：调度模式 - 主agent主动分发
+
+### 调度决策框架
+
+**何时用 subagent**：
+- 任务可独立执行（不依赖主agent的上下文状态）
+- 任务耗时 > 30s（避免主agent阻塞）
+- 需要隔离上下文（避免长上下文污染主agent）
+- 可并行（多个独立子任务）
+
+**何时不用 subagent**：
+- 任务依赖主agent的实时交互（如浏览器操作）
+- 任务简单（< 10s 可完成）
+- 需要共享键鼠/浏览器状态
+- 任务间有强依赖（需顺序执行）
+
+### Input 构造模式
+
+| 场景 | input 内容 | 示例 |
+|------|-----------|------|
+| 简单任务 | 目标 + 约束 | `"扫描D:/Project下所有项目的CHANGELOG完整性"` |
+| 复杂任务 | 目标 + 输入文件路径 + 输出期望 | `"分析 ./data/report.pdf，提取关键数据，结果写入 ./output/summary.md"` |
+| Map模式 | 每个subagent处理一个分片 | `"处理 ./data/chunk_001.csv，结果写入 ./output/result_001.json"` |
+| 测试模式 | 仅目标，不提示位置 | `"用 vision_sop 查看最近截图内容"` |
+
+**Input 构造原则**：
+- ✅ 给目标 + 约束 + 文件路径
+- ✅ 大量数据给文件路径，不内联
+- ✅ 多步骤任务建议 plan_mode
+- ❌ 不写具体步骤（subagent 同等智能）
+- ❌ 不内联 SOP 内容（让 subagent 自己查）
+- ❌ 不过度描述（input 越长，subagent 理解负担越大）
+
+### 结果解析
+
+**正常完成**：
+1. 读取 `output.txt`（或 `output1/2/3.txt`）
+2. 检查最后一行是否包含 `[ROUND END]`
+3. 提取关键结论（忽略工具调用过程）
+4. 验证输出文件是否存在（如 task_dir 中的报告文件）
+
+**结果验证清单**：
+- [ ] output.txt 存在且非空
+- [ ] 包含 `[ROUND END]` 标记
+- [ ] 输出文件（如报告）存在
+- [ ] 结果与预期一致（如数据量、格式）
+
+### 错误处理
+
+| 错误类型 | 症状 | 处理方式 |
+|---------|------|---------|
+| 启动失败 | 进程立即退出，无 output.txt | 检查 task_dir/input.txt 是否存在；重试一次 |
+| 超时未完成 | output.txt 存在但无 `[ROUND END]` | 写 `_intervene` 追加指令；或写 `_stop` 终止后主agent接管 |
+| 输出为空 | output.txt 存在但内容极少 | 检查 input 是否过于模糊；重新构造 input 后重试 |
+| 工具调用失败 | output 中大量 Error/Traceback | 写 `_keyinfo` 注入关键上下文；或主agent直接处理 |
+| 无限循环 | output 持续增长但无进展 | 写 `_stop` 立即终止；分析 input 是否导致歧义 |
+| 资源冲突 | 多个subagent操作同一文件 | 确保每个subagent有独立 task_dir；共享资源只读 |
+
+**干预文件使用**：
+```
+echo "补充指令" > temp/{task_name}/_intervene    # 追加指令
+echo "关键信息" > temp/{task_name}/_keyinfo      # 注入working memory
+echo "" > temp/{task_name}/_stop                 # 当轮结束后退出
+```
+
+**重试策略**：
+1. 首次失败 → 检查 output 末尾，分析原因
+2. 二次失败 → 修改 input（更明确的目标/约束），重新启动
+3. 三次失败 → 主agent 直接执行，记录 subagent 失败原因到报告
