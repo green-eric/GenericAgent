@@ -17,8 +17,7 @@ from agentmain import GeneraticAgent
 
 # ── WxBotClient (inline from wx_bot_client.py) ──
 API     = f'https://{_API_HOST}'
-TOKEN_FILE = Path(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) / 'temp' / 'wxbot_token.json'
-TOKEN_FILE.parent.mkdir(parents=True, exist_ok=True)
+TOKEN_FILE = Path(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) / 'wxbot_token.json'
 VER, MSG_USER, MSG_BOT, ITEM_TEXT, STATE_FINISH = '2.1.10', 1, 2, 1, 2
 ILINK_APP_ID = 'bot'
 ILINK_APP_CLIENT_VERSION = (2 << 16) | (1 << 8) | 10
