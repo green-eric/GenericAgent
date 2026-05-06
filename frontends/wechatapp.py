@@ -552,16 +552,22 @@ def on_message(bot, msg):
                 result = raw_accum if raw_accum else '⏰ 响应超时，请稍后重试'
                 print('[WX] agent 60s 超时', file=sys.__stdout__)
 
-            # ═══ 阶段2：发送最终完整回复 ═══
-            final = _clean(result)
-            if not final.strip():
-                # 清理后为空，说明全是思考过程，用原始内容兜底
-                final = _extract_answer(result)
-            if final.strip():
-                # 截断到 1900 字符（微信限制 2000）
-                if len(final) > 1900:
-                    final = final[:1900]
-                _wx_send(final)
+            # ═══ 阶段2：发送最终完整回复（仅当阶段1没发过时才发） ═══
+            if not sent_text:
+                final = _clean(result)
+                if not final.strip():
+                    final = _extract_answer(result)
+                if final.strip():
+                    if len(final) > 1900:
+                        final = final[:1900]
+                    _wx_send(final)
+            else:
+                # 阶段1已流式发送，阶段2只发剩余部分（如果有）
+                final = _clean(result)
+                if final.strip() and len(final) > len(sent_text):
+                    remaining = final[len(sent_text):]
+                    if remaining.strip():
+                        _wx_send(remaining[:2000])
             files = re.findall(r'\[FILE:([^\]]+)\]', result)
             bad = {'filepath', '<filepath>', 'path', '<path>', 'file_path', '<file_path>', '...'}
             files = [f for f in files if f.strip().lower() not in bad and (f if os.path.isabs(f) else os.path.join(_TEMP_DIR, f)) not in media_paths]
