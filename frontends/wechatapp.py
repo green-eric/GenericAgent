@@ -71,28 +71,46 @@ class WxBotClient:
         return r.json()
 
     def login_qr(self, poll_interval=2):
-        r = requests.get(f'{API}/ilink/bot/get_bot_qrcode', params={'bot_type': 3}, headers={'User-Agent': UA}, timeout=10)
+        # 获取二维码（用 Session 保持连接复用）
+        r = self._session.get(f'{API}/ilink/bot/get_bot_qrcode',
+                               params={'bot_type': 3}, headers={'User-Agent': UA}, timeout=10)
         r.raise_for_status()
         d = r.json()
         qr_id, url = d['qrcode'], d.get('qrcode_img_content', '')
         print(f'[QR登录] ID: {qr_id}')
         if url:
+            # 保存二维码图片到 temp 目录
             img = self._tf.parent / 'wx_qr.png'
-            qrcode.make(url).save(str(img)); webbrowser.open(str(img))
-            qr = qrcode.QRCode(border=1); qr.add_data(url); qr.make(fit=True); qr.print_ascii(invert=True)
+            qrcode.make(url).save(str(img))
+            # 打印 ASCII 二维码到终端（不依赖 GUI）
+            qr = qrcode.QRCode(border=1); qr.add_data(url); qr.make(fit=True)
+            try:
+                qr.print_ascii(invert=True)
+            except Exception:
+                pass
+            print(f'[QR登录] 二维码已保存: {img}')
+            print(f'[QR登录] 扫码链接: {url}')
         last = ''
         while True:
             time.sleep(poll_interval)
-            try: s = requests.get(f'{API}/ilink/bot/get_qrcode_status', params={'qrcode': qr_id}, headers={'User-Agent': UA}, timeout=60).json()
-            except requests.exceptions.ReadTimeout: continue
+            try:
+                s = self._session.get(f'{API}/ilink/bot/get_qrcode_status',
+                                       params={'qrcode': qr_id},
+                                       headers={'User-Agent': UA}, timeout=60).json()
+            except requests.exceptions.ReadTimeout:
+                continue
+            except Exception as e:
+                print(f'[QR登录] 轮询异常: {e}', file=sys.__stdout__)
+                continue
             st = s.get('status', '')
-            if st != last: print(f'  状态: {st}'); last = st
+            if st != last: print(f'[QR登录] 状态: {st}'); last = st
             if st == 'confirmed':
                 self.token, self.bot_id = s.get('bot_token', ''), s.get('ilink_bot_id', '')
                 self._save(login_time=time.strftime('%Y-%m-%d %H:%M:%S'))
                 print(f'[QR登录] 成功! bot_id={self.bot_id}')
                 return s
-            if st == 'expired': raise RuntimeError('二维码过期')
+            if st == 'expired':
+                raise RuntimeError('二维码过期')
 
     def get_updates(self, timeout=30):
         try:
@@ -115,7 +133,16 @@ class WxBotClient:
             return []
         if resp.get('errcode'):
             print(f'[getUpdates] err: {resp.get("errcode")} {resp.get("errmsg","")}')
-            if resp['errcode'] == -14: self._save()
+            if resp['errcode'] == -14:
+                # session 过期 → 自动重新登录
+                print('[getUpdates] session 过期，触发重新登录...')
+                try:
+                    self.login_qr()
+                    print(f'[getUpdates] 重新登录成功! bot_id={self.bot_id}')
+                    # 用新 token 重试一次
+                    return self.get_updates(timeout=timeout)
+                except Exception as e:
+                    print(f'[getUpdates] 重新登录失败: {e}', file=sys.__stdout__)
             return []
         nb = resp.get('get_updates_buf', '')
         if nb: self._buf = nb; self._save()
