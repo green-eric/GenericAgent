@@ -550,7 +550,28 @@ def on_message(bot, msg):
 
     threading.Thread(target=_handle, daemon=True).start()
 
+def _ensure_cdp():
+    """确保 Chrome CDP 9222 可用。不可用时自动启动 headless 隐身 Chrome。"""
+    import socket as _sk
+    sock = _sk.socket(_sk.AF_INET, _sk.SOCK_STREAM)
+    if sock.connect_ex(('127.0.0.1', 9222)) == 0:
+        sock.close(); print('[CDP] 已可用', file=sys.__stdout__); return
+    sock.close()
+    print('[CDP] 未检测到，启动 Chrome headless 隐身模式...', file=sys.__stdout__)
+    chrome_exe = r'C:\Program Files\Google\Chrome\Application\chrome.exe'
+    cdp_profile = os.path.join(os.environ.get('TEMP', ''), 'chrome_cdp_profile')
+    subprocess.Popen([chrome_exe, '--remote-debugging-port=9222', f'--user-data-dir={cdp_profile}',
+                      '--no-first-run', '--disable-gpu', '--headless=new', '--incognito'],
+                     stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                     creationflags=subprocess.CREATE_NO_WINDOW)
+    time.sleep(8)
+    sock2 = _sk.socket(_sk.AF_INET, _sk.SOCK_STREAM)
+    ok = sock2.connect_ex(('127.0.0.1', 9222)) == 0
+    sock2.close()
+    print(f'[CDP] {"✅ 已启动" if ok else "❌ 启动失败"}', file=sys.__stdout__)
+
 if __name__ == '__main__':
+    _ensure_cdp()  # 启动前确保 CDP 可用
     # Prevent multiple instances: check for other wechatapp.py processes via PowerShell
     _my_pid = os.getpid()
     _dup = False
