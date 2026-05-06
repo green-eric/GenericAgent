@@ -420,17 +420,22 @@ def _clean(t):
     t = re.sub(r'^\s*(首先|其次|最后|然后|接着)\s+(调用|读取|写入|搜索|查看|执行).*$', '', t, flags=re.M)
     # 移除空白的工具调用结果行
     t = re.sub(r'^\s*工具调用结果.*$', '', t, flags=re.M)
+    # ═══ 段落级思考过滤 ═══
+    # 删除包含思考关键词的整段（2-5行的段落）
+    _think_kws = [
+        r'用户问的是', r'但回复规则', r'规则模板错配', r'我应该',
+        r'不过规则说', r'搜索失败', r'用已有知识', r'直接回答',
+        r'思考过程', r'分析步骤', r'规则引用',
+    ]
+    _para_pats = '|'.join(_think_kws)
+    # 删除包含思考关键词的段落（连续2-6行）
+    t = re.sub(r'(?:^[^\n]*(?:' + _para_pats + r')[^\n]*\n?){1,6}', '', t, flags=re.M)
     # Remove excessive blank lines but keep paragraph separation
     return re.sub(r'\n{3,}', '\n\n', _strip_md(t)).strip()
 
 def _extract_answer(t):
     """从 agent 回复中提取最终答案，丢弃所有思考过程。
-    
-    策略：
-    1. 先按 Turn 分割，取最后一个 Turn
-    2. 在最后一个 Turn 中，找第一个 emoji 开头的行作为答案起点
-       （因为 prompt 要求用 emoji 分段，思考过程不会以 emoji 开头）
-    3. 如果找不到 emoji 分隔符，取最后 3 行（通常答案在末尾）
+    策略：取最后一个 Turn 内容，清理后返回。
     """
     _ph = []
     safe = re.sub(r'`{4,}.*?`{4,}', lambda m: (_ph.append(m.group(0)), f'\x00PH{len(_ph)-1}\x00')[1], t, flags=re.DOTALL)
@@ -447,23 +452,6 @@ def _extract_answer(t):
             content = t
     else:
         content = t
-    # 找第一个 emoji 开头的行作为答案起点
-    lines = content.split('\n')
-    answer_start = 0
-    for i, line in enumerate(lines):
-        stripped = line.strip()
-        # emoji 开头 或 📊📈💡🔥⚠️ 等常见分段标记
-        if stripped and (re.match(r'^[📊📈💡🔥⚠️✅❌🔴🟢⭐🏆📉💰🎯🔍📰]', stripped) or
-                         re.match(r'^[①②③④⑤⑥⑦⑧⑨⑩]', stripped) or
-                         re.match(r'^[\-\•\·]\s', stripped) or
-                         re.match(r'^\d+[\.\、]', stripped)):
-            answer_start = i
-            break
-    if answer_start > 0:
-        content = '\n'.join(lines[answer_start:])
-    # 如果内容还是太长（>600字），只取前 600 字
-    if len(content) > 600:
-        content = content[:600]
     return content
 
 
