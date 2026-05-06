@@ -1,6 +1,17 @@
-import os, sys, re, threading, queue, time, socket, json, struct, base64, uuid, webbrowser, hashlib, math
+import os, sys, re, threading, queue, time, socket, json, struct, base64, uuid, webbrowser, hashlib, math, shutil
 from pathlib import Path
 from urllib.parse import quote
+
+# ── 启动时自动清理 .pyc 缓存，确保加载最新代码 ──
+for _d in [os.path.dirname(os.path.abspath(__file__)),
+           os.path.dirname(os.path.dirname(os.path.abspath(__file__)))]:
+    _pyc = os.path.join(_d, '__pycache__')
+    if os.path.exists(_pyc):
+        try:
+            shutil.rmtree(_pyc)
+            print(f'[WX] 已清理缓存: {_pyc}', file=sys.__stdout__)
+        except Exception:
+            pass
 
 import requests, qrcode
 import socket as _socket
@@ -522,10 +533,9 @@ def on_message(bot, msg):
                     print(f'[WX] send err {type(e).__name__}: {e}', file=sys.__stdout__)
                     return False
 
-            # ═══ 阶段1：流式接收 agent 输出 ═══
+            # ═══ 接收 agent 输出（不流式发送，只累积） ═══
             max_turns = 5
             turn_count = 0
-            sent_text = ''  # 已发送的内容（流式增量）
 
             try:
                 while True:
@@ -537,13 +547,6 @@ def on_message(bot, msg):
                     raw_accum += raw
                     turn_count += 1
 
-                    # 流式发送：每次有新内容时，清理后发送增量
-                    cleaned = _clean(raw_accum)
-                    if len(cleaned) > len(sent_text) + 50:  # 至少新增50字才发
-                        new_part = cleaned[len(sent_text):]
-                        if _wx_send(new_part[:2000]):
-                            sent_text = cleaned[:2000]
-
                     if turn_count >= max_turns:
                         print(f'[WX] 达到最大轮次{max_turns}，强制结束', file=sys.__stdout__)
                         result = raw_accum
@@ -552,22 +555,14 @@ def on_message(bot, msg):
                 result = raw_accum if raw_accum else '⏰ 响应超时，请稍后重试'
                 print('[WX] agent 60s 超时', file=sys.__stdout__)
 
-            # ═══ 阶段2：发送最终完整回复（仅当阶段1没发过时才发） ═══
-            if not sent_text:
-                final = _clean(result)
-                if not final.strip():
-                    final = _extract_answer(result)
-                if final.strip():
-                    if len(final) > 1900:
-                        final = final[:1900]
-                    _wx_send(final)
-            else:
-                # 阶段1已流式发送，阶段2只发剩余部分（如果有）
-                final = _clean(result)
-                if final.strip() and len(final) > len(sent_text):
-                    remaining = final[len(sent_text):]
-                    if remaining.strip():
-                        _wx_send(remaining[:2000])
+            # ═══ 一次性发送最终回复 ═══
+            final = _clean(result)
+            if not final.strip():
+                final = _extract_answer(result)
+            if final.strip():
+                if len(final) > 1900:
+                    final = final[:1900]
+                _wx_send(final)
             files = re.findall(r'\[FILE:([^\]]+)\]', result)
             bad = {'filepath', '<filepath>', 'path', '<path>', 'file_path', '<file_path>', '...'}
             files = [f for f in files if f.strip().lower() not in bad and (f if os.path.isabs(f) else os.path.join(_TEMP_DIR, f)) not in media_paths]
