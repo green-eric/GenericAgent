@@ -495,70 +495,73 @@ def on_message(bot, msg):
 
     def _handle():
         try:
-            # 极简 prompt：指令 agent 直接输出最终答案，不输出任何中间过程
+            # Prompt：指令 agent 直接输出最终答案
             sys_hint = (
-                "【系统指令-必须遵守】\n"
-                "你是直接回复用户的助手。\n"
-                "禁止输出：思考过程、分析步骤、规则引用、工具调用描述、搜索结果原文、英文推理。\n"
-                "只输出：最终答案本身。\n"
-                "格式：emoji分段，每段2-3行，手机友好，不超过500字。\n"
+                "你是直接回复用户的助手。禁止输出思考过程、分析步骤、规则引用、工具调用描述、英文推理。"
+                "只输出最终答案本身。格式：emoji分段，每段2-3行，不超过500字。"
                 "如果搜索失败，直接用知识回答，不要说明搜索失败。"
             )
             prompt = text if text.startswith('/') else f"{sys_hint}\n\n用户问题：{text}"
             dq = agent.put_task(prompt, source="wechat")
             try: bot.send_typing(uid)
             except: pass
-            result = ''; sent = 0; mi = 0; last_send = 0
+
+            result = ''
+            raw_accum = ''  # 累积 raw 输出用于最终提取
+
             def _wx_send(text):
-                s = text.strip(); t0 = time.time()
+                s = text.strip()
+                if not s: return False
+                t0 = time.time()
                 try:
                     print(f'[WX] _wx_send start len={len(s)} uid={uid[:20]} ctx={ctx[:20] if ctx else ""}', file=sys.__stdout__)
-                    result = bot.send_text(uid, s, context_token=ctx)
-                    print(f'[WX] send ok len={len(s)} dt={time.time()-t0:.1f}s result={result}', file=sys.__stdout__)
+                    r = bot.send_text(uid, s, context_token=ctx)
+                    print(f'[WX] send ok len={len(s)} dt={time.time()-t0:.1f}s', file=sys.__stdout__)
                     return True
                 except Exception as e:
-                    import traceback
-                    tb = traceback.format_exc()
-                    print(f'[WX] send err len={len(s)} dt={time.time()-t0:.1f}s {type(e).__name__}: {e}', file=sys.__stdout__)
-                    print(f'[WX] send err tb:\n{tb}', file=sys.__stdout__)
+                    print(f'[WX] send err {type(e).__name__}: {e}', file=sys.__stdout__)
                     return False
-            def _send(show):
-                nonlocal mi, last_send
-                now = time.time()
-                if mi >= 9 or not show.strip(): return False
-                # 限速：第一条立即发，后续每条间隔 1 秒（从 2 秒优化）
-                if mi and now - last_send < 1: return None
-                if _wx_send(show[:2000]): mi += 1; last_send = time.time(); return True
-                return False
+
+            # ═══ 阶段1：流式接收 agent 输出 ═══
+            max_turns = 5
+            turn_count = 0
+            sent_text = ''  # 已发送的内容（流式增量）
+
             try:
-                max_turns = 5  # 最多5轮，防止无限循环
-                turn_count = 0
                 while True:
-                    item = dq.get(timeout=60)  # 60s超时（从300s缩短）
-                    if 'done' in item: result = item['done']; break
+                    item = dq.get(timeout=60)
+                    if 'done' in item:
+                        result = item['done']
+                        break
                     raw = item.get('next', '')
-                    done, partial = _turn_parts(raw)
+                    raw_accum += raw
                     turn_count += 1
-                    if len(done) > sent:
-                        merged = _clean('\n\n'.join(done[sent:]))
-                        print(f'[WX] turns={len(done)}/{len(done)+1} sent={sent} sending={len(done)-sent}', file=sys.__stdout__)
-                        if _send(merged):
-                            sent = len(done)
+
+                    # 流式发送：每次有新内容时，清理后发送增量
+                    cleaned = _clean(raw_accum)
+                    if len(cleaned) > len(sent_text) + 50:  # 至少新增50字才发
+                        new_part = cleaned[len(sent_text):]
+                        if _wx_send(new_part[:2000]):
+                            sent_text = cleaned[:2000]
+
                     if turn_count >= max_turns:
                         print(f'[WX] 达到最大轮次{max_turns}，强制结束', file=sys.__stdout__)
-                        result = '\n\n'.join(done + [partial])
+                        result = raw_accum
                         break
             except queue.Empty:
-                result = '⏰ 响应超时，请稍后重试'
+                result = raw_accum if raw_accum else '⏰ 响应超时，请稍后重试'
                 print('[WX] agent 60s 超时', file=sys.__stdout__)
-            done, partial = _turn_parts(result)
-            # Build final response - 手机端友好格式
-            rest = '\n\n'.join(done[sent:] + [partial])
-            rest_clean = _clean(rest)
-            # 截断到 2000 字符以内
-            if len(rest_clean) > 1900:
-                rest_clean = rest_clean[-1900:]
-            if rest_clean.strip(): _wx_send(rest_clean)
+
+            # ═══ 阶段2：发送最终完整回复 ═══
+            final = _clean(result)
+            if not final.strip():
+                # 清理后为空，说明全是思考过程，用原始内容兜底
+                final = _extract_answer(result)
+            if final.strip():
+                # 截断到 1900 字符（微信限制 2000）
+                if len(final) > 1900:
+                    final = final[:1900]
+                _wx_send(final)
             files = re.findall(r'\[FILE:([^\]]+)\]', result)
             bad = {'filepath', '<filepath>', 'path', '<path>', 'file_path', '<file_path>', '...'}
             files = [f for f in files if f.strip().lower() not in bad and (f if os.path.isabs(f) else os.path.join(_TEMP_DIR, f)) not in media_paths]
