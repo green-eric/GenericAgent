@@ -92,6 +92,16 @@ class WxBotClient:
                               timeout=timeout + 5)
         except requests.exceptions.ReadTimeout:
             return []
+        except (requests.exceptions.ConnectionError,
+                requests.exceptions.ChunkedEncodingError,
+                ConnectionResetError,
+                OSError) as e:
+            # 网络层异常：DNS失败/连接断开/远端关闭 → 返回空，由上层退避重连
+            print(f'[getUpdates] 网络异常: {type(e).__name__}: {e}', file=sys.__stdout__)
+            return []
+        except Exception as e:
+            print(f'[getUpdates] 未知异常: {type(e).__name__}: {e}', file=sys.__stdout__)
+            return []
         if resp.get('errcode'):
             print(f'[getUpdates] err: {resp.get("errcode")} {resp.get("errmsg","")}')
             if resp['errcode'] == -14: self._save()
@@ -222,6 +232,8 @@ class WxBotClient:
     def run_loop(self, on_message, poll_timeout=30):
         print(f'[Bot] 监听中... (bot_id={self.bot_id})')
         seen = set()
+        retry_delay = 1          # 初始退避 1s
+        max_retry_delay = 60     # 最大退避 60s
         while True:
             try:
                 for msg in self.get_updates(poll_timeout):
@@ -231,8 +243,13 @@ class WxBotClient:
                     if len(seen) > 5000: seen = set(list(seen)[-2000:])
                     try: on_message(self, msg)
                     except Exception as e: print(f'[Bot] 回调异常: {e}')
+                # 成功拉取一轮后退避重置
+                retry_delay = 1
             except KeyboardInterrupt: print('[Bot] 退出'); break
-            except Exception as e: print(f'[Bot] 异常: {e}，5s重试'); time.sleep(5)
+            except Exception as e:
+                print(f'[Bot] 异常: {type(e).__name__}: {e}，{retry_delay}s后重试', file=sys.__stdout__)
+                time.sleep(retry_delay)
+                retry_delay = min(retry_delay * 2, max_retry_delay)
 
 # ── Unified media download (IMAGE/VIDEO/FILE/VOICE) ──
 _MEDIA_KEYS = {'image_item': '.jpg', 'video_item': '.mp4', 'file_item': '', 'voice_item': '.silk'}
