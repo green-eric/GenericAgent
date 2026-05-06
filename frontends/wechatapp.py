@@ -395,11 +395,15 @@ def on_message(bot, msg):
             def _wx_send(text):
                 s = text.strip(); t0 = time.time()
                 try:
-                    bot.send_text(uid, s, context_token=ctx)
-                    print(f'[WX] send ok len={len(s)} dt={time.time()-t0:.1f}s', file=sys.__stdout__)
+                    print(f'[WX] _wx_send start len={len(s)} uid={uid[:20]} ctx={ctx[:20] if ctx else ""}', file=sys.__stdout__)
+                    result = bot.send_text(uid, s, context_token=ctx)
+                    print(f'[WX] send ok len={len(s)} dt={time.time()-t0:.1f}s result={result}', file=sys.__stdout__)
                     return True
                 except Exception as e:
+                    import traceback
+                    tb = traceback.format_exc()
                     print(f'[WX] send err len={len(s)} dt={time.time()-t0:.1f}s {type(e).__name__}: {e}', file=sys.__stdout__)
+                    print(f'[WX] send err tb:\n{tb}', file=sys.__stdout__)
                     return False
             def _send(show):
                 nonlocal mi, last_send
