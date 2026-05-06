@@ -423,26 +423,54 @@ def _clean(t):
     # Remove excessive blank lines but keep paragraph separation
     return re.sub(r'\n{3,}', '\n\n', _strip_md(t)).strip()
 
-def _turn_parts(t):
-    """只取最终完整回复，丢弃所有中间 Turn 分片"""
+def _extract_answer(t):
+    """从 agent 回复中提取最终答案，丢弃所有思考过程。
+    
+    策略：
+    1. 先按 Turn 分割，取最后一个 Turn
+    2. 在最后一个 Turn 中，找第一个 emoji 开头的行作为答案起点
+       （因为 prompt 要求用 emoji 分段，思考过程不会以 emoji 开头）
+    3. 如果找不到 emoji 分隔符，取最后 3 行（通常答案在末尾）
+    """
     _ph = []
     safe = re.sub(r'`{4,}.*?`{4,}', lambda m: (_ph.append(m.group(0)), f'\x00PH{len(_ph)-1}\x00')[1], t, flags=re.DOTALL)
     parts = re.split(r'(\**LLM Running \(Turn \d+\) \.\.\.\**)', safe)
     parts = [re.sub(r'\x00PH(\d+)\x00', lambda m: _ph[int(m.group(1))], p) for p in parts]
-    # 如果没有 Turn 标记，说明是单轮回复，直接返回
-    if len(parts) < 4:
-        cleaned = _clean(t)
-        return ([], cleaned) if cleaned.strip() else ([], '')
-    # 只取最后一个 Turn 的完整内容（最终回复），丢弃所有中间轮次
-    last_turn_idx = len(parts) - 2 if len(parts) % 2 == 0 else len(parts) - 1
-    if last_turn_idx < 1:
-        cleaned = _clean(t)
-        return ([], cleaned) if cleaned.strip() else ([], '')
-    final_content = parts[last_turn_idx]
-    # 加上最后一段（如果有）
-    if last_turn_idx + 1 < len(parts):
-        final_content += parts[last_turn_idx + 1]
-    cleaned = _clean(final_content)
+    # 取最后一个 Turn 的内容
+    if len(parts) >= 4:
+        last_idx = len(parts) - 2 if len(parts) % 2 == 0 else len(parts) - 1
+        if last_idx >= 1:
+            content = parts[last_idx]
+            if last_idx + 1 < len(parts):
+                content += parts[last_idx + 1]
+        else:
+            content = t
+    else:
+        content = t
+    # 找第一个 emoji 开头的行作为答案起点
+    lines = content.split('\n')
+    answer_start = 0
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        # emoji 开头 或 📊📈💡🔥⚠️ 等常见分段标记
+        if stripped and (re.match(r'^[📊📈💡🔥⚠️✅❌🔴🟢⭐🏆📉💰🎯🔍📰]', stripped) or
+                         re.match(r'^[①②③④⑤⑥⑦⑧⑨⑩]', stripped) or
+                         re.match(r'^[\-\•\·]\s', stripped) or
+                         re.match(r'^\d+[\.\、]', stripped)):
+            answer_start = i
+            break
+    if answer_start > 0:
+        content = '\n'.join(lines[answer_start:])
+    # 如果内容还是太长（>600字），只取前 600 字
+    if len(content) > 600:
+        content = content[:600]
+    return content
+
+
+def _turn_parts(t):
+    """只取最终完整回复，丢弃所有中间 Turn 分片"""
+    final = _extract_answer(t)
+    cleaned = _clean(final)
     return ([], cleaned) if cleaned.strip() else ([], '')
 
 def _progress_hint(turn_idx, total_turns):
@@ -479,19 +507,16 @@ def on_message(bot, msg):
 
     def _handle():
         try:
-            # 优化 prompt：最快速度回复，限制轮次
+            # 极简 prompt：指令 agent 直接输出最终答案，不输出任何中间过程
             sys_hint = (
-                "【回复规则-最高优先级】\n"
-                "1. 速度第一！最多搜索1次，直接给出答案\n"
-                "2. 搜索用新浪财经API: https://hq.sinajs.cn/list=sh000001,sz399006\n"
-                "   东方财富API: https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=5&po=1&np=1&fltt=2&invt=2&fid=f3&fs=m:90+t:3&fields=f2,f3,f12,f14\n"
-                "3. 如果搜索失败，用已有知识回答，不要重试\n"
-                "4. 格式：emoji分段，每段2-3行，手机友好\n"
-                "5. 股票推荐：代码+名称+一句话理由，最多5只\n"
-                "6. 不要用markdown表格，不要输出结束标记\n"
-                "7. 总回复不超过800字\n"
+                "【系统指令-必须遵守】\n"
+                "你是直接回复用户的助手。\n"
+                "禁止输出：思考过程、分析步骤、规则引用、工具调用描述、搜索结果原文、英文推理。\n"
+                "只输出：最终答案本身。\n"
+                "格式：emoji分段，每段2-3行，手机友好，不超过500字。\n"
+                "如果搜索失败，直接用知识回答，不要说明搜索失败。"
             )
-            prompt = text if text.startswith('/') else f"{sys_hint}\n\n{text}"
+            prompt = text if text.startswith('/') else f"{sys_hint}\n\n用户问题：{text}"
             dq = agent.put_task(prompt, source="wechat")
             try: bot.send_typing(uid)
             except: pass
