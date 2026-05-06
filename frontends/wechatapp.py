@@ -3,6 +3,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 import requests, qrcode
+from requests.adapters import HTTPAdapter
 import socket as _socket
 
 _API_HOST = 'ilinkai.weixin.qq.com'
@@ -35,6 +36,12 @@ class WxBotClient:
         self.token = token
         self.bot_id = None
         self._buf = ''
+        # 复用 Session：连接池 + 自动重试，避免每次新建 TCP 连接被代理关闭
+        self._session = requests.Session()
+        adapter = HTTPAdapter(pool_connections=5, pool_maxsize=10,
+                              max_retries=3, pool_block=False)
+        self._session.mount('https://', adapter)
+        self._session.mount('http://', adapter)
         if not self.token: self._load()
 
     def _load(self):
@@ -53,10 +60,13 @@ class WxBotClient:
              'Content-Length': str(len(data)), 'X-WECHAT-UIN': _uin(),
              'iLink-App-Id': ILINK_APP_ID,
              'iLink-App-ClientVersion': str(ILINK_APP_CLIENT_VERSION),
-             'User-Agent': UA}
+             'User-Agent': UA,
+             'Connection': 'keep-alive'}
         tok = (self.token or '').strip()
         if tok: h['Authorization'] = f'Bearer {tok}'
-        r = requests.post(f'{API}/{ep}', data=data, headers=h, timeout=timeout)
+        # 分离 connect timeout 和 read timeout，避免代理长连接被远端关闭
+        t = (min(timeout, 10), timeout) if isinstance(timeout, (int, float)) else timeout
+        r = self._session.post(f'{API}/{ep}', data=data, headers=h, timeout=t)
         r.raise_for_status()
         return r.json()
 
@@ -86,10 +96,11 @@ class WxBotClient:
 
     def get_updates(self, timeout=30):
         try:
+            # 固定 read timeout=35，避免代理长连接被远端关闭（之前 timeout+5=35 但 connect timeout 也=35）
             resp = self._post('ilink/bot/getupdates',
                               {'get_updates_buf': self._buf or '',
                                'base_info': {}},
-                              timeout=timeout + 5)
+                              timeout=35)
         except requests.exceptions.ReadTimeout:
             return []
         except (requests.exceptions.ConnectionError,
@@ -234,6 +245,7 @@ class WxBotClient:
         seen = set()
         retry_delay = 1          # 初始退避 1s
         max_retry_delay = 60     # 最大退避 60s
+        consec_fail = 0          # 连续失败计数
         while True:
             try:
                 for msg in self.get_updates(poll_timeout):
@@ -244,10 +256,26 @@ class WxBotClient:
                     try: on_message(self, msg)
                     except Exception as e: print(f'[Bot] 回调异常: {e}')
                 # 成功拉取一轮后退避重置
+                if consec_fail > 0:
+                    print(f'[Bot] 连接恢复，连续失败 {consec_fail} 次后成功')
+                consec_fail = 0
                 retry_delay = 1
             except KeyboardInterrupt: print('[Bot] 退出'); break
             except Exception as e:
-                print(f'[Bot] 异常: {type(e).__name__}: {e}，{retry_delay}s后重试', file=sys.__stdout__)
+                consec_fail += 1
+                print(f'[Bot] 异常(连续第{consec_fail}次): {type(e).__name__}: {e}，{retry_delay}s后重试', file=sys.__stdout__)
+                # 连续失败 5 次以上，重建 Session 清除脏连接
+                if consec_fail >= 5 and consec_fail % 5 == 0:
+                    print(f'[Bot] 连续失败{consec_fail}次，重建 Session...')
+                    try:
+                        self._session.close()
+                    except Exception:
+                        pass
+                    self._session = requests.Session()
+                    from requests.adapters import HTTPAdapter
+                    adapter = HTTPAdapter(pool_connections=5, pool_maxsize=10, max_retries=3, pool_block=False)
+                    self._session.mount('https://', adapter)
+                    self._session.mount('http://', adapter)
                 time.sleep(retry_delay)
                 retry_delay = min(retry_delay * 2, max_retry_delay)
 
