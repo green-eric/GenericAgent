@@ -479,20 +479,17 @@ def on_message(bot, msg):
 
     def _handle():
         try:
-            # 优化 prompt：约束 agent 减少轮次，输出手机+电脑自适应格式
+            # 优化 prompt：最快速度回复，限制轮次
             sys_hint = (
-                "【回复规则】\n"
-                "1. 直接给出最终答案，不要分步输出中间思考过程\n"
-                "2. 搜索/工具调用尽量合并，减少轮次，目标3轮内完成\n"
-                "3. 格式要求（手机+电脑自适应）：\n"
-                "   - 每段不超过3行，段落间空一行\n"
-                "   - 用 emoji 作为段落标记（📊📈💡🔥⚠️等）\n"
-                "   - 数据用简洁列表，不要宽表格（手机显示会乱）\n"
-                "   - 股票推荐：代码+名称+一句话理由\n"
-                "   - 不要用 markdown 表格\n"
-                "4. 回复长度控制在 1200 字以内\n"
-                "5. 如果需要 K 线图，用 [FILE:filepath] 标记\n"
-                "6. 不要输出任何结束标记（如'回复完成'等）\n"
+                "【回复规则-最高优先级】\n"
+                "1. 速度第一！最多搜索1次，直接给出答案\n"
+                "2. 搜索用新浪财经API: https://hq.sinajs.cn/list=sh000001,sz399006\n"
+                "   东方财富API: https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=5&po=1&np=1&fltt=2&invt=2&fid=f3&fs=m:90+t:3&fields=f2,f3,f12,f14\n"
+                "3. 如果搜索失败，用已有知识回答，不要重试\n"
+                "4. 格式：emoji分段，每段2-3行，手机友好\n"
+                "5. 股票推荐：代码+名称+一句话理由，最多5只\n"
+                "6. 不要用markdown表格，不要输出结束标记\n"
+                "7. 总回复不超过800字\n"
             )
             prompt = text if text.startswith('/') else f"{sys_hint}\n\n{text}"
             dq = agent.put_task(prompt, source="wechat")
@@ -521,17 +518,26 @@ def on_message(bot, msg):
                 if _wx_send(show[:2000]): mi += 1; last_send = time.time(); return True
                 return False
             try:
+                max_turns = 5  # 最多5轮，防止无限循环
+                turn_count = 0
                 while True:
-                    item = dq.get(timeout=300)
+                    item = dq.get(timeout=60)  # 60s超时（从300s缩短）
                     if 'done' in item: result = item['done']; break
                     raw = item.get('next', '')
                     done, partial = _turn_parts(raw)
+                    turn_count += 1
                     if len(done) > sent:
                         merged = _clean('\n\n'.join(done[sent:]))
                         print(f'[WX] turns={len(done)}/{len(done)+1} sent={sent} sending={len(done)-sent}', file=sys.__stdout__)
                         if _send(merged):
                             sent = len(done)
-            except queue.Empty: result = '⏰ 响应超时，请稍后重试'
+                    if turn_count >= max_turns:
+                        print(f'[WX] 达到最大轮次{max_turns}，强制结束', file=sys.__stdout__)
+                        result = '\n\n'.join(done + [partial])
+                        break
+            except queue.Empty:
+                result = '⏰ 响应超时，请稍后重试'
+                print('[WX] agent 60s 超时', file=sys.__stdout__)
             done, partial = _turn_parts(result)
             # Build final response - 手机端友好格式
             rest = '\n\n'.join(done[sent:] + [partial])
