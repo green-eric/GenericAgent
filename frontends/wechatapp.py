@@ -83,6 +83,52 @@ class WxBotClient:
                 return s
             if st == 'expired': raise RuntimeError('二维码过期')
 
+    def login_qr_nonblocking(self):
+        """获取二维码并保存到文件，返回 qr_id。不阻塞主循环。"""
+        try:
+            r = requests.get(f'{API}/ilink/bot/get_bot_qrcode',
+                             params={'bot_type': 3}, headers={'User-Agent': UA}, timeout=10)
+            r.raise_for_status()
+            d = r.json()
+            qr_id, url = d['qrcode'], d.get('qrcode_img_content', '')
+            print(f'[QR] ID: {qr_id}', file=sys.__stdout__)
+            if url:
+                img_path = str(self._tf.parent / 'wx_qr_relogin.png')
+                qrcode.make(url).save(img_path)
+                print(f'[QR] 二维码已保存: {img_path}', file=sys.__stdout__)
+            return qr_id, url
+        except Exception as e:
+            print(f'[QR] 获取失败: {e}', file=sys.__stdout__)
+            return None, None
+
+    def poll_qr_status(self, qr_id, max_wait=120):
+        """非阻塞轮询二维码状态，超时返回 None"""
+        deadline = time.time() + max_wait
+        last = ''
+        while time.time() < deadline:
+            time.sleep(3)
+            try:
+                s = requests.get(f'{API}/ilink/bot/get_qrcode_status',
+                                 params={'qrcode': qr_id},
+                                 headers={'User-Agent': UA}, timeout=60).json()
+            except requests.exceptions.ReadTimeout:
+                continue
+            st = s.get('status', '')
+            if st != last:
+                print(f'[QR] 状态: {st}', file=sys.__stdout__)
+                last = st
+            if st == 'confirmed':
+                self.token = s.get('bot_token', '')
+                self.bot_id = s.get('ilink_bot_id', '')
+                self._save(login_time=time.strftime('%Y-%m-%d %H:%M:%S'))
+                print(f'[QR] 登录成功! bot_id={self.bot_id}', file=sys.__stdout__)
+                return True
+            if st == 'expired':
+                print(f'[QR] 二维码过期', file=sys.__stdout__)
+                return False
+        print(f'[QR] 超时', file=sys.__stdout__)
+        return False
+
     def get_updates(self, timeout=30):
         try:
             resp = self._post('ilink/bot/getupdates',
@@ -92,8 +138,13 @@ class WxBotClient:
         except requests.exceptions.ReadTimeout:
             return []
         if resp.get('errcode'):
-            print(f'[getUpdates] err: {resp.get("errcode")} {resp.get("errmsg","")}')
-            if resp['errcode'] == -14: self._save()
+            print(f'[getUpdates] err: {resp.get("errcode")} {resp.get("errmsg","")}', file=sys.__stdout__)
+            if resp['errcode'] == -14:
+                # Token 过期，设置标记，由 run_loop 处理重新登录
+                print('[getUpdates] Token 过期，需要重新登录', file=sys.__stdout__)
+                self._buf = ''
+                self._save()
+                self._token_expired = True
             return []
         nb = resp.get('get_updates_buf', '')
         if nb: self._buf = nb; self._save()
@@ -217,19 +268,46 @@ class WxBotClient:
     def is_user_msg(msg): return msg.get('message_type') == MSG_USER
 
     def run_loop(self, on_message, poll_timeout=30):
-        print(f'[Bot] 监听中... (bot_id={self.bot_id})')
+        print(f'[Bot] 监听中... (bot_id={self.bot_id})', file=sys.__stdout__)
         seen = set()
+        self._token_expired = False
         while True:
             try:
+                # Token 过期时自动重登录（非阻塞）
+                if getattr(self, '_token_expired', False):
+                    print('[Bot] 检测到 token 过期，获取二维码...', file=sys.__stdout__)
+                    self._token_expired = False
+                    qr_id, qr_url = self.login_qr_nonblocking()
+                    if qr_id:
+                        # 发二维码图片给最近联系的用户
+                        qr_img = str(self._tf.parent / 'wx_qr_relogin.png')
+                        for uid in list(seen)[-5:]:
+                            try:
+                                self.send_image(uid, qr_img)
+                                self.send_text(uid, '🔑 Token 已过期，请扫码重新登录')
+                            except: pass
+                        # 等待扫码
+                        ok = self.poll_qr_status(qr_id, max_wait=120)
+                        if ok:
+                            print('[Bot] 重登录成功，恢复监听', file=sys.__stdout__)
+                        else:
+                            print('[Bot] 扫码超时，60s后重试', file=sys.__stdout__)
+                            time.sleep(60)
+                            self._token_expired = True
+                            continue
+                    else:
+                        time.sleep(30)
+                        self._token_expired = True
+                        continue
                 for msg in self.get_updates(poll_timeout):
                     mid = msg.get('message_id', 0)
                     if not self.is_user_msg(msg) or mid in seen: continue
                     seen.add(mid)
                     if len(seen) > 5000: seen = set(list(seen)[-2000:])
                     try: on_message(self, msg)
-                    except Exception as e: print(f'[Bot] 回调异常: {e}')
-            except KeyboardInterrupt: print('[Bot] 退出'); break
-            except Exception as e: print(f'[Bot] 异常: {e}，5s重试'); time.sleep(5)
+                    except Exception as e: print(f'[Bot] 回调异常: {e}', file=sys.__stdout__)
+            except KeyboardInterrupt: print('[Bot] 退出', file=sys.__stdout__); break
+            except Exception as e: print(f'[Bot] 异常: {e}，5s重试', file=sys.__stdout__); time.sleep(5)
 
 # ── Unified media download (IMAGE/VIDEO/FILE/VOICE) ──
 _MEDIA_KEYS = {'image_item': '.jpg', 'video_item': '.mp4', 'file_item': '', 'voice_item': '.silk'}
