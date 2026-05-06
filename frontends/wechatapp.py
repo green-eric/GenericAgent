@@ -315,7 +315,7 @@ def _clean(t):
     t = re.sub(r'^\s*(调用工具\w+|读取文件\s+\S+|写入文件\s+\S+|执行脚本\s+\S+).*$', '', t, flags=re.M)
     # Remove 🔧 web tool call lines (web_scan, web_execute_js, etc.)
     t = re.sub(r'^\s*🔧\s*\w+\(.*$', '', t, flags=re.M)
-    # Remove driver/CDP/executing/timeout/error log lines (match anywhere in line start)
+    # Remove driver/CDP/executing/timeout/error log lines
     t = re.sub(r'^\s*(\[Driver\].*|\[CDP\].*|\[Timeout.*\].*|Executing:.*|Timeout Error.*|Error:.*|Traceback.*)$', '', t, flags=re.M)
     # Remove args: lines (tool call parameters)
     t = re.sub(r'^\s*args:\s*\{.*$', '', t, flags=re.M)
@@ -329,33 +329,47 @@ def _clean(t):
         t = re.sub(p, '', t, flags=re.DOTALL)
     # Remove lines that are just tool metadata
     t = re.sub(r'^\s*["\'](exit_code|stdout|stderr)["\'].*$', '', t, flags=re.M)
-    # Remove ⏳ progress bar lines (keep only the first one per response, remove duplicates)
-    # First, remove all but the first ⏳ line
-    progress_lines = [(m.start(), m.group()) for m in re.finditer(r'^⏳.*$', t, flags=re.M)]
-    if len(progress_lines) > 1:
-        # Keep first, remove rest (reverse order to preserve offsets)
-        for pos, text in reversed(progress_lines[1:]):
-            t = t[:pos] + t[pos + len(text):]
+    # ═══ 新增：过滤 agent 中间思考过程 ═══
+    # 移除 ⏳ 进度条行（全部移除，不需要发给用户）
+    t = re.sub(r'^\s*⏳.*$', '', t, flags=re.M)
+    # 移除 "I'll search for..." / "Let me..." / "I need to..." 等英文思考行
+    t = re.sub(r"^\s*(I'll|I'm|Let me|I need to|I will|I can|I should|I've|We need to)\s+.*$", '', t, flags=re.M)
+    # 移除 "抱歉，我重新来" / "抱歉！我忘了" / "让我先查看" 等自我纠正行
+    t = re.sub(r'^\s*(抱歉[，！!]?.*|让我先.*|重新来|重新执行|重新搜索).*$', '', t, flags=re.M)
+    # 移除 "好的，这个任务比较简单" / "不需要走" 等内部判断行
+    t = re.sub(r'^\s*(好的[，,]?.*|不需要走|直接搜索|直接执行|这个任务).*$', '', t, flags=re.M)
+    # 移除 "首先" / "其次" / "最后" 等内部规划行（如果后面跟的是工具调用描述）
+    t = re.sub(r'^\s*(首先|其次|最后|然后|接着)\s+(调用|读取|写入|搜索|查看|执行).*$', '', t, flags=re.M)
+    # 移除空白的工具调用结果行
+    t = re.sub(r'^\s*工具调用结果.*$', '', t, flags=re.M)
     # Remove excessive blank lines but keep paragraph separation
     return re.sub(r'\n{3,}', '\n\n', _strip_md(t)).strip()
 
 def _turn_parts(t):
+    """只取最终完整回复，丢弃所有中间 Turn 分片"""
     _ph = []
     safe = re.sub(r'`{4,}.*?`{4,}', lambda m: (_ph.append(m.group(0)), f'\x00PH{len(_ph)-1}\x00')[1], t, flags=re.DOTALL)
     parts = re.split(r'(\**LLM Running \(Turn \d+\) \.\.\.\**)', safe)
     parts = [re.sub(r'\x00PH(\d+)\x00', lambda m: _ph[int(m.group(1))], p) for p in parts]
-    if len(parts) < 4: return [], t
-    turns = [parts[i] + (parts[i+1] if i+1 < len(parts) else '') for i in range(1, len(parts), 2)]
-    return (([parts[0]] if parts[0].strip() else []) + turns[:-1], turns[-1])
+    # 如果没有 Turn 标记，说明是单轮回复，直接返回
+    if len(parts) < 4:
+        cleaned = _clean(t)
+        return ([], cleaned) if cleaned.strip() else ([], '')
+    # 只取最后一个 Turn 的完整内容（最终回复），丢弃所有中间轮次
+    last_turn_idx = len(parts) - 2 if len(parts) % 2 == 0 else len(parts) - 1
+    if last_turn_idx < 1:
+        cleaned = _clean(t)
+        return ([], cleaned) if cleaned.strip() else ([], '')
+    final_content = parts[last_turn_idx]
+    # 加上最后一段（如果有）
+    if last_turn_idx + 1 < len(parts):
+        final_content += parts[last_turn_idx + 1]
+    cleaned = _clean(final_content)
+    return ([], cleaned) if cleaned.strip() else ([], '')
 
 def _progress_hint(turn_idx, total_turns):
-    """Generate a brief progress hint for multi-turn responses."""
-    if total_turns <= 1:
-        return ''
-    bar_len = 10
-    filled = min(bar_len, int((turn_idx / total_turns) * bar_len))
-    bar = '█' * filled + '░' * (bar_len - filled)
-    return f'⏳ 思考中 {bar} {turn_idx}/{total_turns}'
+    """进度提示不再发给用户，返回空"""
+    return ''
 
 def on_message(bot, msg):
     text = bot.extract_text(msg).strip()
@@ -409,7 +423,8 @@ def on_message(bot, msg):
                 nonlocal mi, last_send
                 now = time.time()
                 if mi >= 9 or not show.strip(): return False
-                if mi and now - last_send < 6 * mi: return None
+                # 限速：第一条立即发，后续每条间隔 2 秒
+                if mi and now - last_send < 2: return None
                 if _wx_send(show[:2000]): mi += 1; last_send = time.time(); return True
                 return False
             try:
