@@ -34,6 +34,7 @@ tasks/
 *.zip
 
 memory/*
+!memory/__init__.py
 !memory/memory_management_sop.md
 
 # Allow tracking of specific SOPs
@@ -105,3 +106,6 @@ reflect/*
 
 # Universal: never track __pycache__ anywhere
 **/__pycache__/
+
+# Temp QR / login artifacts
+wx_qr_*
