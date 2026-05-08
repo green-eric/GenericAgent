@@ -15,6 +15,8 @@ EXCLUDE_DIRS = {".git", "__pycache__", "node_modules", "L4_raw_sessions"}
 EXCLUDE_EXTS = {".pyc", ".pyo", ".bak", ".tmp", ".log"}
 EXCLUDE_FILES = {"auto_git_commit.py"}
 WATCH_EXTS = {".py", ".md", ".txt", ".json", ".yaml", ".yml", ".toml", ".cfg", ".ini", ".bat", ".ps1", ".vbs"}
+# 关键修复：所有 subprocess 强制不弹 CMD 窗口
+NO_WINDOW = 0x08000000  # CREATE_NO_WINDOW
 
 logging.basicConfig(
     level=logging.INFO,
@@ -28,7 +30,7 @@ logging.basicConfig(
 log = logging.getLogger("auto-git")
 
 def git(*args):
-    r = subprocess.run(["git"] + list(args), capture_output=True, text=True, encoding="utf-8", cwd=WATCH_ROOT)
+    r = subprocess.run(["git"] + list(args), capture_output=True, text=True, encoding="utf-8", cwd=WATCH_ROOT, creationflags=NO_WINDOW)
     return r.stdout.strip(), r.stderr.strip(), r.returncode
 
 def should_watch(filepath):

@@ -52,9 +52,16 @@ def get_history(n: int = 20) -> str:
     return "".join(lines[:n])
 
 
-def set_todo(*args, **kwargs) -> str:
-    """返回 TODO.txt 的真实绝对路径，供 agent/子agent 自行读写。"""
-    return f'路径: {str(_TODO_FILE)}'
+def set_todo(content: str = None) -> str:
+    """
+    将 content 写入 TODO.txt。若 content 为空则返回当前内容。
+    返回值: 写入确认或当前TODO内容。
+    """
+    if content is None:
+        return get_todo()
+    with open(_TODO_FILE, "w", encoding="utf-8") as f:
+        f.write(content)
+    return f"✅ TODO已写入: {_TODO_FILE}"
 
 
 def complete_task(taskname: str, historyline: str, report_path: str) -> str:

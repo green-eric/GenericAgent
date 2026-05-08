@@ -2,6 +2,23 @@ import os, sys, re, threading, queue, time, socket, json, struct, base64, uuid, 
 from pathlib import Path
 from urllib.parse import quote
 
+# ── 自启动日志重定向（pythonw.exe 无 stdout/stderr，手动重定向到文件）──
+_LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'temp')
+os.makedirs(_LOG_DIR, exist_ok=True)
+_logf = open(os.path.join(_LOG_DIR, 'wechatbot_stdout.log'), 'a', encoding='utf-8')
+_logf_err = open(os.path.join(_LOG_DIR, 'wechatbot_stderr.log'), 'a', encoding='utf-8')
+sys.stdout = _logf
+sys.stderr = _logf_err
+sys.__stdout__ = _logf
+sys.__stderr__ = _logf_err
+# Override print to always use UTF-8 log file, never fallback to GBK console
+_builtin_print = print
+def print(*args, file=None, **kwargs):
+    if file is None or file is sys.__stdout__ or file is sys.__stderr__:
+        file = _logf
+    _builtin_print(*args, file=file, **kwargs)
+print(f'[{time.strftime("%Y-%m-%d %H:%M:%S")}] wechatapp.py 启动，日志重定向已生效', file=sys.stdout)
+
 # ── 启动时自动清理 .pyc 缓存，确保加载最新代码 ──
 for _d in [os.path.dirname(os.path.abspath(__file__)),
            os.path.dirname(os.path.dirname(os.path.abspath(__file__)))]:
@@ -51,24 +68,81 @@ class WxBotClient:
         if self._tf.exists():
             d = json.loads(self._tf.read_text('utf-8'))
             self.token, self.bot_id, self._buf = d.get('bot_token',''), d.get('ilink_bot_id',''), d.get('updates_buf','')
+            self._login_time = d.get('login_time', '')  # 记录登录时间用于过期检测
+            self._admin_notify_uid = d.get('admin_notify_uid', '')  # 恢复通知用户
+            self._admin_uid_saved = bool(self._admin_notify_uid)
 
     def _save(self, **kw):
+        # ★ 保留已持久化的关键字段，防止被无参 _save() 覆盖丢失
+        existing = {}
+        if self._tf.exists():
+            try:
+                existing = json.loads(self._tf.read_text('utf-8'))
+            except Exception:
+                pass
         d = {'bot_token': self.token or '', 'ilink_bot_id': self.bot_id or '',
-             'updates_buf': self._buf or '', **kw}
+             'updates_buf': self._buf or '', 'saved_at': time.strftime('%Y-%m-%d %H:%M:%S')}
+        # 持久化 login_time
+        lt = kw.pop('login_time', None) or getattr(self, '_login_time', '') or existing.get('login_time', '')
+        if lt:
+            d['login_time'] = lt
+        # 持久化 admin_notify_uid（优先内存中的，否则保留已有的）
+        anu = kw.pop('admin_notify_uid', None) or getattr(self, '_admin_notify_uid', '') or existing.get('admin_notify_uid', '')
+        if anu:
+            d['admin_notify_uid'] = anu
+        d.update(kw)
         self._tf.write_text(json.dumps(d, ensure_ascii=False, indent=2), 'utf-8')
 
+    def _token_age_hours(self):
+        """返回token已登录的小时数，无记录返回-1"""
+        if not getattr(self, '_login_time', ''):
+            return -1
+        try:
+            lt = time.mktime(time.strptime(self._login_time, '%Y-%m-%d %H:%M:%S'))
+            return (time.time() - lt) / 3600
+        except Exception:
+            return -1
+
+    def _token_near_expiry(self, threshold_hours=20):
+        """token是否接近过期（默认20小时，微信token通常24小时过期）"""
+        age = self._token_age_hours()
+        return age >= 0 and age >= threshold_hours
+
     def _post(self, ep, body, timeout=15):
+        tok = (self.token or '').strip()
+        if not tok:
+            print(f'[POST] 无 token，拒绝请求 {ep}', file=sys.__stderr__)
+            return {'errcode': -1, 'errmsg': 'no_token', 'endpoint': ep}
         data = json.dumps(body, ensure_ascii=False, separators=(',', ':')).encode('utf-8')
         h = {'Content-Type': 'application/json', 'AuthorizationType': 'ilink_bot_token',
              'Content-Length': str(len(data)), 'X-WECHAT-UIN': _uin(),
              'iLink-App-Id': ILINK_APP_ID,
              'iLink-App-ClientVersion': str(ILINK_APP_CLIENT_VERSION),
-             'User-Agent': UA}
-        tok = (self.token or '').strip()
-        if tok: h['Authorization'] = f'Bearer {tok}'
-        r = requests.post(f'{API}/{ep}', data=data, headers=h, timeout=timeout)
-        r.raise_for_status()
-        return r.json()
+             'User-Agent': UA,
+             'Authorization': f'Bearer {tok}'}
+        try:
+            r = requests.post(f'{API}/{ep}', data=data, headers=h, timeout=timeout)
+            r.raise_for_status()
+            resp = r.json()
+            # 检查业务层错误码
+            ec = resp.get('errcode')
+            if ec and ec != 0:
+                em = resp.get('errmsg', '')
+                print(f'[POST] {ep} 业务错误: errcode={ec} errmsg={em}', file=sys.__stderr__)
+                if ec == -14:
+                    self._token_expired = True
+                    self._buf = ''
+                    self._save()
+            return resp
+        except requests.exceptions.Timeout:
+            print(f'[POST] {ep} 超时 (> {timeout}s)', file=sys.__stderr__)
+            return {'errcode': -2, 'errmsg': 'timeout', 'endpoint': ep}
+        except requests.exceptions.ConnectionError as e:
+            print(f'[POST] {ep} 连接错误: {e}', file=sys.__stderr__)
+            return {'errcode': -3, 'errmsg': 'connection_error', 'endpoint': ep}
+        except Exception as e:
+            print(f'[POST] {ep} 未知错误: {type(e).__name__}: {e}', file=sys.__stderr__)
+            return {'errcode': -99, 'errmsg': str(e), 'endpoint': ep}
 
     def login_qr(self, poll_interval=2):
         r = requests.get(f'{API}/ilink/bot/get_bot_qrcode', params={'bot_type': 3}, headers={'User-Agent': UA}, timeout=10)
@@ -102,18 +176,36 @@ class WxBotClient:
             r.raise_for_status()
             d = r.json()
             qr_id, url = d['qrcode'], d.get('qrcode_img_content', '')
-            print(f'[QR] ID: {qr_id}', file=sys.__stdout__)
+            # 用日志文件输出（pythonw下sys.__stdout__为None）
+            _out = sys.__stdout__ if sys.__stdout__ else sys.stdout
+            print(f'[QR] ID: {qr_id}', file=_out)
             if url:
+                # 保存到项目目录
                 img_path = str(self._tf.parent / 'wx_qr_relogin.png')
                 qrcode.make(url).save(img_path)
-                print(f'[QR] 二维码已保存: {img_path}', file=sys.__stdout__)
+                # 同时复制到桌面（方便手动扫码，用 copy 避免重复生成）
+                try:
+                    desktop = Path.home() / 'Desktop' / 'wx_qr_relogin.png'
+                    import shutil as _sh
+                    _sh.copy2(img_path, str(desktop))
+                    print(f'[QR] 二维码已保存: {img_path} + 桌面', file=_out)
+                except Exception:
+                    print(f'[QR] 二维码已保存: {img_path}', file=_out)
             return qr_id, url
         except Exception as e:
-            print(f'[QR] 获取失败: {e}', file=sys.__stdout__)
+            _out = sys.__stdout__ if sys.__stdout__ else sys.stdout
+            print(f'[QR] 获取失败: {e}', file=_out)
             return None, None
 
-    def poll_qr_status(self, qr_id, max_wait=120):
-        """非阻塞轮询二维码状态，超时返回 None"""
+    def _on_login_success(self):
+        """登录成功后统一记录时间戳"""
+        self._login_time = time.strftime('%Y-%m-%d %H:%M:%S')
+        self._save(login_time=self._login_time)
+        self._token_expired = False
+        print(f'[Bot] token刷新成功，登录时间: {self._login_time}', file=sys.__stdout__)
+
+    def poll_qr_status(self, qr_id, max_wait=180):
+        """非阻塞轮询二维码状态，超时返回 False"""
         deadline = time.time() + max_wait
         last = ''
         while time.time() < deadline:
@@ -131,13 +223,13 @@ class WxBotClient:
             if st == 'confirmed':
                 self.token = s.get('bot_token', '')
                 self.bot_id = s.get('ilink_bot_id', '')
-                self._save(login_time=time.strftime('%Y-%m-%d %H:%M:%S'))
+                self._on_login_success()
                 print(f'[QR] 登录成功! bot_id={self.bot_id}', file=sys.__stdout__)
                 return True
             if st == 'expired':
                 print(f'[QR] 二维码过期', file=sys.__stdout__)
                 return False
-        print(f'[QR] 超时', file=sys.__stdout__)
+        print(f'[QR] 超时（{max_wait}s）', file=sys.__stdout__)
         return False
 
     def get_updates(self, timeout=30):
@@ -279,42 +371,83 @@ class WxBotClient:
     def is_user_msg(msg): return msg.get('message_type') == MSG_USER
 
     def run_loop(self, on_message, poll_timeout=30):
-        print(f'[Bot] 监听中... (bot_id={self.bot_id})', file=sys.__stdout__)
+        _out = sys.__stdout__ if sys.__stdout__ else sys.stdout
+        print(f'[Bot] 监听中... (bot_id={self.bot_id})', file=_out)
         seen = set()
-        self._token_expired = False
+        self._token_expired = getattr(self, '_token_expired', False)
+        _relogin_attempts = 0  # 连续重登失败次数（指数退避）
         while True:
             try:
+                # Token 快过期时提前刷新（非阻塞）
+                if not getattr(self, '_token_expired', False) and self._token_near_expiry(threshold_hours=20):
+                    age = self._token_age_hours()
+                    print(f'[Bot] Token 已 {age:.1f}h，接近过期，提前刷新...', file=_out)
+                    self._token_expired = True
+
                 # Token 过期时自动重登录（非阻塞）
                 if getattr(self, '_token_expired', False):
-                    print('[Bot] 检测到 token 过期，获取二维码...', file=sys.__stdout__)
-                    self._token_expired = False
+                    print('[Bot] 检测到 token 过期，获取二维码...', file=_out)
                     qr_id, qr_url = self.login_qr_nonblocking()
-                    if qr_id:
-                        # 发二维码图片给最近联系的用户
-                        qr_img = str(self._tf.parent / 'wx_qr_relogin.png')
-                        for uid in list(seen)[-5:]:
-                            try:
-                                self.send_image(uid, qr_img)
-                                self.send_text(uid, '🔑 Token 已过期，请扫码重新登录')
-                            except: pass
-                        # 等待扫码
-                        ok = self.poll_qr_status(qr_id, max_wait=120)
-                        if ok:
-                            print('[Bot] 重登录成功，恢复监听', file=sys.__stdout__)
-                        else:
-                            print('[Bot] 扫码超时，60s后重试', file=sys.__stdout__)
-                            time.sleep(60)
-                            self._token_expired = True
-                            continue
-                    else:
+                    if not qr_id:
+                        print('[Bot] 获取二维码失败，30s后重试', file=_out)
                         time.sleep(30)
-                        self._token_expired = True
+                        continue
+                    # 发二维码给指定通知用户（优先）+ seen列表兜底
+                    qr_img = str(self._tf.parent / 'wx_qr_relogin.png')
+                    notify_uids = []
+                    # 从token文件读指定通知用户
+                    try:
+                        tf_data = json.loads(self._tf.read_text('utf-8'))
+                        admin_uid = tf_data.get('admin_notify_uid', '')
+                        if admin_uid:
+                            notify_uids.append(admin_uid)
+                    except Exception:
+                        pass
+                    # 兜底：发给最近的用户
+                    notify_uids += list(seen)[-3:]
+                    sent = False
+                    for uid in notify_uids:
+                        try:
+                            self.send_image(uid, qr_img)
+                            self.send_text(uid, 'Token 已过期/即将过期，请扫码重新登录\n扫码后请回复任意消息确认')
+                            sent = True
+                            print(f'[Bot] 二维码已发给: {uid}', file=_out)
+                        except Exception as e:
+                            print(f'[Bot] 发给 {uid} 失败: {e}', file=_out)
+                    if not sent:
+                        # 自动打开二维码图片
+                        try:
+                            webbrowser.open(qr_img)
+                            print('[Bot] 未能发送二维码，已自动打开图片，请手动扫码', file=_out)
+                        except Exception:
+                            print('[Bot] 未能发送二维码给任何用户，请查看 D:\GenericAgent\wx_qr_relogin.png', file=_out)
+                    # 等待扫码（180s）
+                    ok = self.poll_qr_status(qr_id, max_wait=180)
+                    if ok:
+                        print('[Bot] 重登录成功，恢复监听', file=_out)
+                        self._token_expired = False
+                        _relogin_attempts = 0
+                    else:
+                        # 指数退避：60s → 120s → 240s → 480s（最大8分钟）
+                        wait = min(60 * (2 ** _relogin_attempts), 480)
+                        _relogin_attempts += 1
+                        print(f'[Bot] 扫码超时，{wait}s后重试（第{_relogin_attempts}次）', file=sys.__stdout__)
+                        time.sleep(wait)
+                        # _token_expired 保持 True，下次循环继续重登
                         continue
                 for msg in self.get_updates(poll_timeout):
                     mid = msg.get('message_id', 0)
                     if not self.is_user_msg(msg) or mid in seen: continue
                     seen.add(mid)
                     if len(seen) > 5000: seen = set(list(seen)[-2000:])
+                    # 自动检测并保存user_id（首次收到消息时）
+                    from_uid = msg.get('from_user_id', '')
+                    if from_uid and not getattr(self, '_admin_uid_saved', False):
+                        self._admin_uid_saved = True
+                        try:
+                            self._save(admin_notify_uid=from_uid)
+                            print(f'[Bot] 已自动保存admin_notify_uid: {from_uid}', file=sys.__stdout__)
+                        except Exception: pass
                     try: on_message(self, msg)
                     except Exception as e: print(f'[Bot] 回调异常: {e}', file=sys.__stdout__)
             except KeyboardInterrupt: print('[Bot] 退出', file=sys.__stdout__); break
@@ -364,9 +497,9 @@ def _strip_md(t):
         if '\n' not in rest: return full  # single-line, keep as-is
         lang_line, _, body = rest.partition('\n')
         lines = body.split('\n')
-        if len(lines) > 15:
-            kept = lines[:12]
-            return f'{fence}{lang_line}\n' + '\n'.join(kept) + f'\n⋯ ({len(lines)-12} 行省略)\n' + fence
+        if len(lines) > 8:
+            kept = lines[:6]
+            return f'{fence}{lang_line}\n' + '\n'.join(kept) + f'\n⋯ ({len(lines)-6} 行省略)\n' + fence
         return full  # keep intact
     t = re.sub(r'(`{3,})[\s\S]*?\1', _trunc_code, t)
     # inline code: keep (WeChat renders it)
@@ -388,9 +521,10 @@ def _strip_md(t):
     # blockquote: replace with indented style + vertical bar
     t = re.sub(r'^\s*>\s?(.+)', r'│ \1', t, flags=re.M)
     # horizontal rules: enhance with double line
-    t = re.sub(r'^\s*[-*_]{3,}\s*$', '─' * 20, t, flags=re.M)
+    t = re.sub(r'^\s*[-*_]{3,}\s*$', '─' * 12, t, flags=re.M)
     # Add emoji to common keywords (case-insensitive, only if not already prefixed)
-    t = re.sub(r'(?<!📌 )(?<!🔹 )(?<!▪️ )\b(注意|警告|错误|失败)\b', r'⚠️ \1', t)
+    # NOTE: Excluding '异常','错误','失败' to avoid GBK encoding crashes when these appear in exception messages
+    t = re.sub(r'(?<!📌 )(?<!🔹 )(?<!▪️ )\b(注意|警告)\b', r'⚠️ \1', t)
     t = re.sub(r'(?<!\w)(成功|完成|通过|OK|done)\b', r'✅ \1', t, flags=re.I)
     t = re.sub(r'(?<!\w)(提示|说明|备注|Note)\b', r'💡 \1', t, flags=re.I)
     return re.sub(r'\n{3,}', '\n\n', t).strip()
@@ -427,6 +561,8 @@ def _clean(t):
     t = re.sub(r'^\s*(抱歉[，！!]?.*|让我先.*|重新来|重新执行|重新搜索).*$', '', t, flags=re.M)
     # 移除 "好的，这个任务比较简单" / "不需要走" 等内部判断行
     t = re.sub(r'^\s*(好的[，,]?.*|不需要走|直接搜索|直接执行|这个任务).*$', '', t, flags=re.M)
+    # 移除 "让我帮你查/我来搜索/让我查一下/搜索结果显示/我来回答" 等行动描述行
+    t = re.sub(r'^\s*(让我帮你|我来搜索|我来查|让我查|搜索结果显示|根据搜索结果|现在来回答|现在回复|我来回答).*$', '', t, flags=re.M)
     # 移除 "首先" / "其次" / "最后" 等内部规划行（如果后面跟的是工具调用描述）
     t = re.sub(r'^\s*(首先|其次|最后|然后|接着)\s+(调用|读取|写入|搜索|查看|执行).*$', '', t, flags=re.M)
     # 移除空白的工具调用结果行
@@ -442,7 +578,27 @@ def _clean(t):
     # 删除包含思考关键词的段落（连续2-6行）
     t = re.sub(r'(?:^[^\n]*(?:' + _para_pats + r')[^\n]*\n?){1,6}', '', t, flags=re.M)
     # Remove excessive blank lines but keep paragraph separation
-    return re.sub(r'\n{3,}', '\n\n', _strip_md(t)).strip()
+    t = re.sub(r'\n{3,}', '\n\n', _strip_md(t)).strip()
+    # ═══ 去重：移除相邻重复行和重复段落 ═══
+    lines = t.split('\n')
+    deduped = []
+    for line in lines:
+        # 跳过已出现过的相邻重复行（连续空行只保留一个已在上面处理）
+        if deduped and line.strip() and line == deduped[-1]:
+            continue
+        deduped.append(line)
+    t = '\n'.join(deduped)
+    # 段落级去重：按空行分段落，移除相邻重复段落
+    paras = re.split(r'\n\n+', t)
+    dedup_paras = []
+    for para in paras:
+        p = para.strip()
+        if not p:
+            continue
+        if dedup_paras and p == dedup_paras[-1]:
+            continue
+        dedup_paras.append(p)
+    return '\n\n'.join(dedup_paras)
 
 def _extract_answer(t):
     """从 agent 回复中提取最终答案，丢弃所有思考过程。
@@ -534,12 +690,12 @@ def on_message(bot, msg):
                     return False
 
             # ═══ 接收 agent 输出（不流式发送，只累积） ═══
-            max_turns = 5
+            max_turns = 3
             turn_count = 0
 
             try:
                 while True:
-                    item = dq.get(timeout=60)
+                    item = dq.get(timeout=90)
                     if 'done' in item:
                         result = item['done']
                         break
@@ -547,21 +703,26 @@ def on_message(bot, msg):
                     raw_accum += raw
                     turn_count += 1
 
+                    # 上下文过大时提前结束，避免无限膨胀
+                    if len(raw_accum) > 8000:
+                        print(f'[WX] 上下文已达{len(raw_accum)}字符，提前结束', file=sys.__stdout__)
+                        result = raw_accum
+                        break
                     if turn_count >= max_turns:
                         print(f'[WX] 达到最大轮次{max_turns}，强制结束', file=sys.__stdout__)
                         result = raw_accum
                         break
             except queue.Empty:
                 result = raw_accum if raw_accum else '⏰ 响应超时，请稍后重试'
-                print('[WX] agent 60s 超时', file=sys.__stdout__)
+                print('[WX] agent 90s 超时', file=sys.__stdout__)
 
             # ═══ 一次性发送最终回复 ═══
             final = _clean(result)
             if not final.strip():
                 final = _extract_answer(result)
             if final.strip():
-                if len(final) > 1900:
-                    final = final[:1900]
+                if len(final) > 1400:
+                    final = final[:1400]
                 _wx_send(final)
             files = re.findall(r'\[FILE:([^\]]+)\]', result)
             bad = {'filepath', '<filepath>', 'path', '<path>', 'file_path', '<file_path>', '...'}
@@ -601,7 +762,7 @@ def _ensure_cdp():
     sock2 = _sk.socket(_sk.AF_INET, _sk.SOCK_STREAM)
     ok = sock2.connect_ex(('127.0.0.1', 9222)) == 0
     sock2.close()
-    print(f'[CDP] {"✅ 已启动" if ok else "❌ 启动失败"}', file=sys.__stdout__)
+    print(f'[CDP] {"[OK] 已启动" if ok else "[FAIL] 启动失败"}', file=sys.__stdout__)
 
 if __name__ == '__main__':
     _ensure_cdp()  # 启动前确保 CDP 可用
@@ -635,6 +796,7 @@ if __name__ == '__main__':
         sys.exit(1)
     _logf = open(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'temp', 'wechatapp.log'), 'a', encoding='utf-8', buffering=1)
     sys.stdout = sys.stderr = _logf
+    os.environ['PYTHONIOENCODING'] = 'utf-8'
     print(f'[NEW] Process starting {time.strftime("%m-%d %H:%M")}')
     bot = WxBotClient()
     if not bot.token:
@@ -642,6 +804,55 @@ if __name__ == '__main__':
         sys.stdout = sys.stderr = _stdout_save  # restore for QR display
         bot.login_qr()
         sys.stdout = sys.stderr = _logf
+    else:
+        # token 有值但可能已过期，快速检测（5s超时，不阻塞主流程）
+        _token_ok = False
+        try:
+            import threading as _th
+            _result = [None]
+            def _check():
+                try:
+                    r = bot._post('ilink/bot/getupdates', {'limit': 1, 'timeout': 1})
+                    _result[0] = r
+                except:
+                    pass
+            t = _th.Thread(target=_check, daemon=True)
+            t.start()
+            t.join(timeout=5)
+            _test = _result[0]
+            if _test is None:
+                # ★ 超时≠token过期，可能是网络波动；重试1次再决定
+                print('[启动检测] 首次API超时，5s后重试...', file=sys.__stdout__)
+                time.sleep(5)
+                _result2 = [None]
+                def _check2():
+                    try:
+                        _result2[0] = bot._post('ilink/bot/getupdates', {'limit': 1, 'timeout': 1})
+                    except:
+                        pass
+                t2 = _th.Thread(target=_check2, daemon=True)
+                t2.start()
+                t2.join(timeout=5)
+                _test = _result2[0]
+                if _test is None:
+                    # 强制标记过期，让run_loop直接进入重登录流程（避免getupdates持续超时死循环）
+                    print('[启动检测] 重试仍超时，强制标记token过期→进入重登流程', file=sys.__stdout__)
+                    bot._token_expired = True
+                elif _test.get('errcode') == 0:
+                    _token_ok = True
+                elif _test.get('errcode') == -14:
+                    bot._token_expired = True
+                # 其他errno不标记过期（可能是临时错误）
+            elif _test.get('errcode') == -14:
+                bot._token_expired = True
+            elif _test.get('errcode') == 0:
+                _token_ok = True
+            else:
+                # ★ 其他业务错误不一定是token过期，不标记
+                print(f'[启动检测] 业务错误 errcode={_test.get("errcode")}, 不标记过期', file=sys.__stdout__)
+        except:
+            # ★ 异常不标记过期，让run_loop自己处理
+            print('[启动检测] 预检异常，跳过（非token问题）', file=sys.__stdout__)
     # Start agent in a supervised daemon thread that auto-restarts on crash
     def _agent_wrapper():
         while True:
