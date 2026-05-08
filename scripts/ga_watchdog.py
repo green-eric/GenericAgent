@@ -34,6 +34,10 @@ def is_wechatbot_alive():
     return "RUNNING" in r.stdout
 
 def restart_ga():
+    log("  Killing old launch.pyw instances...")
+    ps_kill = r"Get-CimInstance Win32_Process -Filter \"Name='pythonw.exe'\" | Where-Object { $_.CommandLine -match 'launch\.pyw' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force; Write-Host ('Killed PID '+$_.ProcessId) }"
+    subprocess.run(["powershell", "-Command", ps_kill], capture_output=True, timeout=10, creationflags=NO_WINDOW)
+    time.sleep(2)
     log("  Starting GA (launch.pyw)...")
     subprocess.Popen([PYTHONW, LAUNCH_SCRIPT], cwd=GA_DIR, creationflags=0x08000000)
 

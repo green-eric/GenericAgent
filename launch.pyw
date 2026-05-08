@@ -5,6 +5,17 @@ WINDOW_WIDTH, WINDOW_HEIGHT, RIGHT_PADDING, TOP_PADDING = 600, 900, 0, 100
 script_dir = os.path.dirname(os.path.abspath(__file__))
 frontends_dir = os.path.join(script_dir, "frontends")
 
+# 单实例锁：防止同时启动多个GA窗口
+LOCK_FILE = os.path.join(script_dir, "temp", ".ga_instance.lock")
+_ga_lock_fd = None
+try:
+    _ga_lock_fd = open(LOCK_FILE, "w")
+    import msvcrt
+    msvcrt.locking(_ga_lock_fd.fileno(), msvcrt.LK_NBLCK, 1)
+except (IOError, OSError):
+    print(f"[Launch] Another GA instance is already running (lock: {LOCK_FILE})")
+    sys.exit(0)
+
 def find_free_port(lo=18501, hi=18599):
     ports = list(range(lo, hi+1)); random.shuffle(ports)
     for p in ports:
