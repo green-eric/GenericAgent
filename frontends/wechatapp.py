@@ -1,4 +1,4 @@
-import os, sys, re, threading, queue, time, socket, json, struct, base64, uuid, webbrowser, hashlib, math, shutil
+import os, sys, re, threading, queue, time, socket, json, struct, base64, uuid, webbrowser, hashlib, math, shutil, subprocess
 from pathlib import Path
 from urllib.parse import quote
 
@@ -29,19 +29,43 @@ for _d in [os.path.dirname(os.path.abspath(__file__)),
             print(f'[WX] 已清理缓存: {_pyc}', file=sys.__stdout__)
         except Exception:
             pass
+_trace = open(os.path.join(_LOG_DIR, 'wechatbot_trace.log'), 'a', encoding='utf-8', buffering=1)
+_trace.write(f'[{time.strftime("%H:%M:%S")}] TRACE: after cache cleanup\n')
+_trace.flush()
 
 import requests, qrcode
+_trace.write(f'[{time.strftime("%H:%M:%S")}] TRACE: after import requests,qrcode\n')
+_trace.flush()
 import socket as _socket
+_trace.write(f'[{time.strftime("%H:%M:%S")}] TRACE: after import socket\n')
+_trace.flush()
 
 _API_HOST = 'ilinkai.weixin.qq.com'
 
-# Use system proxy (verge-mihomo at 127.0.0.1:7897) — do NOT clear proxy env vars.
-# The proxy handles DNS resolution and SNI correctly, avoiding WFP hijacking.
+# 显式代理配置：不依赖环境变量（nssm服务为SYSTEM用户，无用户环境变量）
+_PROXY = 'http://127.0.0.1:7897'
+_PROXIES = {'http': _PROXY, 'https': _PROXY}
+os.environ.setdefault('http_proxy', _PROXY)
+os.environ.setdefault('https_proxy', _PROXY)
+os.environ.setdefault('HTTP_PROXY', _PROXY)
+os.environ.setdefault('HTTPS_PROXY', _PROXY)
 
 from Crypto.Cipher import AES
+_trace.write(f'[{time.strftime("%H:%M:%S")}] TRACE: after Crypto.Cipher.AES\n')
+_trace.flush()
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 _TEMP_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'temp')
 from agentmain import GeneraticAgent
+# ── K线图集成 ──
+try:
+    _TEMP_DIR_KL = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'temp')
+    sys.path.insert(0, _TEMP_DIR_KL)
+    from kline_chart import generate_kline as _gen_kline
+except ImportError:
+    _gen_kline = None
+    print('[WX] kline_chart.py 未找到，K线功能不可用', file=sys.__stdout__)
+_trace.write(f'[{time.strftime("%H:%M:%S")}] TRACE: after agentmain import\n')
+_trace.flush()
 
 # ── WxBotClient (inline from wx_bot_client.py) ──
 API     = f'https://{_API_HOST}'
@@ -55,6 +79,18 @@ CDN_BASE = 'https://novac2c.cdn.weixin.qq.com/c2c'
 
 def _uin():
     return base64.b64encode(str(struct.unpack('>I', os.urandom(4))[0]).encode()).decode()
+
+# ── 设备模式：uid → 'pc' | 'mobile' | None(auto) ──
+_USER_MODE = {}
+
+def _guess_device(text, uid):
+    """根据消息特征推测用户设备类型。"""
+    if uid in _USER_MODE:
+        return _USER_MODE[uid]
+    # 启发式：长消息/代码块/表格 → PC
+    if len(text) > 150 or '```' in text or '\n|' in text:
+        return 'pc'
+    return 'mobile'
 
 class WxBotClient:
     def __init__(self, token=None, token_file=None):
@@ -121,7 +157,7 @@ class WxBotClient:
              'User-Agent': UA,
              'Authorization': f'Bearer {tok}'}
         try:
-            r = requests.post(f'{API}/{ep}', data=data, headers=h, timeout=timeout)
+            r = requests.post(f'{API}/{ep}', data=data, headers=h, timeout=timeout, proxies=_PROXIES)
             r.raise_for_status()
             resp = r.json()
             # 检查业务层错误码
@@ -130,7 +166,11 @@ class WxBotClient:
                 em = resp.get('errmsg', '')
                 print(f'[POST] {ep} 业务错误: errcode={ec} errmsg={em}', file=sys.__stderr__)
                 if ec == -14:
-                    self._token_expired = True
+                    # ★ 刚重登完成30s内忽略-14，避免QR死循环
+                    if time.time() - getattr(self, '_relogin_time', 0) < 30:
+                        print(f'[POST] {ep} -14 在grace period内，忽略', file=sys.__stdout__)
+                    else:
+                        self._token_expired = True
                     self._buf = ''
                     self._save()
             return resp
@@ -145,19 +185,19 @@ class WxBotClient:
             return {'errcode': -99, 'errmsg': str(e), 'endpoint': ep}
 
     def login_qr(self, poll_interval=2):
-        r = requests.get(f'{API}/ilink/bot/get_bot_qrcode', params={'bot_type': 3}, headers={'User-Agent': UA}, timeout=10)
+        r = requests.get(f'{API}/ilink/bot/get_bot_qrcode', params={'bot_type': 3}, headers={'User-Agent': UA}, timeout=10, proxies=_PROXIES)
         r.raise_for_status()
         d = r.json()
         qr_id, url = d['qrcode'], d.get('qrcode_img_content', '')
         print(f'[QR登录] ID: {qr_id}')
         if url:
             img = self._tf.parent / 'wx_qr.png'
-            qrcode.make(url).save(str(img)); webbrowser.open(str(img))
+            qrcode.make(url).save(str(img))
             qr = qrcode.QRCode(border=1); qr.add_data(url); qr.make(fit=True); qr.print_ascii(invert=True)
         last = ''
         while True:
             time.sleep(poll_interval)
-            try: s = requests.get(f'{API}/ilink/bot/get_qrcode_status', params={'qrcode': qr_id}, headers={'User-Agent': UA}, timeout=60).json()
+            try: s = requests.get(f'{API}/ilink/bot/get_qrcode_status', params={'qrcode': qr_id}, headers={'User-Agent': UA}, timeout=60, proxies=_PROXIES).json()
             except requests.exceptions.ReadTimeout: continue
             st = s.get('status', '')
             if st != last: print(f'  状态: {st}'); last = st
@@ -169,28 +209,35 @@ class WxBotClient:
             if st == 'expired': raise RuntimeError('二维码过期')
 
     def login_qr_nonblocking(self):
-        """获取二维码并保存到文件，返回 qr_id。不阻塞主循环。"""
+        """获取二维码并保存到文件，返回 qr_id。不阻塞主循环。5分钟冷却期避免重复生成。"""
+        # ★ 冷却期检查：5分钟内不重复请求API生成二维码（覆盖退避周期60+120+240+480s）
+        QR_COOLDOWN = 300
+        now = time.time()
+        last = getattr(self, '_last_qr_gen_time', 0)
+        if now - last < QR_COOLDOWN:
+            _out = sys.__stdout__ if sys.__stdout__ else sys.stdout
+            print(f'[QR] 冷却中（{30 - int(now - last)}s后可用），跳过重复生成', file=_out)
+            old_qr_id = getattr(self, '_last_qr_id', None)
+            old_url = getattr(self, '_last_qr_url', None)
+            if old_qr_id:
+                return old_qr_id, old_url
+            return None, None
         try:
             r = requests.get(f'{API}/ilink/bot/get_bot_qrcode',
-                             params={'bot_type': 3}, headers={'User-Agent': UA}, timeout=10)
+                             params={'bot_type': 3}, headers={'User-Agent': UA}, timeout=10, proxies=_PROXIES)
             r.raise_for_status()
             d = r.json()
             qr_id, url = d['qrcode'], d.get('qrcode_img_content', '')
-            # 用日志文件输出（pythonw下sys.__stdout__为None）
             _out = sys.__stdout__ if sys.__stdout__ else sys.stdout
             print(f'[QR] ID: {qr_id}', file=_out)
             if url:
-                # 保存到项目目录
                 img_path = str(self._tf.parent / 'wx_qr_relogin.png')
                 qrcode.make(url).save(img_path)
-                # 同时复制到桌面（方便手动扫码，用 copy 避免重复生成）
-                try:
-                    desktop = Path.home() / 'Desktop' / 'wx_qr_relogin.png'
-                    import shutil as _sh
-                    _sh.copy2(img_path, str(desktop))
-                    print(f'[QR] 二维码已保存: {img_path} + 桌面', file=_out)
-                except Exception:
-                    print(f'[QR] 二维码已保存: {img_path}', file=_out)
+                print(f'[QR] 二维码已保存: {img_path}', file=_out)
+            # ★ 记录本次生成时间和qr_id，供冷却期复用
+            self._last_qr_gen_time = now
+            self._last_qr_id = qr_id
+            self._last_qr_url = url
             return qr_id, url
         except Exception as e:
             _out = sys.__stdout__ if sys.__stdout__ else sys.stdout
@@ -202,6 +249,7 @@ class WxBotClient:
         self._login_time = time.strftime('%Y-%m-%d %H:%M:%S')
         self._save(login_time=self._login_time)
         self._token_expired = False
+        self._relogin_time = time.time()  # 30s grace period after relogin
         print(f'[Bot] token刷新成功，登录时间: {self._login_time}', file=sys.__stdout__)
 
     def poll_qr_status(self, qr_id, max_wait=180):
@@ -213,7 +261,7 @@ class WxBotClient:
             try:
                 s = requests.get(f'{API}/ilink/bot/get_qrcode_status',
                                  params={'qrcode': qr_id},
-                                 headers={'User-Agent': UA}, timeout=60).json()
+                                 headers={'User-Agent': UA}, timeout=60, proxies=_PROXIES).json()
             except requests.exceptions.ReadTimeout:
                 continue
             st = s.get('status', '')
@@ -277,7 +325,7 @@ class WxBotClient:
         last_err = None
         for attempt in range(1, 4):
             try:
-                r = requests.post(url, data=data, headers={'Content-Type': 'application/octet-stream', 'User-Agent': UA}, timeout=timeout)
+                r = requests.post(url, data=data, headers={'Content-Type': 'application/octet-stream', 'User-Agent': UA}, timeout=timeout, proxies=_PROXIES)
                 if 400 <= r.status_code < 500:
                     msg = r.headers.get('x-error-message') or r.text[:300]
                     raise RuntimeError(f'CDN upload client error {r.status_code}: {msg}')
@@ -415,12 +463,7 @@ class WxBotClient:
                         except Exception as e:
                             print(f'[Bot] 发给 {uid} 失败: {e}', file=_out)
                     if not sent:
-                        # 自动打开二维码图片
-                        try:
-                            webbrowser.open(qr_img)
-                            print('[Bot] 未能发送二维码，已自动打开图片，请手动扫码', file=_out)
-                        except Exception:
-                            print('[Bot] 未能发送二维码给任何用户，请查看 D:\GenericAgent\wx_qr_relogin.png', file=_out)
+                        print('[Bot] 未能发送二维码，请扫码: D:\\GenericAgent\\wx_qr_relogin.png', file=_out)
                     # 等待扫码（180s）
                     ok = self.poll_qr_status(qr_id, max_wait=180)
                     if ok:
@@ -486,7 +529,7 @@ agent.verbose = False
 _TAG_PATS = [r'<' + t + r'>.*?</' + t + r'>' for t in ('thinking', 'tool_use')]
 _TAG_PATS.append(r'<file_content>.*?</file_content>')
 
-def _strip_md(t):
+def _strip_md(t, device='mobile'):
     """Enhance & filter markdown for WeChat rich-text rendering.
     WeChat natively renders: code fences, inline code, bold, italic,
     H1-H4 headings, horizontal rules, tables. We add emoji markers and visual separators."""
@@ -497,9 +540,11 @@ def _strip_md(t):
         if '\n' not in rest: return full  # single-line, keep as-is
         lang_line, _, body = rest.partition('\n')
         lines = body.split('\n')
-        if len(lines) > 8:
-            kept = lines[:6]
-            return f'{fence}{lang_line}\n' + '\n'.join(kept) + f'\n⋯ ({len(lines)-6} 行省略)\n' + fence
+        code_max_lines = 15 if device == 'pc' else 8
+        code_keep_lines = 11 if device == 'pc' else 6
+        if len(lines) > code_max_lines:
+            kept = lines[:code_keep_lines]
+            return f'{fence}{lang_line}\n' + '\n'.join(kept) + f'\n⋯ ({len(lines)-code_keep_lines} 行省略)\n' + fence
         return full  # keep intact
     t = re.sub(r'(`{3,})[\s\S]*?\1', _trunc_code, t)
     # inline code: keep (WeChat renders it)
@@ -513,7 +558,11 @@ def _strip_md(t):
     t = re.sub(r'^#{2}\s+(.+)', r'🔹 \1', t, flags=re.M)
     t = re.sub(r'^#{3}\s+(.+)', r'▪️ \1', t, flags=re.M)
     t = re.sub(r'^#{4}\s+(.+)', r'• \1', t, flags=re.M)
-    t = re.sub(r'^#{5,6}\s+', '', t, flags=re.M)                 # H5-H6: strip (too small on mobile)
+    if device == 'pc':
+        t = re.sub(r'^#{5}\s+(.+)', r'  ▸ \1', t, flags=re.M)
+        t = re.sub(r'^#{6}\s+(.+)', r'    ◦ \1', t, flags=re.M)
+    else:
+        t = re.sub(r'^#{5,6}\s+', '', t, flags=re.M)                 # H5-H6: strip (too small on mobile)
     # unordered list: bullet with slight indent
     t = re.sub(r'^\s*[-*+]\s+', '  • ', t, flags=re.M)
     # ordered list: keep number but add spacing
@@ -529,7 +578,7 @@ def _strip_md(t):
     t = re.sub(r'(?<!\w)(提示|说明|备注|Note)\b', r'💡 \1', t, flags=re.I)
     return re.sub(r'\n{3,}', '\n\n', t).strip()
 
-def _clean(t):
+def _clean(t, device='mobile'):
     # Remove <summary>...</summary> blocks entirely (including content)
     t = re.sub(r'<summary>.*?</summary>', '', t, flags=re.DOTALL)
     # Remove internal agent artifacts
@@ -578,7 +627,7 @@ def _clean(t):
     # 删除包含思考关键词的段落（连续2-6行）
     t = re.sub(r'(?:^[^\n]*(?:' + _para_pats + r')[^\n]*\n?){1,6}', '', t, flags=re.M)
     # Remove excessive blank lines but keep paragraph separation
-    t = re.sub(r'\n{3,}', '\n\n', _strip_md(t)).strip()
+    t = re.sub(r'\n{3,}', '\n\n', _strip_md(t, device)).strip()
     # ═══ 去重：移除相邻重复行和重复段落 ═══
     lines = t.split('\n')
     deduped = []
@@ -659,15 +708,47 @@ def on_message(bot, msg):
             lines = [f"{'→' if cur else '  '} [{i}] {name}" for i, name, cur in agent.list_llms()]
             bot.send_text(uid, 'LLMs:\n' + '\n'.join(lines), context_token=ctx)
         return
+    if text == '/pc':
+        _USER_MODE[uid] = 'pc'
+        bot.send_text(uid, '🖥️ 已切换为电脑端模式 — 富文本/表格/长内容', context_token=ctx)
+        return
+    if text == '/mobile':
+        _USER_MODE[uid] = 'mobile'
+        bot.send_text(uid, '📱 已切换为手机端模式 — 简洁排版/emoji/短段落', context_token=ctx)
+        return
+    if text == '/auto':
+        _USER_MODE.pop(uid, None)
+        bot.send_text(uid, '🔄 已切换为自动检测模式', context_token=ctx)
+        return
+
+    # ── K线图请求拦截 ──
+    _kl_match = re.search(r'[Kk]线.*?(\d{6})|(\d{6}).*?[Kk]线', text)
+    if _kl_match:
+        _kl_code = _kl_match.group(1) or _kl_match.group(2)
+        bot.send_text(uid, f'📈 正在获取 {_kl_code} K线数据...', context_token=ctx)
+        png_path = _gen_kline(_kl_code) if _gen_kline else None
+        if png_path and os.path.isfile(png_path):
+            bot.send_image(uid, png_path, context_token=ctx)
+        else:
+            bot.send_text(uid, f'❌ {_kl_code} K线图生成失败，请检查代码或稍后重试', context_token=ctx)
+        return
 
     def _handle():
         try:
-            # Prompt：指令 agent 直接输出最终答案
-            sys_hint = (
-                "你是直接回复用户的助手。禁止输出思考过程、分析步骤、规则引用、工具调用描述、英文推理。"
-                "只输出最终答案本身。格式：emoji分段，每段2-3行，不超过500字。"
-                "如果搜索失败，直接用知识回答，不要说明搜索失败。"
-            )
+            # 设备感知 sys_hint
+            device = _guess_device(text, uid)
+            if device == 'pc':
+                sys_hint = (
+                    "你是直接回复用户的助手。禁止输出思考过程、分析步骤、规则引用、工具调用描述。"
+                    "只输出最终答案。格式：可用markdown表格、代码块（≤15行）、分隔线，详尽回复。"
+                    "如果搜索失败，直接用知识回答。"
+                )
+            else:
+                sys_hint = (
+                    "你是直接回复用户的助手。禁止输出思考过程、分析步骤、规则引用、工具调用描述。"
+                    "只输出最终答案。格式：emoji分段，每段2-3行，不超过500字。"
+                    "如果搜索失败，直接用知识回答。"
+                )
             prompt = text if text.startswith('/') else f"{sys_hint}\n\n用户问题：{text}"
             dq = agent.put_task(prompt, source="wechat")
             try: bot.send_typing(uid)
@@ -717,12 +798,13 @@ def on_message(bot, msg):
                 print('[WX] agent 90s 超时', file=sys.__stdout__)
 
             # ═══ 一次性发送最终回复 ═══
-            final = _clean(result)
+            final = _clean(result, device)
             if not final.strip():
-                final = _extract_answer(result)
+                final = _clean(_extract_answer(result), device)  # ★ 二次清理防止<summary>/工具调用泄漏
             if final.strip():
-                if len(final) > 1400:
-                    final = final[:1400]
+                max_len = 2800 if device == 'pc' else 1400
+                if len(final) > max_len:
+                    final = final[:max_len]
                 _wx_send(final)
             files = re.findall(r'\[FILE:([^\]]+)\]', result)
             bad = {'filepath', '<filepath>', 'path', '<path>', 'file_path', '<file_path>', '...'}
@@ -765,7 +847,11 @@ def _ensure_cdp():
     print(f'[CDP] {"[OK] 已启动" if ok else "[FAIL] 启动失败"}', file=sys.__stdout__)
 
 if __name__ == '__main__':
+    _trace.write(f'[{time.strftime("%H:%M:%S")}] TRACE: entering __main__\n')
+    _trace.flush()
     _ensure_cdp()  # 启动前确保 CDP 可用
+    _trace.write(f'[{time.strftime("%H:%M:%S")}] TRACE: after _ensure_cdp\n')
+    _trace.flush()
     # Prevent multiple instances: check for other wechatapp.py processes via PowerShell
     _my_pid = os.getpid()
     _dup = False
