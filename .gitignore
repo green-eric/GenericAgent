@@ -109,3 +109,6 @@ reflect/*
 
 # Temp QR / login artifacts
 wx_qr_*
+
+# Generated charts
+*.png
