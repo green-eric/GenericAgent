@@ -394,12 +394,8 @@ class GenericAgentHandler(BaseHandler):
                 result["js_return"] += f"\n\n[已保存完整内容到 {abs_path}]"
             except:
                 result['js_return'] += f"\n\n[保存失败，无法写入文件 {abs_path}]"
-        show = smart_format(json.dumps(result, ensure_ascii=False, indent=2, default=json_default), max_str_len=300)
-        try: print("Web Execute JS Result:", show)
-        except: pass
-        yield f"JS 执行结果:\n{show}\n"
-        next_prompt = self._get_anchor_prompt(skip=args.get('_index', 0) > 0)
         result = json.dumps(result, ensure_ascii=False, default=json_default)
+        next_prompt = self._get_anchor_prompt(skip=args.get('_index', 0) > 0)
         return StepOutcome(smart_format(result, max_str_len=8000), next_prompt=next_prompt)
     
     def do_file_patch(self, args, response):
@@ -452,11 +448,10 @@ class GenericAgentHandler(BaseHandler):
     def do_file_read(self, args, response):
         '''读取文件内容。从第start行开始读取。如有keyword则返回第一个keyword(忽略大小写)周边内容'''
         path = self._get_abs_path(args.get("path", ""))
-        yield f"\n[Action] Reading file: {path}\n"
         start = args.get("start", 1)
         count = args.get("count", 200)
         keyword = args.get("keyword")
-        show_linenos = args.get("show_linenos", True)
+        show_linenos = args.get("show_linenos", False)
         result = file_read(path, start=start, keyword=keyword,
                            count=count, show_linenos=show_linenos)
         if show_linenos and not result.startswith("Error:"): result = '由于设置了show_linenos，以下返回信息为：(行号|)内容 。\n' + result 
@@ -485,9 +480,7 @@ class GenericAgentHandler(BaseHandler):
         if "key_info" in args: self.working['key_info'] = key_info
         if "related_sop" in args: self.working['related_sop'] = related_sop
         self.working['passed_sessions'] = 0
-        yield f"[Info] Updated key_info and related_sop.\n"
         next_prompt = self._get_anchor_prompt(skip=args.get('_index', 0) > 0)
-        #next_prompt += '\n[SYSTEM TIPS] 此函数一般在任务开始或中间时调用，如果任务已成功完成应该是start_long_term_update用于结算长期记忆。\n'
         return StepOutcome({"result": "working key_info updated"}, next_prompt=next_prompt)
 
     def do_no_tool(self, args, response):

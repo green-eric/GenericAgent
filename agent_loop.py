@@ -68,9 +68,7 @@ def agent_runner_loop(client, system_prompt, user_input, handler, tools_schema, 
         for ii, tc in enumerate(tool_calls):
             tool_name, args, tid = tc['tool_name'], tc['args'], tc.get('id', '')
             if tool_name == 'no_tool': pass
-            else: 
-                if verbose: yield f"🛠️ Tool: `{tool_name}`  📥 args:\n````text\n{get_pretty_json(args)}\n````\n"
-                else: yield f"🛠️ {tool_name}({_compact_tool_args(tool_name, args)})\n\n\n"
+            elif not verbose: yield f"🛠️ {tool_name}({_compact_tool_args(tool_name, args)})\n\n\n"
             handler.current_turn = turn
             gen = handler.dispatch(tool_name, args, response, index=ii)
             try:
@@ -116,6 +114,10 @@ def _compact_tool_args(name, args):
     a = {k: v for k, v in args.items() if k != '_index'}
     for k in ('path',): 
         if k in a: a[k] = os.path.basename(a[k])
+    if name == 'file_read':
+        count = a.get('count', 200)
+        start = a.get('start', 1)
+        return f"{a.get('path','')} L{start}-{start+count-1}"
     if name == 'update_working_checkpoint': s = a.get('key_info', ''); return (s[:60]+'...') if len(s)>60 else s
     if name == 'ask_user':
         q = str(a.get('question', ''))
