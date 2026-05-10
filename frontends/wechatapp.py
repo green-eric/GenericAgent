@@ -1,4 +1,4 @@
-import os, sys, re, threading, queue, time, socket, json, struct, base64, uuid, webbrowser, hashlib, math, shutil, subprocess
+import os, sys, re, threading, queue, time, socket, json, struct, base64, uuid, hashlib, math, shutil, subprocess
 from pathlib import Path
 from urllib.parse import quote
 
@@ -98,6 +98,7 @@ class WxBotClient:
         self.token = token
         self.bot_id = None
         self._buf = ''
+        self._token_expired = False  # ★ 初始化token过期标记
         if not self.token: self._load()
 
     def _load(self):
@@ -209,14 +210,14 @@ class WxBotClient:
             if st == 'expired': raise RuntimeError('二维码过期')
 
     def login_qr_nonblocking(self):
-        """获取二维码并保存到文件，返回 qr_id。不阻塞主循环。5分钟冷却期避免重复生成。"""
-        # ★ 冷却期检查：5分钟内不重复请求API生成二维码（覆盖退避周期60+120+240+480s）
-        QR_COOLDOWN = 300
+        """获取二维码并保存到文件，返回 qr_id。不阻塞主循环。10分钟冷却期避免重复生成。"""
+        # ★ 冷却期检查：10分钟内不重复请求API生成二维码（覆盖退避周期60+120+240+480s）
+        QR_COOLDOWN = 600
         now = time.time()
         last = getattr(self, '_last_qr_gen_time', 0)
         if now - last < QR_COOLDOWN:
             _out = sys.__stdout__ if sys.__stdout__ else sys.stdout
-            print(f'[QR] 冷却中（{30 - int(now - last)}s后可用），跳过重复生成', file=_out)
+            print(f'[QR] 冷却中（{QR_COOLDOWN - int(now - last)}s后可用），跳过重复生成', file=_out)
             old_qr_id = getattr(self, '_last_qr_id', None)
             old_url = getattr(self, '_last_qr_url', None)
             if old_qr_id:
@@ -529,6 +530,31 @@ agent.verbose = False
 _TAG_PATS = [r'<' + t + r'>.*?</' + t + r'>' for t in ('thinking', 'tool_use')]
 _TAG_PATS.append(r'<file_content>.*?</file_content>')
 
+# ═══ 预编译正则（避免每次_clean/_strip_md调用重复编译） ═══
+_RE_COMPILE = lambda p, f=0: re.compile(p, f)
+_CLEAN_RES = [
+    _RE_COMPILE(r'<summary>.*?</summary>', re.DOTALL),
+    _RE_COMPILE(r'^\s*LLM Running \(Turn \d+\) \.{3}\s*$', re.M),
+    _RE_COMPILE(r'^\s*(调用工具\w+|读取文件\s+\S+|写入文件\s+\S+|执行脚本\s+\S+).*$', re.M),
+    _RE_COMPILE(r'^\s*🔧\s*\w+\(.*$', re.M),
+    _RE_COMPILE(r'^\s*(\[Driver\].*|\[CDP\].*|\[Timeout.*\].*|Executing:.*|Timeout Error.*|Error:.*|Traceback.*)$', re.M),
+    _RE_COMPILE(r'^\s*args:\s*\{.*$', re.M),
+    _RE_COMPILE(r'^\s*🛠️\s*\w+\(.*$', re.M),
+    _RE_COMPILE(r'^\s*\{["\']status["\'].*$', re.M),
+    _RE_COMPILE(r'^\s*={3,}\s*(Response|Prompt)\s*={3,}\s*$', re.M),
+    _RE_COMPILE(r'^\s*["\'](exit_code|stdout|stderr)["\'].*$', re.M),
+    _RE_COMPILE(r'^\s*⏳.*$', re.M),
+    _RE_COMPILE(r"^\s*(I'll|I'm|Let me|I need to|I will|I can|I should|I've|We need to)\s+.*$", re.M),
+    _RE_COMPILE(r'^\s*(抱歉[，！!]?.*|让我先.*|重新来|重新执行|重新搜索).*$', re.M),
+    _RE_COMPILE(r'^\s*(好的[，,]?.*|不需要走|直接搜索|直接执行|这个任务).*$', re.M),
+    _RE_COMPILE(r'^\s*(让我帮你|我来搜索|我来查|让我查|搜索结果显示|根据搜索结果|现在来回答|现在回复|我来回答).*$', re.M),
+    _RE_COMPILE(r'^\s*(首先|其次|最后|然后|接着)\s+(调用|读取|写入|搜索|查看|执行).*$', re.M),
+    _RE_COMPILE(r'^\s*工具调用结果.*$', re.M),
+    _RE_COMPILE(r'\n{3,}', 0),
+]
+# 段落级思考过滤（单独处理，含动态参数）
+_THINK_KWS = r'用户问的是|但回复规则|规则模板错配|我应该|不过规则说|搜索失败|用已有知识|直接回答|思考过程|分析步骤|规则引用|数据获取成功|让我解析一下|让我换个方式|搜索中|正在搜索|正在获取|稍等一下'
+
 def _strip_md(t, device='mobile'):
     """Enhance & filter markdown for WeChat rich-text rendering.
     WeChat natively renders: code fences, inline code, bold, italic,
@@ -579,94 +605,87 @@ def _strip_md(t, device='mobile'):
     return re.sub(r'\n{3,}', '\n\n', t).strip()
 
 def _clean(t, device='mobile'):
-    # Remove <summary>...</summary> blocks entirely (including content)
-    t = re.sub(r'<summary>.*?</summary>', '', t, flags=re.DOTALL)
-    # Remove internal agent artifacts
-    t = re.sub(r'^\s*LLM Running \(Turn \d+\) \.{3}\s*$', '', t, flags=re.M)
-    # Remove tool call lines: "调用工具xxx", "读取文件 xxx", "写入文件 xxx"
-    t = re.sub(r'^\s*(调用工具\w+|读取文件\s+\S+|写入文件\s+\S+|执行脚本\s+\S+).*$', '', t, flags=re.M)
-    # Remove 🔧 web tool call lines (web_scan, web_execute_js, etc.)
-    t = re.sub(r'^\s*🔧\s*\w+\(.*$', '', t, flags=re.M)
-    # Remove driver/CDP/executing/timeout/error log lines
-    t = re.sub(r'^\s*(\[Driver\].*|\[CDP\].*|\[Timeout.*\].*|Executing:.*|Timeout Error.*|Error:.*|Traceback.*)$', '', t, flags=re.M)
-    # Remove args: lines (tool call parameters)
-    t = re.sub(r'^\s*args:\s*\{.*$', '', t, flags=re.M)
-    # Remove 🛠️ tool call summary lines
-    t = re.sub(r'^\s*🛠️\s*\w+\(.*$', '', t, flags=re.M)
-    # Remove code_run/file_read/file_patch tool result JSON blocks
-    t = re.sub(r'^\s*\{["\']status["\'].*$', '', t, flags=re.M)
-    # Remove === Response === / === Prompt === token markers
-    t = re.sub(r'^\s*={3,}\s*(Response|Prompt)\s*={3,}\s*$', '', t, flags=re.M)
+    # 使用预编译正则批量过滤（避免每次重复编译）
+    for _re in _CLEAN_RES:
+        t = _re.sub('', t)
+    # TAG patterns (含file_content等，需DOTALL)
     for p in _TAG_PATS:
         t = re.sub(p, '', t, flags=re.DOTALL)
-    # Remove lines that are just tool metadata
-    t = re.sub(r'^\s*["\'](exit_code|stdout|stderr)["\'].*$', '', t, flags=re.M)
-    # ═══ 新增：过滤 agent 中间思考过程 ═══
-    # 移除 ⏳ 进度条行（全部移除，不需要发给用户）
-    t = re.sub(r'^\s*⏳.*$', '', t, flags=re.M)
-    # 移除 "I'll search for..." / "Let me..." / "I need to..." 等英文思考行
-    t = re.sub(r"^\s*(I'll|I'm|Let me|I need to|I will|I can|I should|I've|We need to)\s+.*$", '', t, flags=re.M)
-    # 移除 "抱歉，我重新来" / "抱歉！我忘了" / "让我先查看" 等自我纠正行
-    t = re.sub(r'^\s*(抱歉[，！!]?.*|让我先.*|重新来|重新执行|重新搜索).*$', '', t, flags=re.M)
-    # 移除 "好的，这个任务比较简单" / "不需要走" 等内部判断行
-    t = re.sub(r'^\s*(好的[，,]?.*|不需要走|直接搜索|直接执行|这个任务).*$', '', t, flags=re.M)
-    # 移除 "让我帮你查/我来搜索/让我查一下/搜索结果显示/我来回答" 等行动描述行
-    t = re.sub(r'^\s*(让我帮你|我来搜索|我来查|让我查|搜索结果显示|根据搜索结果|现在来回答|现在回复|我来回答).*$', '', t, flags=re.M)
-    # 移除 "首先" / "其次" / "最后" 等内部规划行（如果后面跟的是工具调用描述）
-    t = re.sub(r'^\s*(首先|其次|最后|然后|接着)\s+(调用|读取|写入|搜索|查看|执行).*$', '', t, flags=re.M)
-    # 移除空白的工具调用结果行
-    t = re.sub(r'^\s*工具调用结果.*$', '', t, flags=re.M)
-    # ═══ 段落级思考过滤 ═══
-    # 删除包含思考关键词的整段（2-5行的段落）
-    _think_kws = [
-        r'用户问的是', r'但回复规则', r'规则模板错配', r'我应该',
-        r'不过规则说', r'搜索失败', r'用已有知识', r'直接回答',
-        r'思考过程', r'分析步骤', r'规则引用',
-    ]
-    _para_pats = '|'.join(_think_kws)
-    # 删除包含思考关键词的段落（连续2-6行）
+    # 段落级思考过滤
+    _para_pats = _THINK_KWS
     t = re.sub(r'(?:^[^\n]*(?:' + _para_pats + r')[^\n]*\n?){1,6}', '', t, flags=re.M)
-    # Remove excessive blank lines but keep paragraph separation
-    t = re.sub(r'\n{3,}', '\n\n', _strip_md(t, device)).strip()
-    # ═══ 去重：移除相邻重复行和重复段落 ═══
+    # strip_md + 去多余空行
+    t = _strip_md(t, device).strip()
+    # ═══ 去重：全局去重（保留首次出现的行，后续非相邻重复也移除） ═══
     lines = t.split('\n')
+    seen = set()
     deduped = []
     for line in lines:
-        # 跳过已出现过的相邻重复行（连续空行只保留一个已在上面处理）
-        if deduped and line.strip() and line == deduped[-1]:
+        s = line.strip()
+        # 空行始终保留
+        if not s:
+            deduped.append(line)
             continue
+        # 非空行：全局去重（首次保留，后续重复跳过）
+        if s in seen:
+            continue
+        seen.add(s)
         deduped.append(line)
     t = '\n'.join(deduped)
-    # 段落级去重：按空行分段落，移除相邻重复段落
+    # 行内子串去重：检测行内重复的短句（如"xxx\nxxx\nxxx内容"中xxx重复）
+    # 策略：如果一行包含2+次出现的短句（8~60字），只保留最后一次出现及其后续内容
+    _lines_final = []
+    for _line in t.split('\n'):
+        _s = _line.strip()
+        if not _s:
+            _lines_final.append(_line)
+            continue
+        # 检测行内重复子串：尝试不同长度的子串
+        _deduped_line = _line
+        for _sub_len in range(8, min(61, len(_s) // 2 + 1)):
+            for _start in range(len(_s) - _sub_len * 2 + 1):
+                _sub = _s[_start:_start + _sub_len]
+                if _s.count(_sub) >= 2:
+                    # 找到最后一次出现的位置，截取从该位置开始
+                    _last_pos = _s.rfind(_sub)
+                    _candidate = _s[_last_pos:]
+                    if len(_candidate) < len(_deduped_line):
+                        _deduped_line = _candidate
+        _lines_final.append(_deduped_line)
+    t = '\n'.join(_lines_final)
+    # 段落级去重：按空行分段落，全局去重（保留首次出现）
     paras = re.split(r'\n\n+', t)
+    seen_paras = set()
     dedup_paras = []
     for para in paras:
         p = para.strip()
         if not p:
             continue
-        if dedup_paras and p == dedup_paras[-1]:
+        if p in seen_paras:
             continue
+        seen_paras.add(p)
         dedup_paras.append(p)
     return '\n\n'.join(dedup_paras)
 
 def _extract_answer(t):
     """从 agent 回复中提取最终答案，丢弃所有思考过程。
     策略：取最后一个 Turn 内容，清理后返回。
+    split 结果格式: [text_before, DELIM, turn_text, DELIM, turn_text, ...]
+    奇数索引是 DELIM，偶数索引是内容。取最后一个 DELIM 之后的内容。
     """
     _ph = []
     safe = re.sub(r'`{4,}.*?`{4,}', lambda m: (_ph.append(m.group(0)), f'\x00PH{len(_ph)-1}\x00')[1], t, flags=re.DOTALL)
     parts = re.split(r'(\**LLM Running \(Turn \d+\) \.\.\.\**)', safe)
     parts = [re.sub(r'\x00PH(\d+)\x00', lambda m: _ph[int(m.group(1))], p) for p in parts]
-    # 取最后一个 Turn 的内容
-    if len(parts) >= 4:
-        last_idx = len(parts) - 2 if len(parts) % 2 == 0 else len(parts) - 1
-        if last_idx >= 1:
-            content = parts[last_idx]
-            if last_idx + 1 < len(parts):
-                content += parts[last_idx + 1]
-        else:
-            content = t
+    # 找到最后一个 DELIM（奇数索引），取其后的内容
+    last_delim_idx = -1
+    for i in range(len(parts)):
+        if re.match(r'\**LLM Running \(Turn \d+\) \.\.\.\**', parts[i]):
+            last_delim_idx = i
+    if last_delim_idx >= 0 and last_delim_idx + 1 < len(parts):
+        content = ''.join(parts[last_delim_idx + 1:])
     else:
+        # 无 Turn 分隔符，返回全文（可能是最终 done 消息）
         content = t
     return content
 
@@ -689,7 +708,7 @@ def on_message(bot, msg):
     if not text and not media_paths: return
     if media_paths:
         text = (text + '\n' if text else '') + '\n'.join(f'[用户发送文件: {p}]' for p in media_paths)
-    print(f'[WX] 收到: {text[:80]}', file=sys.__stdout__)
+    print(f'[WX] 收到: {text[:80]} media={media_paths}', file=sys.__stdout__)
 
     # Commands
     if text in ('/stop', '/abort'):
@@ -750,12 +769,14 @@ def on_message(bot, msg):
                     "如果搜索失败，直接用知识回答。"
                 )
             prompt = text if text.startswith('/') else f"{sys_hint}\n\n用户问题：{text}"
-            dq = agent.put_task(prompt, source="wechat")
+            # ★ 修复：传入图片路径给agent
+            images = media_paths if media_paths else None
+            dq = agent.put_task(prompt, source="wechat", images=images)
             try: bot.send_typing(uid)
             except: pass
 
             result = ''
-            raw_accum = ''  # 累积 raw 输出用于最终提取
+            raw_accum = ''
 
             def _wx_send(text):
                 s = text.strip()
@@ -770,13 +791,13 @@ def on_message(bot, msg):
                     print(f'[WX] send err {type(e).__name__}: {e}', file=sys.__stdout__)
                     return False
 
-            # ═══ 接收 agent 输出（不流式发送，只累积） ═══
-            max_turns = 3
+            # ═══ 接收 agent 输出（只发最终done消息，不发中间chunk） ═══
+            max_turns = 10
             turn_count = 0
 
             try:
                 while True:
-                    item = dq.get(timeout=90)
+                    item = dq.get(timeout=120)
                     if 'done' in item:
                         result = item['done']
                         break
@@ -784,8 +805,8 @@ def on_message(bot, msg):
                     raw_accum += raw
                     turn_count += 1
 
-                    # 上下文过大时提前结束，避免无限膨胀
-                    if len(raw_accum) > 8000:
+                    # 上下文过大时提前结束
+                    if len(raw_accum) > 12000:
                         print(f'[WX] 上下文已达{len(raw_accum)}字符，提前结束', file=sys.__stdout__)
                         result = raw_accum
                         break
@@ -795,12 +816,12 @@ def on_message(bot, msg):
                         break
             except queue.Empty:
                 result = raw_accum if raw_accum else '⏰ 响应超时，请稍后重试'
-                print('[WX] agent 90s 超时', file=sys.__stdout__)
+                print('[WX] agent 120s 超时', file=sys.__stdout__)
 
-            # ═══ 一次性发送最终回复 ═══
+            # ═══ 只发送最终完整回复 ═══
             final = _clean(result, device)
             if not final.strip():
-                final = _clean(_extract_answer(result), device)  # ★ 二次清理防止<summary>/工具调用泄漏
+                final = _clean(_extract_answer(result), device)
             if final.strip():
                 max_len = 2800 if device == 'pc' else 1400
                 if len(final) > max_len:
@@ -898,7 +919,7 @@ if __name__ == '__main__':
             _result = [None]
             def _check():
                 try:
-                    r = bot._post('ilink/bot/getupdates', {'limit': 1, 'timeout': 1})
+                    r = bot._post('ilink/bot/getupdates', {'limit': 1, 'timeout': 10})
                     _result[0] = r
                 except:
                     pass
