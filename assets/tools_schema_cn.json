@@ -66,6 +66,16 @@
       "candidates": {"type": "array", "items": {"type": "string"}, "description": "提供给用户的可选快捷选项列表"}}}
   }},
   {"type": "function", "function": {
+    "name": "web_search",
+    "description": "联网搜索实时信息。使用场景：(1)用户询问天气/新闻/时事，(2)需要验证事实，(3)查找文档或技术信息。返回搜索结果（标题、URL、摘要）。支持多种搜索引擎。搜索任务的首选工具 — 优先于 web_scan/web_execute_js。",
+    "parameters": {"type": "object", "properties": {
+      "query": {"type": "string", "description": "搜索关键词。简洁明确。例如：'上海今天天气', 'Python 3.12 release date'"},
+      "engine": {"type": "string", "enum": ["google", "bing", "duckduckgo_html", "baidu"], "description": "搜索引擎。duckduckgo_html(默认)经代理工作；baidu直连；google可能被反爬JS拦截。", "default": "duckduckgo_html"},
+      "num_results": {"type": "integer", "description": "返回结果数(1-10)", "default": 5},
+      "no_cache": {"type": "boolean", "description": "强制刷新，跳过缓存", "default": false}}
+    }
+  }},
+  {"type": "function", "function": {
     "name": "start_long_term_update",
     "description": "准备开始提炼记忆。发现值得长期记忆的信息（环境事实/用户偏好/避坑经验）时调用此工具。已记忆更新或在自主流程内时无需调用。超15轮完成的任务必须调用以沉淀经验",
     "parameters": {"type": "object", "properties": {}}}

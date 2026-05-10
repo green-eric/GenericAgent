@@ -66,6 +66,16 @@
       "candidates": {"type": "array", "items": {"type": "string"}, "description": "Optional quick-select choices for the user"}}}
   }},
   {"type": "function", "function": {
+    "name": "web_search",
+    "description": "Search the web for real-time information. Use when: (1) user asks about current events/weather/news, (2) need to verify facts, (3) looking up documentation or technical info. Returns top search results with title, URL, and snippet. Supports multiple engines. This is the PRIMARY tool for internet searches — prefer over web_scan/web_execute_js for search tasks.",
+    "parameters": {"type": "object", "properties": {
+      "query": {"type": "string", "description": "Search query. Be specific and concise. e.g. '上海今天天气', 'Python 3.12 release date'"},
+      "engine": {"type": "string", "enum": ["google", "bing", "duckduckgo_html", "baidu"], "description": "Search engine to use. duckduckgo_html (default) works via proxy; baidu works direct; google may be blocked by anti-bot JS.", "default": "duckduckgo_html"},
+      "num_results": {"type": "integer", "description": "Number of results to return (1-10)", "default": 5},
+      "no_cache": {"type": "boolean", "description": "Force fresh search, bypass cache", "default": false}}
+    }
+  }},
+  {"type": "function", "function": {
     "name": "start_long_term_update",
     "description": "Start distilling long-term memory. Call when discovering info worth remembering (env facts/user prefs/lessons learned). Skip if memory already updated or in autonomous flow. Must call when a task that took 15+ turns is completed",
     "parameters": {"type": "object", "properties": {}}}
