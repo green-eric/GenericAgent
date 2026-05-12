@@ -1,0 +1,26 @@
+{
+  "conversationId": "ef59391879274f2685416cdd746a36a7",
+  "todos": [
+    {
+      "id": "1",
+      "status": "completed",
+      "content": "解析300+股票代码，排除科创板688开头"
+    },
+    {
+      "id": "2",
+      "status": "completed",
+      "content": "用东方财富API批量查询2025年报/2026一季报增长率"
+    },
+    {
+      "id": "3",
+      "status": "completed",
+      "content": "筛选>50%并生成Excel到桌面"
+    },
+    {
+      "id": "4",
+      "status": "pending",
+      "content": "生成Excel输出到桌面"
+    }
+  ],
+  "updatedAt": 1776961158896
+}

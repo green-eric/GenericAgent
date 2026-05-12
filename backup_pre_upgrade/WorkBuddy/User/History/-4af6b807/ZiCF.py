@@ -1,0 +1,3 @@
+s = "\u7edf\u8ba1\u622a\u6b22\u65e5\u671f\u4e3a20260331\u7684Q1\u5355\u5b63\u62a5"
+print(repr(s))
+print(s)

@@ -1,0 +1,177 @@
+{
+  "version": 2,
+  "lastUpdated": 1777034295616,
+  "conversations": {
+    "f9034ea9c98044bba610359f5d7c29ed": {
+      "version": 2,
+      "conversationId": "f9034ea9c98044bba610359f5d7c29ed",
+      "updatedAt": 1776473412414,
+      "runtime": {
+        "activated": true,
+        "paused": false,
+        "awaitingSessionIdle": false,
+        "updatedAt": 1776473412414
+      },
+      "items": [
+        {
+          "id": "mq-1776471830784-zyn9tj",
+          "conversationId": "f9034ea9c98044bba610359f5d7c29ed",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "API Key: nTuM4qxxiN7Bkm82scAFWSrJ9tMfqmpQK0y5M6iLmj9vHuoMuN7ys/8SENSi5iGqJCuf5uoFEw==\r\nClient ID: 19b0a405efe15a1a830355d760910389",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "deepseek-v3-2-volc"
+                }
+              }
+            }
+          ],
+          "previewText": "API Key: nTuM4qxxiN7Bkm82scAFWSrJ9tMfqmpQK0y5M6iLmj9vHuoMuN7ys/8SENSi5iGqJCuf5uoFEw== Client ID: 19b0a405efe15a1a830355d760910389",
+          "status": "sent",
+          "order": 0,
+          "createdAt": 1776471830784,
+          "updatedAt": 1776472130699,
+          "modeId": "craft",
+          "modelId": "deepseek-v3-2-volc",
+          "lastAttemptAt": 1776472130685
+        },
+        {
+          "id": "mq-1776472343096-37vmo5",
+          "conversationId": "f9034ea9c98044bba610359f5d7c29ed",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "自动同步：设置定时任务，定期上传",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "deepseek-v3-2-volc"
+                }
+              }
+            }
+          ],
+          "previewText": "自动同步：设置定时任务，定期上传",
+          "status": "sent",
+          "order": 1,
+          "createdAt": 1776472343096,
+          "updatedAt": 1776472726776,
+          "modeId": "craft",
+          "modelId": "deepseek-v3-2-volc",
+          "lastAttemptAt": 1776472726743
+        },
+        {
+          "id": "mq-1776472937210-n6ubyn",
+          "conversationId": "f9034ea9c98044bba610359f5d7c29ed",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "同步内容到微信小程序",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "deepseek-v3-2-volc"
+                }
+              }
+            }
+          ],
+          "previewText": "同步内容到微信小程序",
+          "status": "sent",
+          "order": 2,
+          "createdAt": 1776472937210,
+          "updatedAt": 1776473412414,
+          "modeId": "craft",
+          "modelId": "deepseek-v3-2-volc",
+          "lastAttemptAt": 1776473412148
+        }
+      ]
+    },
+    "91bafb168dd94c758367a981013ccd80": {
+      "version": 2,
+      "conversationId": "91bafb168dd94c758367a981013ccd80",
+      "updatedAt": 1777034295615,
+      "runtime": {
+        "activated": true,
+        "paused": true,
+        "pauseReason": "cancel",
+        "awaitingSessionIdle": false,
+        "updatedAt": 1777034295615
+      },
+      "items": [
+        {
+          "id": "mq-1776528740478-k1y3z9",
+          "conversationId": "91bafb168dd94c758367a981013ccd80",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "卸载 atomcode",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "LongCat-Flash-Thinking-2601"
+                }
+              }
+            }
+          ],
+          "previewText": "卸载 atomcode",
+          "status": "sent",
+          "order": 0,
+          "createdAt": 1776528740478,
+          "updatedAt": 1776528740553,
+          "modeId": "craft",
+          "modelId": "LongCat-Flash-Thinking-2601",
+          "lastAttemptAt": 1776528740517
+        },
+        {
+          "id": "mq-1776528894679-9w0ibd",
+          "conversationId": "91bafb168dd94c758367a981013ccd80",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "卸载 claudecode",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "auto"
+                }
+              }
+            }
+          ],
+          "previewText": "卸载 claudecode",
+          "status": "sent",
+          "order": 1,
+          "createdAt": 1776528894679,
+          "updatedAt": 1776529504548,
+          "modeId": "craft",
+          "modelId": "auto",
+          "lastAttemptAt": 1776529504528
+        },
+        {
+          "id": "mq-1776556932013-f8tnnt",
+          "conversationId": "91bafb168dd94c758367a981013ccd80",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "卸载 删除 atomcode",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "auto"
+                }
+              }
+            }
+          ],
+          "previewText": "卸载 删除 atomcode",
+          "status": "sent",
+          "order": 2,
+          "createdAt": 1776556932013,
+          "updatedAt": 1776556932589,
+          "modeId": "craft",
+          "modelId": "auto",
+          "lastAttemptAt": 1776556932026
+        }
+      ]
+    }
+  }
+}

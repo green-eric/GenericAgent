@@ -185,7 +185,15 @@ def web_scan(tabs_only=False, switch_tab_id=None, text_only=False):
                 "active_tab": driver.default_session_id
             }
         }
-        if not tabs_only: 
+        if not tabs_only:
+            # 如果当前页面是 chrome:// 内部页，先导航到 about:blank
+            _sess = driver.get_all_sessions()
+            _cur_url = _sess[0].get('url', '') if _sess else ''
+            if _cur_url.startswith('chrome://'):
+                try:
+                    driver.jump('about:blank')
+                    time.sleep(2)
+                except: pass
             importlib.reload(simphtml); result["content"] = simphtml.get_html(driver, cutlist=True, maxchars=35000, text_only=text_only)
             if text_only: result['content'] = smart_format(result['content'], max_str_len=10000, omit_str='\n\n[omitted long content]\n\n')
         return result
@@ -221,6 +229,72 @@ def web_execute_js(script, switch_tab_id=None, no_monitor=False):
         result = simphtml.execute_js_rich(script, driver, no_monitor=no_monitor)
         return result
     except Exception as e: return {"status": "error", "msg": format_error(e)}
+
+def web_search(query, engine="baidu", num_results=5, no_cache=False):
+    """Search the web for real-time information. Returns top search results with title, URL, and snippet.
+    Supports multiple engines: baidu (default), duckduckgo_html, google, bing.
+    注: duckduckgo_html 已失效（页面改为 JS 渲染），默认改用百度。"""
+    import urllib.request, urllib.parse, json as _json, re, os
+    _HDR = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+    }
+    try:
+        if engine == "baidu":
+            url = f"https://www.baidu.com/s?wd={urllib.parse.quote(query)}&rn={num_results}"
+            # 优先用 requests，回退 urllib
+            try:
+                import requests as _req
+                r = _req.get(url, headers=_HDR, timeout=15)
+                html = r.text
+            except ImportError:
+                req = urllib.request.Request(url, headers=_HDR)
+                with urllib.request.urlopen(req, timeout=15) as resp:
+                    html = resp.read().decode("utf-8", errors="replace")
+            results = []
+            # 提取标题+URL: <h3><a href="...">...<!--s-text-->标题<!--/s-text--></a></h3>
+            for m in re.finditer(r'<h3[^>]*>.*?<a[^>]+href="(http[^"]+)"[^>]*>.*?<!--s-text-->(.*?)<!--/s-text-->', html, re.DOTALL):
+                title = re.sub(r'<[^>]+>', '', m.group(2)).strip()
+                if title and len(title) > 2:
+                    results.append({"title": title, "url": m.group(1), "snippet": ""})
+            # 回退: 不带 s-text 的 h3
+            if not results:
+                for m in re.finditer(r'<h3[^>]*>.*?<a[^>]+href="(http[^"]+)"[^>]*>(.*?)</a>', html, re.DOTALL):
+                    title = re.sub(r'<[^>]+>', '', m.group(2)).strip()
+                    if title and len(title) > 2:
+                        results.append({"title": title, "url": m.group(1), "snippet": ""})
+            # 从 s-data JSON 中提取摘要
+            snippets = {}
+            for block in re.findall(r'<!--s-data:(.*?)-->', html, re.DOTALL):
+                try:
+                    data = _json.loads(block.strip())
+                    if 'summaryData' in data and 'generalLines' in data['summaryData']:
+                        for line in data['summaryData']['generalLines']:
+                            for t in line.get('data', []):
+                                text = re.sub(r'<[^>]+>', '', t.get('text', '')).strip()
+                                if text and len(text) > 10:
+                                    url_match = re.search(r'"tcUrl":"(http[^"]+)"', block)
+                                    if url_match:
+                                        snippets[url_match.group(1)] = text[:200]
+                except:
+                    pass
+            for r_item in results:
+                if r_item["url"] in snippets:
+                    r_item["snippet"] = snippets[r_item["url"]]
+            return {"status": "success", "results": results[:num_results], "engine": engine, "query": query}
+
+        elif engine == "duckduckgo_html":
+            # DuckDuckGo HTML 已改为 JS 渲染，urllib 无法获取结果，自动切百度
+            return web_search(query, engine="baidu", num_results=num_results, no_cache=no_cache)
+
+        elif engine in ("google", "bing"):
+            return {"status": "error", "msg": f"Engine '{engine}' 需要额外配置（API key 或代理），请使用 baidu", "results": []}
+
+        else:
+            return {"status": "error", "msg": f"Unknown engine: {engine}", "results": []}
+    except Exception as e:
+        return {"status": "error", "msg": format_error(e)}
 
 def expand_file_refs(text, base_dir=None):
     """展开文本中的 {{file:路径:起始行:结束行}} 引用为实际文件内容。
@@ -482,6 +556,37 @@ class GenericAgentHandler(BaseHandler):
         self.working['passed_sessions'] = 0
         next_prompt = self._get_anchor_prompt(skip=args.get('_index', 0) > 0)
         return StepOutcome({"result": "working key_info updated"}, next_prompt=next_prompt)
+
+    def do_web_search(self, args, response):
+        '''搜索互联网获取实时信息。'''
+        query = args.get("query", "")
+        if not query:
+            yield "[Error] web_search 缺少 query 参数\n"
+            return StepOutcome({"status": "error", "msg": "query is required"}, next_prompt="\n")
+        engine = args.get("engine", "duckduckgo_html")
+        num_results = args.get("num_results", 5)
+        no_cache = args.get("no_cache", False)
+        yield f"[Status] 🔍 搜索中: {query} (engine={engine})...\n"
+        result = web_search(query=query, engine=engine, num_results=num_results, no_cache=no_cache)
+        if result.get("status") == "success":
+            results = result.get("results", [])
+            if results:
+                lines = [f"搜索成功，找到 {len(results)} 条结果：\n"]
+                for i, r in enumerate(results, 1):
+                    title = r.get("title", "")
+                    url = r.get("url", "")
+                    snippet = r.get("snippet", "")
+                    lines.append(f"{i}. {title}")
+                    lines.append(f"   {url}")
+                    if snippet:
+                        lines.append(f"   {snippet}")
+                    lines.append("")
+                summary = "\n".join(lines)
+            else:
+                summary = "搜索完成，但未找到结果。请尝试换关键词或换搜索引擎。"
+            return StepOutcome(result, next_prompt=f"\n{summary}\n")
+        else:
+            return StepOutcome(result, next_prompt=f"\n[Error] 搜索失败: {result.get('msg', '未知错误')}\n")
 
     def do_no_tool(self, args, response):
         '''这是一个特殊工具，由引擎自主调用，不要包含在TOOLS_SCHEMA里。

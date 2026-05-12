@@ -1,0 +1,43 @@
+{
+  "version": 2,
+  "lastUpdated": 1777266660123,
+  "conversations": {
+    "49d2182685dd4896bef1d91589d99e23": {
+      "version": 2,
+      "conversationId": "49d2182685dd4896bef1d91589d99e23",
+      "updatedAt": 1777266660123,
+      "runtime": {
+        "activated": true,
+        "paused": false,
+        "awaitingSessionIdle": false,
+        "updatedAt": 1777266660123
+      },
+      "items": [
+        {
+          "id": "mq-1777265045570-c9vsly",
+          "conversationId": "49d2182685dd4896bef1d91589d99e23",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "你帮我清理一下",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "LongCat-2.0-Preview"
+                }
+              }
+            }
+          ],
+          "previewText": "你帮我清理一下",
+          "status": "sent",
+          "order": 0,
+          "createdAt": 1777265045570,
+          "updatedAt": 1777265152391,
+          "modeId": "craft",
+          "modelId": "LongCat-2.0-Preview",
+          "lastAttemptAt": 1777265152322
+        }
+      ]
+    }
+  }
+}

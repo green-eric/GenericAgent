@@ -1,0 +1,38 @@
+C:\WINDOWS\system32
+C:\WINDOWS
+C:\WINDOWS\System32\Wbem
+C:\WINDOWS\System32\WindowsPowerShell\v1.0
+C:\WINDOWS\System32\OpenSSH
+C:\Users\green\AppData\Local\Microsoft\WindowsApps
+C:\Program Files\dotnet\
+C:\WINDOWS\System32\WindowsPowerShell\v1.0\
+C:\WINDOWS\System32\OpenSSH\
+C:\ProgramData\chocolatey\bin
+C:\Program Files\Cloud Foundry
+C:\Program Files\Apollo
+C:\Program Files\Apollo\tools
+%APPDATA%\npm
+%APPDATA%\Composer\vendor\bin
+C:\WINDOWS\system32\config\systemprofile\.cargo\bin
+C:\WINDOWS\system32\config\systemprofile\go\bin
+D:\ServBay\bin
+C:\WINDOWS\system32
+C:\WINDOWS
+C:\WINDOWS\System32\Wbem
+C:\WINDOWS\System32\WindowsPowerShell\v1.0\
+C:\WINDOWS\System32\OpenSSH\
+C:\WINDOWS\system32\downlevel
+C:\Program Files\Kraken Desktop\
+C:\Program Files\PostgreSQL\18\bin
+C:\Program Files\Git\cmd
+C:\Program Files\Redis
+C:\Program Files\Docker\Docker\resources\bin
+C:\Windows\System32\OpenSSH
+C:\Program Files\WezTerm
+C:\Program Files\nodejs\
+D:\GenericAgent\temp\es_extract
+C:\Users\green\AppData\Roaming\npm
+C:\Users\green\AppData\Local\Claude-3p\claude-code\2.1.121
+C:\Users\green\AppData\Local\Programs\Python\Python312
+C:\Users\green\AppData\Local\Programs\Ollama
+C:\Users\green\.lmstudio\bin

@@ -1,0 +1,36 @@
+{
+  "conversationId": "acae1f227516474780e3eaf1887d25e3",
+  "todos": [
+    {
+      "id": "1",
+      "status": "completed",
+      "content": "检查当前项目文件结构和代码状态"
+    },
+    {
+      "id": "2",
+      "status": "in_progress",
+      "content": "修复percentile_rank算法bug并全面审计逻辑"
+    },
+    {
+      "id": "3",
+      "status": "pending",
+      "content": "更新README.md文档与代码保持一致"
+    },
+    {
+      "id": "4",
+      "status": "pending",
+      "content": "调整版本号为V6.0.0并更新标题"
+    },
+    {
+      "id": "5",
+      "status": "pending",
+      "content": "验证输出字段逻辑和命名规范"
+    },
+    {
+      "id": "6",
+      "status": "pending",
+      "content": "创建审计报告文档"
+    }
+  ],
+  "updatedAt": 1777168248548
+}

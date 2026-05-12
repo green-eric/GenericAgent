@@ -1,17 +1,37 @@
 import webview, threading, subprocess, sys, time, os, ctypes, atexit, socket, random
+from ctypes import wintypes
 
 WINDOW_WIDTH, WINDOW_HEIGHT, RIGHT_PADDING, TOP_PADDING = 600, 900, 0, 100
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 frontends_dir = os.path.join(script_dir, "frontends")
 
-# 单实例锁：防止同时启动多个GA窗口
+# ── 单实例锁：文件锁 + Windows Mutex（供watchdog检测） ──
+MUTEX_NAME = r"Global\GenericAgent_Launch_Mutex"
+
+# 1) 创建/获取 Mutex（watchdog 通过此 mutex 检测 GA 是否存活）
+_ga_mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME)
+if _ga_mutex:
+    _mutex_err = ctypes.windll.kernel32.GetLastError()
+    if _mutex_err == 183:  # ERROR_ALREADY_EXISTS
+        # 另一个实例已持有 mutex，释放并退出
+        ctypes.windll.kernel32.CloseHandle(_ga_mutex)
+        print(f"[Launch] Another GA instance is already running (mutex: {MUTEX_NAME})")
+        sys.exit(0)
+    # 我们持有 mutex，保持到进程退出（不 CloseHandle）
+else:
+    print("[Launch] ⚠️ Failed to create mutex, continuing anyway")
+
+# 2) 文件锁（额外防护）
 LOCK_FILE = os.path.join(script_dir, "temp", ".ga_instance.lock")
 _ga_lock_fd = None
 try:
     _ga_lock_fd = open(LOCK_FILE, "w")
     import msvcrt
     msvcrt.locking(_ga_lock_fd.fileno(), msvcrt.LK_NBLCK, 1)
+    # 写入 PID 方便排查
+    _ga_lock_fd.write(str(os.getpid()))
+    _ga_lock_fd.flush()
 except (IOError, OSError):
     print(f"[Launch] Another GA instance is already running (lock: {LOCK_FILE})")
     sys.exit(0)

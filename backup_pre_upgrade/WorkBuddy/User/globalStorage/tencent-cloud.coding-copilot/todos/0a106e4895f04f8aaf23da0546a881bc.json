@@ -1,0 +1,26 @@
+{
+  "conversationId": "0a106e4895f04f8aaf23da0546a881bc",
+  "todos": [
+    {
+      "id": "1",
+      "status": "completed",
+      "content": "创建终极版A股智能选股分析系统"
+    },
+    {
+      "id": "2",
+      "status": "completed",
+      "content": "运行完整分析流程验证功能"
+    },
+    {
+      "id": "3",
+      "status": "completed",
+      "content": "建立6维度财务评分体系和错误处理机制"
+    },
+    {
+      "id": "4",
+      "status": "completed",
+      "content": "生成符合行业标准的Excel增长率分析报告"
+    }
+  ],
+  "updatedAt": 1777027623821
+}

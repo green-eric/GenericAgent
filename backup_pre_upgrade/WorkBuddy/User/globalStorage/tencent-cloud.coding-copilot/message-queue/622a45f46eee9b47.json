@@ -1,0 +1,187 @@
+{
+  "version": 2,
+  "lastUpdated": 1777216374413,
+  "conversations": {
+    "47a0aebd5b434f1f87fd5e2ef52287a6": {
+      "version": 2,
+      "conversationId": "47a0aebd5b434f1f87fd5e2ef52287a6",
+      "updatedAt": 1777216374413,
+      "runtime": {
+        "activated": true,
+        "paused": false,
+        "awaitingSessionIdle": false,
+        "updatedAt": 1777216374413
+      },
+      "items": [
+        {
+          "id": "mq-1777195090858-owa6e1",
+          "conversationId": "47a0aebd5b434f1f87fd5e2ef52287a6",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "置信度 ?",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "LongCat-2.0-Preview"
+                }
+              }
+            }
+          ],
+          "previewText": "置信度 ?",
+          "status": "sent",
+          "order": 0,
+          "createdAt": 1777195090858,
+          "updatedAt": 1777195202061,
+          "modeId": "craft",
+          "modelId": "LongCat-2.0-Preview",
+          "lastAttemptAt": 1777195202024
+        },
+        {
+          "id": "mq-1777198119308-hzk8ps",
+          "conversationId": "47a0aebd5b434f1f87fd5e2ef52287a6",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "行业映射表  优先级4?  评估调整",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "LongCat-2.0-Preview"
+                }
+              }
+            }
+          ],
+          "previewText": "行业映射表 优先级4? 评估调整",
+          "status": "sent",
+          "order": 1,
+          "createdAt": 1777198119308,
+          "updatedAt": 1777198600925,
+          "modeId": "craft",
+          "modelId": "LongCat-2.0-Preview",
+          "lastAttemptAt": 1777198600789
+        },
+        {
+          "id": "mq-1777198554405-coq5wi",
+          "conversationId": "47a0aebd5b434f1f87fd5e2ef52287a6",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "这个区一级行业 还是二级行业  请也评估",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "LongCat-2.0-Preview"
+                }
+              }
+            }
+          ],
+          "previewText": "这个区一级行业 还是二级行业 请也评估",
+          "status": "sent",
+          "order": 2,
+          "createdAt": 1777198554405,
+          "updatedAt": 1777198756863,
+          "modeId": "craft",
+          "modelId": "LongCat-2.0-Preview",
+          "lastAttemptAt": 1777198756838
+        },
+        {
+          "id": "mq-1777199997131-xlpw5b",
+          "conversationId": "47a0aebd5b434f1f87fd5e2ef52287a6",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "代码里面版本也要改哦",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "LongCat-2.0-Preview"
+                }
+              }
+            }
+          ],
+          "previewText": "代码里面版本也要改哦",
+          "status": "sent",
+          "order": 3,
+          "createdAt": 1777199997131,
+          "updatedAt": 1777200190977,
+          "modeId": "craft",
+          "modelId": "LongCat-2.0-Preview",
+          "lastAttemptAt": 1777200190503
+        },
+        {
+          "id": "mq-1777200217937-4wwksa",
+          "conversationId": "47a0aebd5b434f1f87fd5e2ef52287a6",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "目前400+股票 全量脚本运行一次 评估一下 python annual_scorer.py --force-refresh",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "LongCat-2.0-Preview"
+                }
+              }
+            }
+          ],
+          "previewText": "目前400+股票 全量脚本运行一次 评估一下 python annual_scorer.py --force-refresh",
+          "status": "sent",
+          "order": 4,
+          "createdAt": 1777200217937,
+          "updatedAt": 1777200285797,
+          "modeId": "craft",
+          "modelId": "LongCat-2.0-Preview",
+          "lastAttemptAt": 1777200285667
+        },
+        {
+          "id": "mq-1777200240808-f0yfs0",
+          "conversationId": "47a0aebd5b434f1f87fd5e2ef52287a6",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "4000+",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "LongCat-2.0-Preview"
+                }
+              }
+            }
+          ],
+          "previewText": "4000+",
+          "status": "sent",
+          "order": 5,
+          "createdAt": 1777200240808,
+          "updatedAt": 1777200437481,
+          "modeId": "craft",
+          "modelId": "LongCat-2.0-Preview",
+          "lastAttemptAt": 1777200437041
+        },
+        {
+          "id": "mq-1777203466028-ubfy9b",
+          "conversationId": "47a0aebd5b434f1f87fd5e2ef52287a6",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "太多错误 参数调整??",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "LongCat-2.0-Preview"
+                }
+              }
+            }
+          ],
+          "previewText": "太多错误 参数调整??",
+          "status": "sent",
+          "order": 6,
+          "createdAt": 1777203466028,
+          "updatedAt": 1777203486507,
+          "modeId": "craft",
+          "modelId": "LongCat-2.0-Preview",
+          "lastAttemptAt": 1777203486384
+        }
+      ]
+    }
+  }
+}

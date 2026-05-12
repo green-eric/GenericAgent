@@ -1,0 +1,60 @@
+{
+  "filePath": "d:\\Project\\QAScorer\\fix_syntax5.py",
+  "fileName": "fix_syntax5.py",
+  "changeType": "modify",
+  "addedLines": 13,
+  "removedLines": 0,
+  "status": "pending",
+  "diff": "Index: d:\\Project\\QAScorer\\fix_syntax5.py\n===================================================================\n--- d:\\Project\\QAScorer\\fix_syntax5.py\toriginal\n+++ d:\\Project\\QAScorer\\fix_syntax5.py\tmodified\n@@ -1,1 +1,14 @@\n-\r\n\\ No newline at end of file\n+#!/usr/bin/env python3\r\n+\r\n+# 读取文件并修复语法错误\r\n+with open('d:/Project/QAScorer/qa_scorer.py', 'r', encoding='utf-8') as f:\r\n+    content = f.read()\r\n+\r\n+# 替换所有有问题的字符\r\n+content = content.replace('（', '(').replace('）', ')').replace('，', ',').replace('。', '.').replace('：', ':').replace('、', 'and').replace('→', '->')\r\n+\r\n+# 写入修复后的文件\r\n+with open('d:/Project/QAScorer/qa_scorer.py', 'w', encoding='utf-8') as f:\r\n+    f.write(content)\r\n+\r\n+print(\"语法修复完成\")\n\\ No newline at end of file\n",
+  "versionId": "6355",
+  "timestamp": 1777285319559,
+  "ideState": {
+    "editCodeData": {
+      "diffAreas": [
+        {
+          "diffareaid": "106",
+          "type": "DiffZone",
+          "originalCode": "",
+          "startLine": 1,
+          "endLine": 14,
+          "_diffOfId": {
+            "6354": {
+              "type": "insertion",
+              "startLine": 1,
+              "endLine": 1,
+              "originalStartLine": 1,
+              "originalEndLine": 0,
+              "originalCode": "",
+              "code": "#!/usr/bin/env python3",
+              "diffid": "6354",
+              "diffareaid": "106"
+            },
+            "6355": {
+              "type": "insertion",
+              "startLine": 3,
+              "endLine": 14,
+              "originalStartLine": 2,
+              "originalEndLine": 1,
+              "originalCode": "",
+              "code": "# 读取文件并修复语法错误\nwith open('d:/Project/QAScorer/qa_scorer.py', 'r', encoding='utf-8') as f:\n    content = f.read()\n\n# 替换所有有问题的字符\ncontent = content.replace('（', '(').replace('）', ')').replace('，', ',').replace('。', '.').replace('：', ':').replace('、', 'and').replace('→', '->')\n\n# 写入修复后的文件\nwith open('d:/Project/QAScorer/qa_scorer.py', 'w', encoding='utf-8') as f:\n    f.write(content)\n\nprint(\"语法修复完成\")",
+              "diffid": "6355",
+              "diffareaid": "106"
+            }
+          }
+        }
+      ],
+      "originalFileContent": "#!/usr/bin/env python3\n\n# 读取文件并修复语法错误\nwith open('d:/Project/QAScorer/qa_scorer.py', 'r', encoding='utf-8') as f:\n    content = f.read()\n\n# 替换所有有问题的字符\ncontent = content.replace('（', '(').replace('）', ')').replace('，', ',').replace('。', '.').replace('：', ':').replace('、', 'and').replace('→', '->')\n\n# 写入修复后的文件\nwith open('d:/Project/QAScorer/qa_scorer.py', 'w', encoding='utf-8') as f:\n    f.write(content)\n\nprint(\"语法修复完成\")"
+    },
+    "commandBarState": {
+      "sortedDiffZoneIds": [
+        "106"
+      ],
+      "sortedDiffIds": [
+        "6354",
+        "6355"
+      ],
+      "isStreaming": false,
+      "diffIdx": 0
+    }
+  }
+}

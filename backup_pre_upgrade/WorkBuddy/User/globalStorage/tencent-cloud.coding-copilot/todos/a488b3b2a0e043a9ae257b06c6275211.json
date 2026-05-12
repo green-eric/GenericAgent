@@ -1,0 +1,26 @@
+{
+  "conversationId": "a488b3b2a0e043a9ae257b06c6275211",
+  "todos": [
+    {
+      "id": "1",
+      "status": "completed",
+      "content": "全面代码审查 - 识别性能瓶颈"
+    },
+    {
+      "id": "2",
+      "status": "completed",
+      "content": "量化各阶段耗时估算并输出报告"
+    },
+    {
+      "id": "3",
+      "status": "in_progress",
+      "content": "实施高优先级性能优化"
+    },
+    {
+      "id": "4",
+      "status": "pending",
+      "content": "验证优化效果"
+    }
+  ],
+  "updatedAt": 1777348416070
+}

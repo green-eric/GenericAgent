@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "lastUpdated": 1777033876898,
+  "conversations": {
+    "088f9eccd19c4feea726950a282ba0fb": {
+      "version": 2,
+      "conversationId": "088f9eccd19c4feea726950a282ba0fb",
+      "updatedAt": 1777033876898,
+      "runtime": {
+        "activated": false,
+        "paused": true,
+        "pauseReason": "error",
+        "awaitingSessionIdle": false,
+        "updatedAt": 1777033876898
+      },
+      "items": []
+    }
+  }
+}

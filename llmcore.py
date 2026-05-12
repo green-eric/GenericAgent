@@ -107,18 +107,19 @@ def auto_make_url(base, path):
     if b.endswith(p): return b
     return f"{b}/{p}" if re.search(r'/v\d+(/|$)', b) else f"{b}/v1/{p}"
 
-def _parse_claude_json(data):
+def _parse_claude_json(data, model=None):
     content_blocks = data.get("content", [])
-    _record_usage(data.get("usage", {}), "messages")
+    _record_usage(data.get("usage", {}), "messages", model)
     for b in content_blocks:
         if b.get("type") == "text": yield b.get("text", "")
         elif b.get("type") == "thinking": yield ""
     return content_blocks
 
-def _parse_claude_sse(resp_lines):
+def _parse_claude_sse(resp_lines, model=None, est_input=0):
     """Parse Anthropic SSE stream. Yields text chunks, returns list[content_block]."""
     content_blocks = []; current_block = None; tool_json_buf = ""
     stop_reason = None; got_message_stop = False; warn = None
+    _pending_usage = None  # 暂存 message_start 的 input/cache usage
     for line in resp_lines:
         if not line: continue
         line = line.decode('utf-8') if isinstance(line, bytes) else line
@@ -131,8 +132,28 @@ def _parse_claude_sse(resp_lines):
             continue
         evt_type = evt.get("type", "")
         if evt_type == "message_start":
+            # 只记录 input/cache 部分（此时 output_tokens 还为 0）
             usage = evt.get("message", {}).get("usage", {})
-            _record_usage(usage, "messages")
+            # 暂存 input/cache，等 message_delta 拿到 output 后再写
+            _pending_usage = usage
+        elif evt_type == "message_delta":
+            delta = evt.get("delta", {})
+            stop_reason = delta.get("stop_reason", stop_reason)
+            out_usage = evt.get("usage", {})
+            out_tokens = out_usage.get("output_tokens", 0)
+            if out_tokens:
+                print(f"[Output] tokens={out_tokens} stop_reason={stop_reason}")
+                # ★ 合并 input(来自 message_start 或 message_delta 本身) + output 写入
+                merged = dict(_pending_usage or {})
+                # message_delta.usage 可能也带 input_tokens（部分代理会回传）
+                if out_usage.get("input_tokens"):
+                    merged["input_tokens"] = out_usage["input_tokens"]
+                if out_usage.get("cache_creation_input_tokens"):
+                    merged["cache_creation_input_tokens"] = out_usage["cache_creation_input_tokens"]
+                if out_usage.get("cache_read_input_tokens"):
+                    merged["cache_read_input_tokens"] = out_usage["cache_read_input_tokens"]
+                merged["output_tokens"] = out_tokens
+                _record_usage(merged, "messages", model, est_input=est_input)
         elif evt_type == "content_block_start":
             block = evt.get("content_block", {})
             if block.get("type") == "text": current_block = {"type": "text", "text": ""}
@@ -165,7 +186,12 @@ def _parse_claude_sse(resp_lines):
             out_usage = evt.get("usage", {})
             out_tokens = out_usage.get("output_tokens", 0)
             if out_tokens: print(f"[Output] tokens={out_tokens} stop_reason={stop_reason}")
-        elif evt_type == "message_stop": got_message_stop = True
+        elif evt_type == "message_stop":
+            got_message_stop = True
+            # 兜底：如果 message_delta 没触发（无 output_tokens），写入 pending
+            if _pending_usage is not None:
+                _record_usage(_pending_usage, "messages", model, est_input=est_input)
+                _pending_usage = None
         elif evt_type == "error":
             err = evt.get("error", {})
             emsg = err.get("message", str(err)) if isinstance(err, dict) else str(err)
@@ -198,7 +224,7 @@ def _try_parse_tool_args(raw):
         return parsed
     return [{"_raw": raw}]
 
-def _parse_openai_sse(resp_lines, api_mode="chat_completions"):
+def _parse_openai_sse(resp_lines, api_mode="chat_completions", model=None, est_input=0):
     """Parse OpenAI SSE stream (chat_completions or responses API).
     Yields text chunks, returns list[content_block].
     content_block: {type:'text', text:str} | {type:'tool_use', id:str, name:str, input:dict}
@@ -240,7 +266,7 @@ def _parse_openai_sse(resp_lines, api_mode="chat_completions"):
                 break
             elif etype == "response.completed":
                 usage = evt.get("response", {}).get("usage", {})
-                _record_usage(usage, api_mode)
+                _record_usage(usage, api_mode, model)
                 break
         blocks = []
         if content_text: blocks.append({"type": "text", "text": content_text})
@@ -279,7 +305,12 @@ def _parse_openai_sse(resp_lines, api_mode="chat_completions"):
                 if tc.get("function", {}).get("arguments"): tc_buf[idx]["args"] += tc["function"]["arguments"]
                 if tc.get("id") and not tc_buf[idx]["id"]: tc_buf[idx]["id"] = tc["id"]
             usage = evt.get("usage")
-            if usage: _record_usage(usage, api_mode)
+            if usage:
+                _record_usage(usage, api_mode, model, est_input=est_input)
+            else:
+                # ★ Ollama 等模型不返回 usage，用预估算值兜底
+                if est_input > 0:
+                    _record_usage({"input_tokens": est_input, "output_tokens": 0}, api_mode, model, est_input=est_input)
         blocks = []
         if reasoning_text: blocks.append({"type": "thinking", "thinking": reasoning_text})
         if content_text: blocks.append({"type": "text", "text": content_text})
@@ -292,27 +323,41 @@ def _parse_openai_sse(resp_lines, api_mode="chat_completions"):
                 blocks.append({"type": "tool_use", "id": bid, "name": tc["name"], "input": inp})
         return blocks
 
-def _record_usage(usage, api_mode):
-    if not usage: return
+def _record_usage(usage, api_mode, model=None, est_input=0):
+    """Record token usage. If usage is empty/zero, use est_input as fallback estimate."""
     import json, os, datetime
     log_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'memory', 'usage_log.jsonl')
-    entry = {"ts": datetime.datetime.now().isoformat(), "api_mode": api_mode}
+    entry = {"ts": datetime.datetime.now().isoformat(), "api_mode": api_mode, "model": model or "unknown"}
     if api_mode == 'responses':
-        entry["cached"] = (usage.get("input_tokens_details") or {}).get("cached_tokens", 0)
-        entry["input"] = usage.get("input_tokens", 0)
-        entry["output"] = usage.get("output_tokens", 0)
+        entry["cached"] = (usage.get("input_tokens_details") or {}).get("cached_tokens", 0) if usage else 0
+        entry["input"] = usage.get("input_tokens", 0) if usage else 0
+        entry["output"] = usage.get("output_tokens", 0) if usage else 0
         print(f"[Cache] input={entry['input']} cached={entry['cached']}")
     elif api_mode == 'chat_completions':
-        entry["cached"] = (usage.get("prompt_tokens_details") or {}).get("cached_tokens", 0)
-        entry["input"] = usage.get("prompt_tokens", 0)
-        entry["output"] = usage.get("completion_tokens", 0)
+        entry["cached"] = (usage.get("prompt_tokens_details") or {}).get("cached_tokens", 0) if usage else 0
+        entry["input"] = usage.get("prompt_tokens", 0) if usage else 0
+        entry["output"] = usage.get("completion_tokens", 0) if usage else 0
         print(f"[Cache] input={entry['input']} cached={entry['cached']}")
     elif api_mode == 'messages':
-        entry["input"] = usage.get("input_tokens", 0)
-        entry["cache_creation"] = usage.get("cache_creation_input_tokens", 0)
-        entry["cache_read"] = usage.get("cache_read_input_tokens", 0)
-        entry["output"] = usage.get("output_tokens", 0)
+        # ★ 调试：打印原始usage看字段名（无论usage是否None都打）
+        print(f"[UsageDebug] api_mode=messages raw_usage={usage} type={type(usage).__name__}")
+        if usage:
+            print(f"[UsageDebug] usage keys={list(usage.keys())}")
+        _raw_input = usage.get("input_tokens", 0) if usage else 0
+        entry["cache_creation"] = usage.get("cache_creation_input_tokens", 0) if usage else 0
+        entry["cache_read"] = usage.get("cache_read_input_tokens", 0) if usage else 0
+        entry["output"] = usage.get("output_tokens", 0) if usage else 0
+        # input = 原始input + 缓存命中
+        entry["input"] = _raw_input + entry["cache_read"]
         print(f"[Cache] input={entry['input']} creation={entry['cache_creation']} read={entry['cache_read']}")
+    # ★ Fallback: if API returned input=0 (or missing), use estimated input
+    if not entry.get("input"):
+        fallback = est_input or (entry.get("output", 0) * 10) or 1
+        entry["input"] = fallback
+        print(f"[UsageLog] fallback estimate: input~{fallback}")
+    # skip only if truly nothing to record
+    if not entry.get("input") and not entry.get("output"):
+        return
     try:
         os.makedirs(os.path.dirname(log_path), exist_ok=True)
         with open(log_path, 'a', encoding='utf-8') as lf:
@@ -320,10 +365,10 @@ def _record_usage(usage, api_mode):
     except Exception as e:
         print(f"[UsageLog] write failed: {e}")
     
-def _parse_openai_json(data, api_mode="chat_completions"):
+def _parse_openai_json(data, api_mode="chat_completions", model=None, est_input=0):
     blocks = []
     if api_mode == "responses":
-        _record_usage(data.get("usage") or {}, api_mode)
+        _record_usage(data.get("usage") or {}, api_mode, model, est_input=est_input)
         for item in (data.get("output") or []):
             if item.get("type") == "message":
                 for p in (item.get("content") or []):
@@ -335,7 +380,7 @@ def _parse_openai_json(data, api_mode="chat_completions"):
                 blocks.append({"type": "tool_use", "id": item.get("call_id", item.get("id", "")),
                                "name": item.get("name", ""), "input": args})
     else:
-        _record_usage(data.get("usage") or {}, api_mode)
+        _record_usage(data.get("usage") or {}, api_mode, model, est_input=est_input)
         msg = (data.get("choices") or [{}])[0].get("message", {})
         reasoning = msg.get("reasoning_content", "")
         if reasoning:
@@ -423,7 +468,25 @@ def _openai_stream(sess, messages):
     tools = getattr(sess, 'tools', None)
     if tools: payload["tools"] = _prepare_oai_tools(tools, api_mode)
     if sess.service_tier: payload["service_tier"] = sess.service_tier
-    parse_fn = (lambda r: _parse_openai_sse(r.iter_lines(), api_mode)) if sess.stream else (lambda r: _parse_openai_json(r.json(), api_mode))
+    # ★ 预估算 input tokens（用于 Ollama 等不返回 usage 的模型）
+    _est_input = 0
+    try:
+        import tiktoken
+        _enc = tiktoken.encoding_for_model("gpt-4")
+        _payload_msgs = payload.get("messages") or payload.get("input", "")
+        if isinstance(_payload_msgs, list):
+            _est_input = sum(len(_enc.encode(m.get("content", ""))) for m in _payload_msgs if isinstance(m, dict))
+        elif isinstance(_payload_msgs, str):
+            _est_input = len(_enc.encode(_payload_msgs))
+    except Exception:
+        # tiktoken 不可用时用字符数/4 粗估
+        _payload_msgs = payload.get("messages") or payload.get("input", "")
+        if isinstance(_payload_msgs, list):
+            _est_input = sum(len(str(m.get("content", ""))) for m in _payload_msgs if isinstance(m, dict)) // 4
+        elif isinstance(_payload_msgs, str):
+            _est_input = len(_payload_msgs) // 4
+    _est_input = max(_est_input, 0)
+    parse_fn = (lambda r: _parse_openai_sse(r.iter_lines(), api_mode, model=sess.model, est_input=_est_input)) if sess.stream else (lambda r: _parse_openai_json(r.json(), api_mode, model=sess.model, est_input=_est_input))
     return (yield from _stream_with_retry(sess, url, headers, payload, parse_fn))
         
 def _prepare_oai_tools(tools, api_mode="chat_completions"):
@@ -607,7 +670,7 @@ class ClaudeSession(BaseSession):
         self._apply_claude_thinking(payload)
         if self.system: payload["system"] = [{"type": "text", "text": self.system, "cache_control": {"type": "persistent"}}]
         url = auto_make_url(self.api_base, "messages")
-        parse_fn = (lambda r: _parse_claude_sse(r.iter_lines())) if self.stream else (lambda r: _parse_claude_json(r.json()))
+        parse_fn = (lambda r: _parse_claude_sse(r.iter_lines(), model=self.model)) if self.stream else (lambda r: _parse_claude_json(r.json(), model=self.model))
         return (yield from _stream_with_retry(self, url, headers, payload, parse_fn))
     def make_messages(self, raw_list):
         msgs = _drop_unsigned_thinking([{"role": m['role'], "content": list(m['content'])} for m in raw_list])
@@ -678,7 +741,7 @@ class NativeClaudeSession(BaseSession):
             messages[idx] = {**messages[idx], "content": list(messages[idx]["content"])}
             messages[idx]["content"][-1] = dict(messages[idx]["content"][-1], cache_control={"type": "ephemeral"})
         url = auto_make_url(self.api_base, "messages") + '?beta=true'
-        parse_fn = (lambda r: _parse_claude_sse(r.iter_lines())) if self.stream else (lambda r: _parse_claude_json(r.json()))
+        parse_fn = (lambda r: _parse_claude_sse(r.iter_lines(), model=self.model)) if self.stream else (lambda r: _parse_claude_json(r.json(), model=self.model))
         return (yield from _stream_with_retry(self, url, headers, payload, parse_fn))
 
     def ask(self, msg):

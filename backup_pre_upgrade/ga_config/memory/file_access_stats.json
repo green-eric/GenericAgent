@@ -1,0 +1,214 @@
+{
+  "web_setup_sop.md": {
+    "count": 30,
+    "last": "2026-05-11"
+  },
+  "tmwebdriver_sop.md": {
+    "count": 23,
+    "last": "2026-05-09"
+  },
+  "ocr_utils.py": {
+    "count": 1,
+    "last": "2026-05-04"
+  },
+  "vision_sop.md": {
+    "count": 5,
+    "last": "2026-05-12"
+  },
+  "memory_management_sop.md": {
+    "count": 55,
+    "last": "2026-05-12"
+  },
+  "global_mem.txt": {
+    "count": 354,
+    "last": "2026-05-12"
+  },
+  "global_mem_insight.txt": {
+    "count": 100,
+    "last": "2026-05-12"
+  },
+  "vision_api.template.py": {
+    "count": 1,
+    "last": "2026-05-04"
+  },
+  "compress_session.py": {
+    "count": 2,
+    "last": "2026-05-04"
+  },
+  "ga_token_usage.md": {
+    "count": 20,
+    "last": "2026-05-09"
+  },
+  "wechat_fix.md": {
+    "count": 11,
+    "last": "2026-05-09"
+  },
+  "autonomous_operation_sop.md": {
+    "count": 164,
+    "last": "2026-05-12"
+  },
+  "task_planning.md": {
+    "count": 33,
+    "last": "2026-05-12"
+  },
+  "subagent.md": {
+    "count": 13,
+    "last": "2026-05-12"
+  },
+  "plan_sop.md": {
+    "count": 12,
+    "last": "2026-05-12"
+  },
+  "autonomous_operation_sop.py": {
+    "count": 3,
+    "last": "2026-05-11"
+  },
+  "autonomous_operation_sop": {
+    "count": 2,
+    "last": "2026-05-07"
+  },
+  "history.txt": {
+    "count": 1,
+    "last": "2026-05-04"
+  },
+  "search_tool.py": {
+    "count": 7,
+    "last": "2026-05-06"
+  },
+  "helper.py": {
+    "count": 20,
+    "last": "2026-05-12"
+  },
+  "ga_token_usage": {
+    "count": 1,
+    "last": "2026-05-05"
+  },
+  "cdp_bridge_sop.md": {
+    "count": 3,
+    "last": "2026-05-06"
+  },
+  "memory": {
+    "count": 2,
+    "last": "2026-05-09"
+  },
+  "model_responses_24448.txt": {
+    "count": 1,
+    "last": "2026-05-05"
+  },
+  "wechat_fix": {
+    "count": 1,
+    "last": "2026-05-05"
+  },
+  "output_format_sop.md": {
+    "count": 4,
+    "last": "2026-05-06"
+  },
+  "web_setup_sop": {
+    "count": 1,
+    "last": "2026-05-05"
+  },
+  "otel_trace.py": {
+    "count": 1,
+    "last": "2026-05-05"
+  },
+  "mini_sop_env_scan.md": {
+    "count": 1,
+    "last": "2026-05-05"
+  },
+  "global_mem_insight": {
+    "count": 1,
+    "last": "2026-05-05"
+  },
+  "token_stats.py": {
+    "count": 4,
+    "last": "2026-05-11"
+  },
+  "MEMORY.md": {
+    "count": 3,
+    "last": "2026-05-05"
+  },
+  "scheduled_task_sop.md": {
+    "count": 10,
+    "last": "2026-05-12"
+  },
+  "bullish_stream_realtime_sop.md": {
+    "count": 4,
+    "last": "2026-05-06"
+  },
+  "wechat_bot_perf_sop.md": {
+    "count": 6,
+    "last": "2026-05-08"
+  },
+  "verify_sop.md": {
+    "count": 1,
+    "last": "2026-05-06"
+  },
+  "ljqCtrl_sop.md": {
+    "count": 1,
+    "last": "2026-05-06"
+  },
+  "keychain.py": {
+    "count": 2,
+    "last": "2026-05-08"
+  },
+  "procmem_scanner_sop.md": {
+    "count": 1,
+    "last": "2026-05-06"
+  },
+  "file_monitor.py": {
+    "count": 1,
+    "last": "2026-05-06"
+  },
+  "L4_raw_sessions": {
+    "count": 3,
+    "last": "2026-05-08"
+  },
+  "supervisor_sop.md": {
+    "count": 1,
+    "last": "2026-05-06"
+  },
+  "usage_log.jsonl": {
+    "count": 2,
+    "last": "2026-05-11"
+  },
+  "subagent_sop.md": {
+    "count": 1,
+    "last": "2026-05-07"
+  },
+  "working_checkpoint.txt": {
+    "count": 1,
+    "last": "2026-05-08"
+  },
+  "token_monitor.py": {
+    "count": 23,
+    "last": "2026-05-09"
+  },
+  "token_monitor+.sop": {
+    "count": 2,
+    "last": "2026-05-09"
+  },
+  "token_monitor_sop.md": {
+    "count": 11,
+    "last": "2026-05-09"
+  },
+  "token_report.md": {
+    "count": 2,
+    "last": "2026-05-09"
+  },
+  "2026-05-10.md": {
+    "count": 1,
+    "last": "2026-05-10"
+  },
+  "2026-05-09.md": {
+    "count": 1,
+    "last": "2026-05-10"
+  },
+  "token_stats.md": {
+    "count": 1,
+    "last": "2026-05-11"
+  },
+  "token_stats": {
+    "count": 1,
+    "last": "2026-05-11"
+  }
+}

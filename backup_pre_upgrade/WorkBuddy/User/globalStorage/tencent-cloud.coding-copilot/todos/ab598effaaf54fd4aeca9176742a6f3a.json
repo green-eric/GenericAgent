@@ -1,0 +1,41 @@
+{
+  "conversationId": "ab598effaaf54fd4aeca9176742a6f3a",
+  "todos": [
+    {
+      "id": "1",
+      "content": "统一版本号 V6.0.0",
+      "status": "completed"
+    },
+    {
+      "id": "2",
+      "content": "拆分 main.py：提取 Excel 导出到独立模块",
+      "status": "in_progress"
+    },
+    {
+      "id": "3",
+      "content": "消除模块重叠：明确 utils_cache.py / batch_runner.py 定位",
+      "status": "pending"
+    },
+    {
+      "id": "4",
+      "content": "修复 mock 模式 name 字段 bug",
+      "status": "completed"
+    },
+    {
+      "id": "5",
+      "content": "补充单元测试",
+      "status": "pending"
+    },
+    {
+      "id": "6",
+      "content": "运行模拟测试验证",
+      "status": "pending"
+    },
+    {
+      "id": "7",
+      "content": "更新 README 与代码一致",
+      "status": "pending"
+    }
+  ],
+  "updatedAt": 1777376601627
+}

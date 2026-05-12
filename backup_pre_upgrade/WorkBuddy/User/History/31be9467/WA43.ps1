@@ -1,0 +1,1 @@
+Get-Process | Where-Object { $_.ProcessName -match "WorkBuddy|electron|node" } | Select-Object Id, ProcessName, @{N='MemMB';E={[math]::Round($_.WorkingSet64/1MB,1)}}, Path | Sort-Object MemMB -Descending | Format-Table -AutoSize

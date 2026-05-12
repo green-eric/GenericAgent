@@ -1,0 +1,60 @@
+{
+  "filePath": "d:\\Project\\QAScorer\\simple_test.py",
+  "fileName": "simple_test.py",
+  "changeType": "modify",
+  "addedLines": 41,
+  "removedLines": 0,
+  "status": "pending",
+  "diff": "Index: d:\\Project\\QAScorer\\simple_test.py\n===================================================================\n--- d:\\Project\\QAScorer\\simple_test.py\toriginal\n+++ d:\\Project\\QAScorer\\simple_test.py\tmodified\n@@ -1,1 +1,42 @@\n-\r\n\\ No newline at end of file\n+#!/usr/bin/env python3\r\n+\r\n+# 简单测试脚本，验证核心功能\r\n+import os\r\n+import sys\r\n+\r\n+print(\"开始测试...\")\r\n+\r\n+# 检查文件是否存在\r\n+if not os.path.exists('d:/Project/QAScorer/qa_scorer.py'):\r\n+    print(\"错误: qa_scorer.py 文件不存在\")\r\n+    exit(1)\r\n+\r\n+# 尝试读取文件\r\n+try:\r\n+    with open('d:/Project/QAScorer/qa_scorer.py', 'r', encoding='utf-8') as f:\r\n+        content = f.read()\r\n+\r\n+    # 检查基本结构\r\n+    if 'def fetch_quarterly_data' in content:\r\n+        print(\"✓ 找到 fetch_quarterly_data 函数\")\r\n+    else:\r\n+        print(\"✗ 未找到 fetch_quarterly_data 函数\")\r\n+\r\n+    if 'get_combined_financials' in content:\r\n+        print(\"✓ 找到 get_combined_financials 函数\")\r\n+    else:\r\n+        print(\"✗ 未找到 get_combined_financials 函数\")\r\n+\r\n+    # 检查是否有语法错误\r\n+    try:\r\n+        compile(content, 'd:/Project/QAScorer/qa_scorer.py', 'exec')\r\n+        print(\"✓ 文件语法正确\")\r\n+    except SyntaxError as e:\r\n+        print(f\"✗ 语法错误: {e}\")\r\n+        exit(1)\r\n+\r\n+    print(\"测试完成！\")\r\n+\r\n+except Exception as e:\r\n+    print(f\"错误: {e}\")\r\n+    exit(1)\n\\ No newline at end of file\n",
+  "versionId": "6700",
+  "timestamp": 1777285319559,
+  "ideState": {
+    "editCodeData": {
+      "diffAreas": [
+        {
+          "diffareaid": "108",
+          "type": "DiffZone",
+          "originalCode": "",
+          "startLine": 1,
+          "endLine": 42,
+          "_diffOfId": {
+            "6699": {
+              "type": "insertion",
+              "startLine": 1,
+              "endLine": 1,
+              "originalStartLine": 1,
+              "originalEndLine": 0,
+              "originalCode": "",
+              "code": "#!/usr/bin/env python3",
+              "diffid": "6699",
+              "diffareaid": "108"
+            },
+            "6700": {
+              "type": "insertion",
+              "startLine": 3,
+              "endLine": 42,
+              "originalStartLine": 2,
+              "originalEndLine": 1,
+              "originalCode": "",
+              "code": "# 简单测试脚本，验证核心功能\nimport os\nimport sys\n\nprint(\"开始测试...\")\n\n# 检查文件是否存在\nif not os.path.exists('d:/Project/QAScorer/qa_scorer.py'):\n    print(\"错误: qa_scorer.py 文件不存在\")\n    exit(1)\n\n# 尝试读取文件\ntry:\n    with open('d:/Project/QAScorer/qa_scorer.py', 'r', encoding='utf-8') as f:\n        content = f.read()\n\n    # 检查基本结构\n    if 'def fetch_quarterly_data' in content:\n        print(\"✓ 找到 fetch_quarterly_data 函数\")\n    else:\n        print(\"✗ 未找到 fetch_quarterly_data 函数\")\n\n    if 'get_combined_financials' in content:\n        print(\"✓ 找到 get_combined_financials 函数\")\n    else:\n        print(\"✗ 未找到 get_combined_financials 函数\")\n\n    # 检查是否有语法错误\n    try:\n        compile(content, 'd:/Project/QAScorer/qa_scorer.py', 'exec')\n        print(\"✓ 文件语法正确\")\n    except SyntaxError as e:\n        print(f\"✗ 语法错误: {e}\")\n        exit(1)\n\n    print(\"测试完成！\")\n\nexcept Exception as e:\n    print(f\"错误: {e}\")\n    exit(1)",
+              "diffid": "6700",
+              "diffareaid": "108"
+            }
+          }
+        }
+      ],
+      "originalFileContent": "#!/usr/bin/env python3\n\n# 简单测试脚本，验证核心功能\nimport os\nimport sys\n\nprint(\"开始测试...\")\n\n# 检查文件是否存在\nif not os.path.exists('d:/Project/QAScorer/qa_scorer.py'):\n    print(\"错误: qa_scorer.py 文件不存在\")\n    exit(1)\n\n# 尝试读取文件\ntry:\n    with open('d:/Project/QAScorer/qa_scorer.py', 'r', encoding='utf-8') as f:\n        content = f.read()\n\n    # 检查基本结构\n    if 'def fetch_quarterly_data' in content:\n        print(\"✓ 找到 fetch_quarterly_data 函数\")\n    else:\n        print(\"✗ 未找到 fetch_quarterly_data 函数\")\n\n    if 'get_combined_financials' in content:\n        print(\"✓ 找到 get_combined_financials 函数\")\n    else:\n        print(\"✗ 未找到 get_combined_financials 函数\")\n\n    # 检查是否有语法错误\n    try:\n        compile(content, 'd:/Project/QAScorer/qa_scorer.py', 'exec')\n        print(\"✓ 文件语法正确\")\n    except SyntaxError as e:\n        print(f\"✗ 语法错误: {e}\")\n        exit(1)\n\n    print(\"测试完成！\")\n\nexcept Exception as e:\n    print(f\"错误: {e}\")\n    exit(1)"
+    },
+    "commandBarState": {
+      "sortedDiffZoneIds": [
+        "108"
+      ],
+      "sortedDiffIds": [
+        "6699",
+        "6700"
+      ],
+      "isStreaming": false,
+      "diffIdx": 0
+    }
+  }
+}

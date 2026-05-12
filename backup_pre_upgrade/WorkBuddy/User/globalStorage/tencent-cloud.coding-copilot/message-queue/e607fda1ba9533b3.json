@@ -1,0 +1,750 @@
+{
+  "version": 2,
+  "lastUpdated": 1777382799386,
+  "conversations": {
+    "d846acd7e26143e2b27d2b0acb02ae1a": {
+      "version": 2,
+      "conversationId": "d846acd7e26143e2b27d2b0acb02ae1a",
+      "updatedAt": 1777347661830,
+      "runtime": {
+        "activated": true,
+        "paused": false,
+        "awaitingSessionIdle": false,
+        "updatedAt": 1777347661830
+      },
+      "items": [
+        {
+          "id": "mq-1777300539183-0ksc4x",
+          "conversationId": "d846acd7e26143e2b27d2b0acb02ae1a",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "md文档调整",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "LongCat-2.0-Preview"
+                }
+              }
+            }
+          ],
+          "previewText": "md文档调整",
+          "status": "sent",
+          "order": 0,
+          "createdAt": 1777300539183,
+          "updatedAt": 1777300542961,
+          "modeId": "craft",
+          "modelId": "LongCat-2.0-Preview",
+          "lastAttemptAt": 1777300542837
+        },
+        {
+          "id": "mq-1777300977056-yt8rod",
+          "conversationId": "d846acd7e26143e2b27d2b0acb02ae1a",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "再全量\r\n测试 4500+ 股票全流程性能 前  先做excel各字段验证 确保数据取值准确",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "LongCat-2.0-Preview"
+                }
+              }
+            }
+          ],
+          "previewText": "再全量 测试 4500+ 股票全流程性能 前 先做excel各字段验证 确保数据取值准确",
+          "status": "sent",
+          "order": 1,
+          "createdAt": 1777300977056,
+          "updatedAt": 1777301075910,
+          "modeId": "craft",
+          "modelId": "LongCat-2.0-Preview",
+          "lastAttemptAt": 1777301075894
+        },
+        {
+          "id": "mq-1777301811004-jj4u6i",
+          "conversationId": "d846acd7e26143e2b27d2b0acb02ae1a",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "检查技能 是否有可以的API可用",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "LongCat-2.0-Preview"
+                }
+              }
+            }
+          ],
+          "previewText": "检查技能 是否有可以的API可用",
+          "status": "sent",
+          "order": 2,
+          "createdAt": 1777301811004,
+          "updatedAt": 1777301828547,
+          "modeId": "craft",
+          "modelId": "LongCat-2.0-Preview",
+          "lastAttemptAt": 1777301828514
+        },
+        {
+          "id": "mq-1777304030576-pt4pvh",
+          "conversationId": "d846acd7e26143e2b27d2b0acb02ae1a",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "并行先把文档更新一下",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "LongCat-2.0-Preview"
+                }
+              }
+            }
+          ],
+          "previewText": "并行先把文档更新一下",
+          "status": "sent",
+          "order": 3,
+          "createdAt": 1777304030576,
+          "updatedAt": 1777304796198,
+          "modeId": "craft",
+          "modelId": "LongCat-2.0-Preview",
+          "lastAttemptAt": 1777304796010
+        },
+        {
+          "id": "mq-1777304799833-kix2b6",
+          "conversationId": "d846acd7e26143e2b27d2b0acb02ae1a",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "为什么这么慢!",
+              "_meta": {
+                "displayAsContext": false,
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "LongCat-2.0-Preview"
+                }
+              }
+            },
+            {
+              "type": "text",
+              "text": "\n",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "LongCat-2.0-Preview"
+                }
+              }
+            }
+          ],
+          "previewText": "为什么这么慢!",
+          "status": "sent",
+          "order": 4,
+          "createdAt": 1777304799833,
+          "updatedAt": 1777304834491,
+          "modeId": "craft",
+          "modelId": "LongCat-2.0-Preview",
+          "lastAttemptAt": 1777304834446
+        },
+        {
+          "id": "mq-1777305650800-jy8s9e",
+          "conversationId": "d846acd7e26143e2b27d2b0acb02ae1a",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "hcp 65001 && cd /d d:\\Project\\ScoreSys && python main.py --real --workers 3 --rate-limit 0.5 --save-db --fetch-only --pool d:\\Project\\ScoreSys\\stock_pool.txt --db stock_data_test.db\r\n#< CLIXML\r\n\r\nActive code page: 65001\r\nC:\\Users\\green\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe: can't open file 'D:\\\\Project\\\\BullishForMonitoring\\\\main.py': [Errno 2] No such file or directory\r\n<Objs Version=\"1.1.0.1\" xmlns=\"http://schemas.microsoft.com/powershell/2004/04\"><Obj S=\"progress\" RefId=\"0\"><TN RefId=\"0\"><T>System.Management.Automation.PSCustomObject</T><T>System.Object</T></TN><MS><I64 N=\"SourceId\">1</I64><PR N=\"Record\"><AV>正在准备首次使用模块。</AV><AI>0</AI><Nil /><PI>-1</PI><PC>-1</PC><T>Completed</T><SR>-1</SR><SD> </SD></PR></MS></Obj><S S=\"Error\">Set-Location : 找不到接受实际参数“d:\\Project\\ScoreSys”的位置形式参数。_x000D__x000A_</S><S S=\"Error\">所在位置 行:1 字符: 176_x000D__x000A_</S><S S=\"Error\">+ ... m.Text.Encoding]::UTF8; chcp 65001; cd /d d:\\Project\\ScoreSys; python ..._x000D__x000A_</S><S S=\"Error\">+                                         ~~~~~~~~~~~~~~~~~~~~~~~~~_x000D__x000A_</S><S S=\"Error\">    + CategoryInfo          : InvalidArgument: (:) [Set-Location]，ParameterBindingException_x000D__x000A_</S><S S=\"Error\">    + FullyQualifiedErrorId : PositionalParameterNotFound,Microsoft.PowerShell.Commands.SetLocationCommand_x000D__x000A_</S><S S=\"Error\"> _x000D__x000A_</S></Objs",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "LongCat-2.0-Preview"
+                }
+              }
+            }
+          ],
+          "previewText": "hcp 65001 && cd /d d:\\Project\\ScoreSys && python main.py --real --workers 3 --rate-limit 0.5 --save-db --fetch-only --pool d:\\Project\\ScoreSys\\stock_pool.txt --db stock_data_test.db #< CLIXML Active code page: 65001 C:\\Users\\green\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe: can't open file 'D:\\\\Project\\\\BullishForMonitoring\\\\main.py': [Errno 2] No such file or directory <Objs Version=\"1.1.0.1\" xmlns=\"http://schemas.microsoft.com/powershell/2004/04\"><Obj S=\"progress\" RefId=\"0\"><TN RefId=\"0\"><T>System.Management.Automation.PSCustomObject</T><T>System.Object</T></TN><MS><I64 N=\"SourceId\">1</I64><PR N=\"Record\"><AV>正在准备首次使用模块。</AV><AI>0</AI><Nil /><PI>-1</PI><PC>-1</PC><T>Completed</T><SR>-1</SR><SD> </SD></PR></MS></Obj><S S=\"Error\">Set-Location : 找不到接受实际参数“d:\\Project\\ScoreSys”的位置形式参数。_x000D__x000A_</S><S S=\"Error\">所在位置 行:1 字符: 176_x000D__x000A_</S><S S=\"Error\">+ ... m.Text.Encoding]::UTF8; chcp 65001; cd /d d:\\Project\\ScoreSys; python ..._x000D__x000A_</S><S S=\"Error\">+ ~~~~~~~~~~~~~~~~~~~~~~~~~_x000D__x000A_</S><S S=\"Error\"> + CategoryInfo : InvalidArgument: (:) [Set-Location]，ParameterBindingException_x000D__x000A_</S><S S=\"Error\"> + FullyQualifiedErrorId : PositionalParameterNotFound,Microsoft.PowerShell.Commands.SetLocationCommand_x000D__x000A_</S><S S=\"Error\"> _x000D__x000A_</S></Objs",
+          "status": "sent",
+          "order": 5,
+          "createdAt": 1777305650800,
+          "updatedAt": 1777305676446,
+          "modeId": "craft",
+          "modelId": "LongCat-2.0-Preview",
+          "lastAttemptAt": 1777305676072
+        },
+        {
+          "id": "mq-1777305941339-ep61vi",
+          "conversationId": "d846acd7e26143e2b27d2b0acb02ae1a",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "UnicodeDecodeError: 'utf-8' codec can't decode byte 0xb2 in position 31: invalid start byte\r\nException in thread Thread-17 (_readerthread):  这个问题出现多次 你不修复  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "LongCat-2.0-Preview"
+                }
+              }
+            }
+          ],
+          "previewText": "UnicodeDecodeError: 'utf-8' codec can't decode byte 0xb2 in position 31: invalid start byte Exception in thread Thread-17 (_readerthread): 这个问题出现多次 你不修复 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
+          "status": "sent",
+          "order": 6,
+          "createdAt": 1777305941339,
+          "updatedAt": 1777305964555,
+          "modeId": "craft",
+          "modelId": "LongCat-2.0-Preview",
+          "lastAttemptAt": 1777305964206
+        },
+        {
+          "id": "mq-1777306010100-thj4wg",
+          "conversationId": "d846acd7e26143e2b27d2b0acb02ae1a",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "尽快修复尽快  你做什么呢!!!!!!!!!!!!!!!!!!!!!!!!1",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "glm-5.1"
+                }
+              }
+            }
+          ],
+          "previewText": "尽快修复尽快 你做什么呢!!!!!!!!!!!!!!!!!!!!!!!!1",
+          "status": "sent",
+          "order": 7,
+          "createdAt": 1777306010100,
+          "updatedAt": 1777306030814,
+          "modeId": "craft",
+          "modelId": "glm-5.1",
+          "lastAttemptAt": 1777306030253
+        },
+        {
+          "id": "mq-1777306074950-ufhg3j",
+          "conversationId": "d846acd7e26143e2b27d2b0acb02ae1a",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "你先把日志搞好  错哪里都不知道 慢成毛呢!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 你",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "glm-5.1"
+                }
+              }
+            }
+          ],
+          "previewText": "你先把日志搞好 错哪里都不知道 慢成毛呢!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 你",
+          "status": "sent",
+          "order": 8,
+          "createdAt": 1777306074950,
+          "updatedAt": 1777306089142,
+          "modeId": "craft",
+          "modelId": "glm-5.1"
+        },
+        {
+          "id": "mq-1777306096991-7eeomi",
+          "conversationId": "d846acd7e26143e2b27d2b0acb02ae1a",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "你先把日志搞好  错哪里都不知道 慢成毛呢!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "glm-5.1"
+                }
+              }
+            }
+          ],
+          "previewText": "你先把日志搞好 错哪里都不知道 慢成毛呢!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
+          "status": "sent",
+          "order": 9,
+          "createdAt": 1777306096991,
+          "updatedAt": 1777306339641,
+          "modeId": "craft",
+          "modelId": "glm-5.1",
+          "lastAttemptAt": 1777306339221
+        },
+        {
+          "id": "mq-1777306783859-sxlrj8",
+          "conversationId": "d846acd7e26143e2b27d2b0acb02ae1a",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "你先把旧进程处理掉!!!!!!!!!!!!!!!!!!!!!!!!",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "glm-5.1"
+                }
+              }
+            }
+          ],
+          "previewText": "你先把旧进程处理掉!!!!!!!!!!!!!!!!!!!!!!!!",
+          "status": "sent",
+          "order": 10,
+          "createdAt": 1777306783859,
+          "updatedAt": 1777306819709,
+          "modeId": "craft",
+          "modelId": "glm-5.1",
+          "lastAttemptAt": 1777306819377
+        },
+        {
+          "id": "mq-1777306882784-jjb2yv",
+          "conversationId": "d846acd7e26143e2b27d2b0acb02ae1a",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "你这智商 做什么没思路!!",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "glm-5.1"
+                }
+              }
+            }
+          ],
+          "previewText": "你这智商 做什么没思路!!",
+          "status": "sent",
+          "order": 11,
+          "createdAt": 1777306882784,
+          "updatedAt": 1777306952143,
+          "modeId": "craft",
+          "modelId": "glm-5.1",
+          "lastAttemptAt": 1777306952121
+        },
+        {
+          "id": "mq-1777308322320-f17cts",
+          "conversationId": "d846acd7e26143e2b27d2b0acb02ae1a",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "\"净现比\n(OCFtoProfit)\"\r\n0\r\n0\r\n \"ROE(%)(TTM)\n(ROE_TTM)\"\r\n0\r\n0 excel 每个字段要测试通过哦\r\n",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "glm-5.1"
+                }
+              }
+            }
+          ],
+          "previewText": "\"净现比 (OCFtoProfit)\" 0 0 \"ROE(%)(TTM) (ROE_TTM)\" 0 0 excel 每个字段要测试通过哦",
+          "status": "sent",
+          "order": 12,
+          "createdAt": 1777308322320,
+          "updatedAt": 1777325876819,
+          "modeId": "craft",
+          "modelId": "glm-5.1",
+          "lastAttemptAt": 1777325876798
+        },
+        {
+          "id": "mq-1777308407859-wf1w9l",
+          "conversationId": "d846acd7e26143e2b27d2b0acb02ae1a",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "一定要确保excel 各字段取数逻辑准确! 保证系统性能ok等",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "glm-5.1"
+                }
+              }
+            }
+          ],
+          "previewText": "一定要确保excel 各字段取数逻辑准确! 保证系统性能ok等",
+          "status": "sent",
+          "order": 13,
+          "createdAt": 1777308407859,
+          "updatedAt": 1777329576238,
+          "modeId": "craft",
+          "modelId": "glm-5.1",
+          "lastAttemptAt": 1777329576207
+        },
+        {
+          "id": "mq-1777308460538-3trnwc",
+          "conversationId": "d846acd7e26143e2b27d2b0acb02ae1a",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "后面不要确认操作 自行执行就行 我只有完美结果",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "glm-5.1"
+                }
+              }
+            }
+          ],
+          "previewText": "后面不要确认操作 自行执行就行 我只有完美结果",
+          "status": "sent",
+          "order": 14,
+          "createdAt": 1777308460538,
+          "updatedAt": 1777329627860,
+          "modeId": "craft",
+          "modelId": "glm-5.1"
+        },
+        {
+          "id": "mq-1777330448417-e1q47u",
+          "conversationId": "d846acd7e26143e2b27d2b0acb02ae1a",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "\"年报日期\n(AnnualReportDate)\"\t\"最新季报期\n(LatestQuarter)\"\r\n这2个取值是最新的吗?",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "LongCat-2.0-Preview"
+                }
+              }
+            }
+          ],
+          "previewText": "\"年报日期 (AnnualReportDate)\" \"最新季报期 (LatestQuarter)\" 这2个取值是最新的吗?",
+          "status": "sent",
+          "order": 15,
+          "createdAt": 1777330448417,
+          "updatedAt": 1777330465260,
+          "modeId": "craft",
+          "modelId": "LongCat-2.0-Preview",
+          "lastAttemptAt": 1777330465168
+        },
+        {
+          "id": "mq-1777335648079-x00o7d",
+          "conversationId": "d846acd7e26143e2b27d2b0acb02ae1a",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "输出txt 日志文件 不要乱码",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "LongCat-2.0-Preview"
+                }
+              }
+            }
+          ],
+          "previewText": "输出txt 日志文件 不要乱码",
+          "status": "sent",
+          "order": 16,
+          "createdAt": 1777335648079,
+          "updatedAt": 1777335766451,
+          "modeId": "craft",
+          "modelId": "LongCat-2.0-Preview",
+          "lastAttemptAt": 1777335764651
+        },
+        {
+          "id": "mq-1777335922280-mp3r11",
+          "conversationId": "d846acd7e26143e2b27d2b0acb02ae1a",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "每次运行脚本 增量数据怎么更新的 还是每次全量 不要json输出日志!",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "LongCat-2.0-Preview"
+                }
+              }
+            }
+          ],
+          "previewText": "每次运行脚本 增量数据怎么更新的 还是每次全量 不要json输出日志!",
+          "status": "sent",
+          "order": 17,
+          "createdAt": 1777335922280,
+          "updatedAt": 1777335941693,
+          "modeId": "craft",
+          "modelId": "LongCat-2.0-Preview",
+          "lastAttemptAt": 1777335941258
+        },
+        {
+          "id": "mq-1777336235048-x8sd9v",
+          "conversationId": "d846acd7e26143e2b27d2b0acb02ae1a",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "excel 输出结果时 同时输出股票数据完整度 比如是否最新4个季度数据全取到了 有无缺失等 自行研究合理实用输出格式统计",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "glm-5.1"
+                }
+              }
+            }
+          ],
+          "previewText": "excel 输出结果时 同时输出股票数据完整度 比如是否最新4个季度数据全取到了 有无缺失等 自行研究合理实用输出格式统计",
+          "status": "sent",
+          "order": 18,
+          "createdAt": 1777336235048,
+          "updatedAt": 1777336329392,
+          "modeId": "craft",
+          "modelId": "glm-5.1",
+          "lastAttemptAt": 1777336328826
+        },
+        {
+          "id": "mq-1777337025531-r7erwf",
+          "conversationId": "d846acd7e26143e2b27d2b0acb02ae1a",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "excel 输出文件名 是否要带时间戳 或者每次覆盖吗?",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "glm-5.1"
+                }
+              }
+            }
+          ],
+          "previewText": "excel 输出文件名 是否要带时间戳 或者每次覆盖吗?",
+          "status": "sent",
+          "order": 19,
+          "createdAt": 1777337025531,
+          "updatedAt": 1777338407903,
+          "modeId": "craft",
+          "modelId": "glm-5.1",
+          "lastAttemptAt": 1777338404770
+        },
+        {
+          "id": "mq-1777347619832-gvh143",
+          "conversationId": "d846acd7e26143e2b27d2b0acb02ae1a",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "运行这么长 肯定有问题 你再干什么呢!!",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "LongCat-2.0-Preview"
+                }
+              }
+            }
+          ],
+          "previewText": "运行这么长 肯定有问题 你再干什么呢!!",
+          "status": "sent",
+          "order": 20,
+          "createdAt": 1777347619832,
+          "updatedAt": 1777347661830,
+          "modeId": "craft",
+          "modelId": "LongCat-2.0-Preview",
+          "lastAttemptAt": 1777347657263
+        }
+      ]
+    },
+    "a488b3b2a0e043a9ae257b06c6275211": {
+      "version": 2,
+      "conversationId": "a488b3b2a0e043a9ae257b06c6275211",
+      "updatedAt": 1777352028196,
+      "runtime": {
+        "activated": true,
+        "paused": false,
+        "awaitingSessionIdle": false,
+        "updatedAt": 1777352028196
+      },
+      "items": [
+        {
+          "id": "mq-1777349448775-omwztm",
+          "conversationId": "a488b3b2a0e043a9ae257b06c6275211",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "防未来] 因公告日过滤移除 1 条记录  为什么这么多",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "LongCat-2.0-Preview"
+                }
+              }
+            }
+          ],
+          "previewText": "防未来] 因公告日过滤移除 1 条记录 为什么这么多",
+          "status": "sent",
+          "order": 0,
+          "createdAt": 1777349448775,
+          "updatedAt": 1777349466749,
+          "modeId": "craft",
+          "modelId": "LongCat-2.0-Preview",
+          "lastAttemptAt": 1777349465741
+        }
+      ]
+    },
+    "ab598effaaf54fd4aeca9176742a6f3a": {
+      "version": 2,
+      "conversationId": "ab598effaaf54fd4aeca9176742a6f3a",
+      "updatedAt": 1777382799386,
+      "runtime": {
+        "activated": true,
+        "paused": false,
+        "awaitingSessionIdle": false,
+        "updatedAt": 1777382799386
+      },
+      "items": [
+        {
+          "id": "mq-1777379299127-8uh8ip",
+          "conversationId": "ab598effaaf54fd4aeca9176742a6f3a",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "main.py 代码全没了!",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "LongCat-2.0-Preview"
+                }
+              }
+            }
+          ],
+          "previewText": "main.py 代码全没了!",
+          "status": "sent",
+          "order": 0,
+          "createdAt": 1777379299127,
+          "updatedAt": 1777379323800,
+          "modeId": "craft",
+          "modelId": "LongCat-2.0-Preview",
+          "lastAttemptAt": 1777379323790
+        },
+        {
+          "id": "mq-1777379559618-wy4w53",
+          "conversationId": "ab598effaaf54fd4aeca9176742a6f3a",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "请尽快!!!",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "LongCat-2.0-Preview"
+                }
+              }
+            }
+          ],
+          "previewText": "请尽快!!!",
+          "status": "sent",
+          "order": 1,
+          "createdAt": 1777379559618,
+          "updatedAt": 1777379598370,
+          "modeId": "craft",
+          "modelId": "LongCat-2.0-Preview",
+          "lastAttemptAt": 1777379598353
+        },
+        {
+          "id": "mq-1777380674386-9y6noh",
+          "conversationId": "ab598effaaf54fd4aeca9176742a6f3a",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "1304行 有输出长度限制?????!",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "LongCat-2.0-Preview"
+                }
+              }
+            }
+          ],
+          "previewText": "1304行 有输出长度限制?????!",
+          "status": "sent",
+          "order": 2,
+          "createdAt": 1777380674386,
+          "updatedAt": 1777380679546,
+          "modeId": "craft",
+          "modelId": "LongCat-2.0-Preview",
+          "lastAttemptAt": 1777380679494
+        },
+        {
+          "id": "mq-1777380912187-vnp5y6",
+          "conversationId": "ab598effaaf54fd4aeca9176742a6f3a",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "如果你可以恢复 请尽快恢复",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "LongCat-2.0-Preview"
+                }
+              }
+            }
+          ],
+          "previewText": "如果你可以恢复 请尽快恢复",
+          "status": "sent",
+          "order": 3,
+          "createdAt": 1777380912187,
+          "updatedAt": 1777380980849,
+          "modeId": "craft",
+          "modelId": "LongCat-2.0-Preview",
+          "lastAttemptAt": 1777380980770
+        },
+        {
+          "id": "mq-1777381242687-h7v04g",
+          "conversationId": "ab598effaaf54fd4aeca9176742a6f3a",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "什么情况",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "LongCat-2.0-Preview"
+                }
+              }
+            }
+          ],
+          "previewText": "什么情况",
+          "status": "sent",
+          "order": 4,
+          "createdAt": 1777381242687,
+          "updatedAt": 1777381258543,
+          "modeId": "craft",
+          "modelId": "LongCat-2.0-Preview",
+          "lastAttemptAt": 1777381258506
+        },
+        {
+          "id": "mq-1777381524366-bw72hu",
+          "conversationId": "ab598effaaf54fd4aeca9176742a6f3a",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "输出长度限制  什么意思!!!  你要不生成TXT文件",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "LongCat-2.0-Preview"
+                }
+              }
+            }
+          ],
+          "previewText": "输出长度限制 什么意思!!! 你要不生成TXT文件",
+          "status": "sent",
+          "order": 5,
+          "createdAt": 1777381524366,
+          "updatedAt": 1777381548418,
+          "modeId": "craft",
+          "modelId": "LongCat-2.0-Preview",
+          "lastAttemptAt": 1777381548339
+        },
+        {
+          "id": "mq-1777382766528-bz5ar6",
+          "conversationId": "ab598effaaf54fd4aeca9176742a6f3a",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "PS D:\\Project\\ScoreSys> python main.py --real --pool stock_pool.txt --workers 8 --rate-limit 0.1 --save-db --fetch-only --db stock_data.db\r\n  File \"D:\\Project\\ScoreSys\\main.py\", line 91\r\n    try:\r\nIndentationError: expected an indented block after 'else' statement on line 90\r\nPS D:\\Project\\ScoreSys>\r\n",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "LongCat-2.0-Preview"
+                }
+              }
+            }
+          ],
+          "previewText": "PS D:\\Project\\ScoreSys> python main.py --real --pool stock_pool.txt --workers 8 --rate-limit 0.1 --save-db --fetch-only --db stock_data.db File \"D:\\Project\\ScoreSys\\main.py\", line 91 try: IndentationError: expected an indented block after 'else' statement on line 90 PS D:\\Project\\ScoreSys>",
+          "status": "sent",
+          "order": 6,
+          "createdAt": 1777382766528,
+          "updatedAt": 1777382797353,
+          "modeId": "craft",
+          "modelId": "LongCat-2.0-Preview",
+          "lastAttemptAt": 1777382797343
+        }
+      ]
+    }
+  }
+}

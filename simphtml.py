@@ -658,7 +658,8 @@ def get_temp_texts(driver):
     
 import time, re, os
 def get_main_block(driver, extra_js="", text_only=False): 
-    page = driver.execute_js(f"{extra_js}\n{js_optHTML}\nreturn optHTML({str(text_only).lower()});").get('data', '')
+    _js_result = driver.execute_js(f"{extra_js}\n{js_optHTML}\nreturn optHTML({str(text_only).lower()});")
+    page = (_js_result.get('data') or '') if isinstance(_js_result, dict) else ''
     if text_only:
         page = re.sub(r' {2,}', ' ', page)           # 连续空格→单空格
         page = re.sub(r'^ +', '', page, flags=re.M)   # 去行首空格

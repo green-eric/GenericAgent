@@ -1,0 +1,10 @@
+{
+    "codingcopilot.httpProxySettings": "system",
+    "codingcopilot.enableInlineChat": true,
+    "codingcopilot.enableInlineChatIDEShortcutsTip": false,
+    "codingcopilot.commitMessageStyle": "Auto",
+    "codingcopilot.commitMessageLanguage": "zh_CN",
+    "codingcopilot.toolbarOnSelection": false,
+    "codingcopilot.enableAutoCompletions": true,
+    "codingcopilot.enableNextEditSuggestions": true
+}

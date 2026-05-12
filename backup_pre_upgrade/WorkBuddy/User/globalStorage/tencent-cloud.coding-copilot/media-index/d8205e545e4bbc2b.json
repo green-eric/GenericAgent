@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "lastUpdated": 1777034026196,
+  "records": {
+    "c:\\Users\\green\\WorkBuddy\\20260424165345\\USAGE.md": {
+      "uri": "file://c:\\Users\\green\\WorkBuddy\\20260424165345\\USAGE.md",
+      "filePath": "c:\\Users\\green\\WorkBuddy\\20260424165345\\USAGE.md",
+      "fileName": "USAGE.md",
+      "mimeType": "text/markdown",
+      "size": 2646,
+      "contentType": "document",
+      "timestamp": 1777034019814,
+      "sessionId": "088f9eccd19c4feea726950a282ba0fb"
+    },
+    "c:\\Users\\green\\WorkBuddy\\20260424165345\\PROJECT_STATUS.md": {
+      "uri": "file://c:\\Users\\green\\WorkBuddy\\20260424165345\\PROJECT_STATUS.md",
+      "filePath": "c:\\Users\\green\\WorkBuddy\\20260424165345\\PROJECT_STATUS.md",
+      "fileName": "PROJECT_STATUS.md",
+      "mimeType": "text/markdown",
+      "size": 3409,
+      "contentType": "document",
+      "timestamp": 1777034025693,
+      "sessionId": "088f9eccd19c4feea726950a282ba0fb"
+    }
+  }
+}

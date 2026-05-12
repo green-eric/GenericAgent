@@ -1,0 +1,34 @@
+{
+    "codingcopilot.httpProxySettings": "system",
+    "codingcopilot.enableInlineChat": true,
+    "codingcopilot.enableInlineChatIDEShortcutsTip": false,
+    "codingcopilot.commitMessageStyle": "Auto",
+    "codingcopilot.commitMessageLanguage": "zh_CN",
+    "codingcopilot.toolbarOnSelection": false,
+    "codingcopilot.enableAutoCompletions": true,
+    "codingcopilot.enableNextEditSuggestions": true,
+    "codingcopilot.generationPreference": "intelligentMode",
+    "codingcopilot.selectedCompletionModel": "",
+    "codingcopilot.enableCompletionLanguage": {
+		"scmInput": false
+	},
+    "codingcopilot.enableFloatShortcut": true,
+	"codingcopilot.enableIDENotification": true,
+	"claw.channels": {
+		"weixinClawBot": {
+			"enabled": true,
+			"channelId": "a616295a43dd@im.bot",
+			"connectionMode": "websocket",
+			"botToken": "a616295a43dd@im.bot:060000a851dcd7dca806d215fddb76d4b4a6ed",
+			"baseUrl": "https://ilinkai.weixin.qq.com",
+			"accountId": "a616295a43dd@im.bot",
+			"userId": "o9cq80-1u4kvzb2osLB4FHV0X-Zo@im.wechat",
+			"registration": {
+				"webhookUrl": "",
+				"sessionId": ""
+			}
+		}
+	},
+	"wecom.wechatmp.artifactUploadEnabled": true,
+	"wecom.wechatMpEnabled": false
+}

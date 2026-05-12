@@ -1,3 +1,6 @@
+# 微信 Bot — wechatapp.py
+# 版本: 1.0.0
+# 功能: 微信消息收发 + Agent 入口，与评分系统无直接耦合
 import os, sys, re, threading, queue, time, socket, json, struct, base64, uuid, hashlib, math, shutil, subprocess
 from pathlib import Path
 from urllib.parse import quote
@@ -145,7 +148,7 @@ class WxBotClient:
         age = self._token_age_hours()
         return age >= 0 and age >= threshold_hours
 
-    def _post(self, ep, body, timeout=15):
+    def _post(self, ep, body, timeout=30):
         tok = (self.token or '').strip()
         if not tok:
             print(f'[POST] 无 token，拒绝请求 {ep}', file=sys.__stderr__)
@@ -215,7 +218,9 @@ class WxBotClient:
         QR_COOLDOWN = 600
         now = time.time()
         last = getattr(self, '_last_qr_gen_time', 0)
-        if now - last < QR_COOLDOWN:
+        # ★ 如果上次二维码已过期，允许提前解除冷却（二维码过期后旧id已无用）
+        last_qr_expired = getattr(self, '_last_qr_expired', False)
+        if now - last < QR_COOLDOWN and not last_qr_expired:
             _out = sys.__stdout__ if sys.__stdout__ else sys.stdout
             print(f'[QR] 冷却中（{QR_COOLDOWN - int(now - last)}s后可用），跳过重复生成', file=_out)
             old_qr_id = getattr(self, '_last_qr_id', None)
@@ -277,11 +282,13 @@ class WxBotClient:
                 return True
             if st == 'expired':
                 print(f'[QR] 二维码过期', file=sys.__stdout__)
+                # ★ 标记二维码已过期，让login_qr_nonblocking的冷却期检查知道可以提前解除
+                self._last_qr_expired = True
                 return False
         print(f'[QR] 超时（{max_wait}s）', file=sys.__stdout__)
         return False
 
-    def get_updates(self, timeout=30):
+    def get_updates(self, timeout=60):
         try:
             resp = self._post('ilink/bot/getupdates',
                               {'get_updates_buf': self._buf or '',
@@ -470,6 +477,7 @@ class WxBotClient:
                     if ok:
                         print('[Bot] 重登录成功，恢复监听', file=_out)
                         self._token_expired = False
+                        self._last_qr_expired = False  # ★ 登录成功，重置过期标记
                         _relogin_attempts = 0
                     else:
                         # 指数退避：60s → 120s → 240s → 480s（最大8分钟）
@@ -527,8 +535,9 @@ def _dl_media(items):
 agent = GeneraticAgent()
 agent.verbose = False
 
-_TAG_PATS = [r'<' + t + r'>.*?</' + t + r'>' for t in ('thinking', 'tool_use')]
+_TAG_PATS = [r'<' + t + r'>.*?</' + t + r'>' for t in ('thinking', 'tool_use', 'details', 'think', 'reasoning', 'analysis', 'internal')]
 _TAG_PATS.append(r'<file_content>.*?</file_content>')
+_TAG_PATS.append(r'<summary>.*?</summary>')  # 双重保障：TAG_PATS也清洗summary
 
 # ═══ 预编译正则（避免每次_clean/_strip_md调用重复编译） ═══
 _RE_COMPILE = lambda p, f=0: re.compile(p, f)
@@ -550,6 +559,10 @@ _CLEAN_RES = [
     _RE_COMPILE(r'^\s*(让我帮你|我来搜索|我来查|让我查|搜索结果显示|根据搜索结果|现在来回答|现在回复|我来回答).*$', re.M),
     _RE_COMPILE(r'^\s*(首先|其次|最后|然后|接着)\s+(调用|读取|写入|搜索|查看|执行).*$', re.M),
     _RE_COMPILE(r'^\s*工具调用结果.*$', re.M),
+    # V13.5 新增：清洗 agent 内部思考泄漏模式
+    _RE_COMPILE(r'^\s*(\[USER\]|\[Agent\]|USER:|Agent:)\s+.*$', re.M),          # agent对话角色前缀行
+    _RE_COMPILE(r'^\s*(\*\*summary\*\*|##\s*Summary|#\s*思考|#\s*分析步骤)\s*$', re.M),  # 思考标题行
+    _RE_COMPILE(r'^\s*(好的，|明白了，|收到，|了解了，|我来|我需要|我应该|我打算)\s+.*$', re.M),  # 思考开头口语
     _RE_COMPILE(r'\n{3,}', 0),
 ]
 # 段落级思考过滤（单独处理，含动态参数）
@@ -868,6 +881,21 @@ def _ensure_cdp():
     print(f'[CDP] {"[OK] 已启动" if ok else "[FAIL] 启动失败"}', file=sys.__stdout__)
 
 if __name__ == '__main__':
+    # ★ 抑制 Windows 崩溃弹窗（pythonw 无 stdout，任何未捕获异常都会弹 Windows 错误对话框）
+    if os.name == 'nt':
+        import ctypes
+        # SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX | SEM_NOOPENFILEERRORBOX
+        ctypes.windll.kernel32.SetErrorMode(0x0001 | 0x0002 | 0x8000)
+        # 同时设置未处理异常过滤器，静默退出
+        import sys as _sys
+        _orig_except = _sys.excepthook
+        def _silent_except(exc_type, exc_val, exc_tb):
+            _trace.write(f'[{time.strftime("%H:%M:%S")}] FATAL: {exc_type.__name__}: {exc_val}\n')
+            _trace.flush()
+            # 不调用 _orig_except（避免弹窗），直接退出
+            os._exit(1)
+        _sys.excepthook = _silent_except
+
     _trace.write(f'[{time.strftime("%H:%M:%S")}] TRACE: entering __main__\n')
     _trace.flush()
     _ensure_cdp()  # 启动前确保 CDP 可用
@@ -883,7 +911,7 @@ if __name__ == '__main__':
              'Get-Process python -ErrorAction SilentlyContinue | '
              'Select-Object Id, @{Name="Cmd";Expression={(Get-CimInstance Win32_Process -Filter "ProcessId=$($_.Id)").CommandLine}} | '
              'Where-Object { $_.Cmd -like "*wechatapp*" } | ForEach-Object { "$($_.Id) $($_.Cmd)" }'],
-            timeout=8
+            timeout=15
         ).decode('utf-8', errors='replace').strip()
         if _out:
             for _line in _out.split('\n'):
@@ -928,9 +956,9 @@ if __name__ == '__main__':
             t.join(timeout=5)
             _test = _result[0]
             if _test is None:
-                # ★ 超时≠token过期，可能是网络波动；重试1次再决定
-                print('[启动检测] 首次API超时，5s后重试...', file=sys.__stdout__)
-                time.sleep(5)
+                # ★ 超时≠token过期，可能是网络波动；重试2次再决定
+                print('[启动检测] 首次API超时，3s后重试(第1次)...', file=sys.__stdout__)
+                time.sleep(3)
                 _result2 = [None]
                 def _check2():
                     try:
@@ -942,14 +970,30 @@ if __name__ == '__main__':
                 t2.join(timeout=5)
                 _test = _result2[0]
                 if _test is None:
-                    # 强制标记过期，让run_loop直接进入重登录流程（避免getupdates持续超时死循环）
-                    print('[启动检测] 重试仍超时，强制标记token过期→进入重登流程', file=sys.__stdout__)
-                    bot._token_expired = True
+                    print('[启动检测] 第1次重试超时，再等3s重试(第2次)...', file=sys.__stdout__)
+                    time.sleep(3)
+                    _result3 = [None]
+                    def _check3():
+                        try:
+                            _result3[0] = bot._post('ilink/bot/getupdates', {'limit': 1, 'timeout': 1})
+                        except:
+                            pass
+                    t3 = _th.Thread(target=_check3, daemon=True)
+                    t3.start()
+                    t3.join(timeout=5)
+                    _test = _result3[0]
+                if _test is None:
+                    # 3次全超时：不标记token过期，直接让run_loop去跑
+                    # run_loop里的getupdates超时只是返回[]，不会崩溃
+                    print('[启动检测] 3次全超时，不标记过期→让run_loop自行处理', file=sys.__stdout__)
+                    _token_ok = True  # 乐观假设，避免误触发重登
                 elif _test.get('errcode') == 0:
                     _token_ok = True
                 elif _test.get('errcode') == -14:
                     bot._token_expired = True
-                # 其他errno不标记过期（可能是临时错误）
+                else:
+                    print(f'[启动检测] 业务错误 errcode={_test.get("errcode")}, 不标记过期', file=sys.__stdout__)
+                    _token_ok = True  # 其他错误也不标记
             elif _test.get('errcode') == -14:
                 bot._token_expired = True
             elif _test.get('errcode') == 0:

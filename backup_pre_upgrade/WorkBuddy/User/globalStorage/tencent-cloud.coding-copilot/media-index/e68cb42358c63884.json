@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "lastUpdated": 1777376325347,
+  "records": {
+    "d:\\Project\\ScoreSys\\README.md": {
+      "uri": "file://d:\\Project\\ScoreSys\\README.md",
+      "filePath": "d:\\Project\\ScoreSys\\README.md",
+      "fileName": "README.md",
+      "mimeType": "text/markdown",
+      "size": 15934,
+      "contentType": "document",
+      "timestamp": 1777375979972,
+      "sessionId": "ab598effaaf54fd4aeca9176742a6f3a"
+    },
+    "d:\\Project\\ScoreSys\\全面评估报告.md": {
+      "uri": "file://d:\\Project\\ScoreSys\\全面评估报告.md",
+      "filePath": "d:\\Project\\ScoreSys\\全面评估报告.md",
+      "fileName": "全面评估报告.md",
+      "mimeType": "text/markdown",
+      "size": 10523,
+      "contentType": "document",
+      "timestamp": 1777370804919,
+      "sessionId": "ab598effaaf54fd4aeca9176742a6f3a"
+    }
+  }
+}

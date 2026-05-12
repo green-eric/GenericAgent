@@ -1,0 +1,24 @@
+DIR  $Recycle.Bin
+DIR  $SysReset
+DIR  $WINDOWS.~BT
+DIR  $Windows.~WS
+DIR  .ADSPOWER_GLOBAL
+DIR  Documents and Settings
+DIR  ESD
+DIR  Intel
+DIR  LenovoSoftstore
+DIR  Program Files
+DIR  Program Files (x86)
+DIR  ProgramData
+DIR  Recovery
+DIR  System Volume Information
+DIR  Users
+DIR  Windows
+DIR  WuXingZhiTou
+DIR  ima.copilot
+DIR  inetpub
+DIR  同花顺远航版
+FILE DumpStack.log
+FILE DumpStack.log.tmp
+FILE pagefile.sys
+FILE swapfile.sys

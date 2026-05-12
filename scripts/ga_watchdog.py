@@ -3,6 +3,7 @@ GA Watchdog - monitor launch.pyw + wechatbot service
 Auto-restart on crash, check every 60s
 No admin required
 
+v3: disabled wechatbot monitoring (token expiry loop)
 v2 fixes:
   (1) 修复 PowerShell fallback 查询语法错误（无效查询 → 假阴性）
   (2) ctypes 模块级导入，避免函数内重复 import 失败
@@ -15,7 +16,7 @@ from ctypes import wintypes
 LOG = r"D:\GenericAgent\temp\watchdog.log"
 GA_DIR = r"D:\GenericAgent"
 LAUNCH_SCRIPT = r"D:\GenericAgent\launch.pyw"
-WECHATAPP = r"D:\GenericAgent\frontends\wechatapp.py"
+# WECHATAPP = r"D:\GenericAgent\frontends\wechatapp.py"  # DISABLED: wx bot unstable
 PYTHONW = r"C:\Users\green\AppData\Local\Programs\Python\Python312\pythonw.exe"
 
 # 所有 subprocess 调用强制不弹 CMD 窗口
@@ -25,9 +26,9 @@ NO_WINDOW = 0x08000000  # CREATE_NO_WINDOW
 _MUTEX_NAME = r"Global\GenericAgent_Launch_Mutex"
 # 冷却期 & 频率限制
 _GA_COOLDOWN_UNTIL = 0
-_WX_COOLDOWN_UNTIL = 0
+# _WX_COOLDOWN_UNTIL = 0  # DISABLED
 _GA_RESTART_TIMES = []   # list of epoch timestamps
-_WX_RESTART_TIMES = []
+# _WX_RESTART_TIMES = []  # DISABLED
 MAX_RESTARTS = 3
 RESTART_WINDOW = 600     # 10 minutes
 COOLDOWN_SEC = 120       # 2 minutes after restart
@@ -52,64 +53,62 @@ def log(msg):
 
 
 def is_ga_alive():
-    """检测 GA 是否存活。mutex 主方法 + 修复版 PowerShell fallback"""
-    # 方法1: Mutex (快速可靠)
-    for attempt in range(3):
-        try:
-            _h = _CreateMutex(None, True, _MUTEX_NAME)
-            _err = _GetLastError()
-            if _h:
-                _CloseHandle(_h)
-            if _err == 183:
-                return True
-            # mutex 不存在，等 1s 重试（应对启动时序）
-            if attempt < 2:
-                time.sleep(1)
-        except Exception as e:
-            log(f"    Mutex check attempt {attempt+1} error: {e}")
-            if attempt < 2:
-                time.sleep(1)
-
-    # 方法2: PowerShell 进程扫描 (fallback) — 修复引号转义
-    # 使用单引号包裹 PowerShell 命令避免 \" 转义失败
-    ps = (
-        "Get-CimInstance Win32_Process -Filter \"Name='pythonw.exe'\" "
-        "| Where-Object { $_.CommandLine -match 'launch[.]pyw' } "
-        "| Select-Object -ExpandProperty ProcessId"
-    )
+    """检测 GA 是否存活。mutex 主方法 + 多种 fallback"""
+    # 方法1: Mutex (快速可靠) — launch.pyw 现在会创建此 mutex
     try:
-        r = subprocess.run(
-            ["powershell", "-NoProfile", "-Command", ps],
-            capture_output=True, text=True, timeout=15, creationflags=NO_WINDOW
-        )
-        if r.stdout.strip():
+        _h = _CreateMutex(None, False, _MUTEX_NAME)
+        _err = _GetLastError()
+        if _h:
+            _CloseHandle(_h)
+        if _err == 183:  # ERROR_ALREADY_EXISTS
             return True
-        # stderr being non-empty doesn't necessarily mean failure
-        return False
-    except subprocess.TimeoutExpired:
-        log("    ⚠️ PowerShell GA check timed out (15s)")
-        return False
     except Exception as e:
-        log(f"    ⚠️ PowerShell GA check error: {e}")
-        return False
+        log(f"    Mutex check error: {e}")
 
-
-def is_wechatbot_alive():
-    """检测 wechatbot 是否存活。修复版 PowerShell"""
-    ps = (
-        "Get-CimInstance Win32_Process -Filter \"Name='pythonw.exe'\" "
-        "| Where-Object { $_.CommandLine -match 'wechatapp' } "
-        "| Select-Object -ExpandProperty ProcessId"
-    )
+    # 方法2: PID 文件检测（launch.pyw 启动后会在锁文件中写入 PID）
+    _pid_file = os.path.join(GA_DIR, "temp", ".ga_instance.lock")
     try:
-        r = subprocess.run(
-            ["powershell", "-NoProfile", "-Command", ps],
-            capture_output=True, text=True, timeout=15, creationflags=NO_WINDOW
-        )
-        return bool(r.stdout.strip())
+        if os.path.exists(_pid_file):
+            with open(_pid_file, "r") as f:
+                _pid = f.read().strip()
+            if _pid and _pid.isdigit():
+                # 检查该 PID 是否仍在运行
+                _check = subprocess.run(
+                    ["tasklist", "/FI", f"PID eq {_pid}", "/FO", "CSV", "/NH"],
+                    capture_output=True, text=True, timeout=5, creationflags=NO_WINDOW
+                )
+                if _check.stdout.strip() and "pythonw.exe" in _check.stdout.lower():
+                    return True
     except Exception as e:
-        log(f"    ⚠️ PowerShell WX check error: {e}")
-        return False
+        log(f"    PID file check error: {e}")
+
+    # 方法3: tasklist 快速扫描（比 PowerShell 快且稳定）
+    try:
+        _r = subprocess.run(
+            ["tasklist", "/FI", "IMAGENAME eq pythonw.exe", "/FO", "CSV", "/NH"],
+            capture_output=True, text=True, timeout=5, creationflags=NO_WINDOW
+        )
+        if "launch.pyw" in _r.stdout:
+            return True
+    except Exception as e:
+        log(f"    Tasklist check error: {e}")
+
+    return False
+
+
+# DISABLED: wechatbot monitoring (unstable token expiry loop)
+# def is_wechatbot_alive():
+#     """检测 wechatbot 是否存活。tasklist 快速扫描"""
+#     try:
+#         _r = subprocess.run(
+#             ["tasklist", "/FI", "IMAGENAME eq pythonw.exe", "/FO", "CSV", "/NH"],
+#             capture_output=True, text=True, timeout=5, creationflags=NO_WINDOW
+#         )
+#         if "wechatapp" in _r.stdout:
+#             return True
+#     except Exception as e:
+#         log(f"    ⚠️ WX check error: {e}")
+#     return False
 
 
 def _rate_limited(restart_times):
@@ -161,44 +160,34 @@ def restart_ga():
     _GA_COOLDOWN_UNTIL = time.time() + COOLDOWN_SEC
 
 
-def restart_wechatbot():
-    global _WX_COOLDOWN_UNTIL
-    if _rate_limited(_WX_RESTART_TIMES):
-        log("  🚫 WX restart rate-limited (max 3/10min). Skipping.")
-        return
-    _WX_RESTART_TIMES.append(time.time())
-
-    log("  Killing old wechatapp instances...")
-    ps_kill = (
-        "Get-CimInstance Win32_Process -Filter \"Name='pythonw.exe'\" "
-        "| Where-Object { $_.CommandLine -match 'wechatapp' } "
-        "| ForEach-Object { Stop-Process -Id $_.ProcessId -Force }"
-    )
-    subprocess.run(
-        ["powershell", "-NoProfile", "-Command", ps_kill],
-        capture_output=True, timeout=15, creationflags=NO_WINDOW
-    )
-    time.sleep(3)
-
-    if is_wechatbot_alive():
-        log("  ⚠️ Old wechatbot still alive, retry...")
-        subprocess.run(
-            ["powershell", "-NoProfile", "-Command", ps_kill],
-            capture_output=True, timeout=15, creationflags=NO_WINDOW
-        )
-        time.sleep(3)
-
-    if is_wechatbot_alive():
-        log("  ❌ Cannot kill old wechatbot. Skipping restart.")
-        return
-
-    log("  Starting wechatbot (wechatapp.py)...")
-    subprocess.Popen(
-        [PYTHONW, WECHATAPP],
-        cwd=GA_DIR, creationflags=NO_WINDOW
-    )
-    log(f"  ✅ wechatbot started. Cooldown {COOLDOWN_SEC}s")
-    _WX_COOLDOWN_UNTIL = time.time() + COOLDOWN_SEC
+# DISABLED: wechatbot restart (unstable token expiry loop)
+# def restart_wechatbot():
+#     global _WX_COOLDOWN_UNTIL
+#     if _rate_limited(_WX_RESTART_TIMES):
+#         log("  🚫 WX restart rate-limited (max 3/10min). Skipping.")
+#         return
+#     _WX_RESTART_TIMES.append(time.time())
+#     log("  Killing old wechatapp instances...")
+#     ps_kill = (
+#         "Get-CimInstance Win32_Process -Filter \"Name='pythonw.exe'\" "
+#         "| Where-Object { $_.CommandLine -match 'wechatapp' } "
+#         "| ForEach-Object { Stop-Process -Id $_.ProcessId -Force }"
+#     )
+#     subprocess.run(["powershell", "-NoProfile", "-Command", ps_kill],
+#         capture_output=True, timeout=15, creationflags=NO_WINDOW)
+#     time.sleep(3)
+#     if is_wechatbot_alive():
+#         log("  ⚠️ Old wechatbot still alive, retry...")
+#         subprocess.run(["powershell", "-NoProfile", "-Command", ps_kill],
+#             capture_output=True, timeout=15, creationflags=NO_WINDOW)
+#         time.sleep(3)
+#     if is_wechatbot_alive():
+#         log("  ❌ Cannot kill old wechatbot. Skipping restart.")
+#         return
+#     log("  Starting wechatbot (wechatapp.py)...")
+#     subprocess.Popen([PYTHONW, WECHATAPP], cwd=GA_DIR, creationflags=NO_WINDOW)
+#     log(f"  ✅ wechatbot started. Cooldown {COOLDOWN_SEC}s")
+#     _WX_COOLDOWN_UNTIL = time.time() + COOLDOWN_SEC
 
 
 def main():
@@ -216,7 +205,7 @@ def main():
         pass
 
     fail_ga = 0
-    fail_wx = 0
+    # fail_wx = 0  # DISABLED
 
     while True:
         try:
@@ -239,20 +228,20 @@ def main():
                     fail_ga = 0
                     # 冷却期已在 restart_ga 内设置
 
-            # --- WeChatBot ---
-            if now < _WX_COOLDOWN_UNTIL:
-                pass
-            elif is_wechatbot_alive():
-                if fail_wx > 0:
-                    log("  wechatbot recovered ✓")
-                fail_wx = 0
-            else:
-                fail_wx += 1
-                log(f"  wechatbot not running! (consecutive={fail_wx})")
-                if fail_wx >= 3:
-                    log("  Restarting wechatbot...")
-                    restart_wechatbot()
-                    fail_wx = 0
+            # --- WeChatBot --- DISABLED (token expiry loop, manual restart only)
+            # if now < _WX_COOLDOWN_UNTIL:
+            #     pass
+            # elif is_wechatbot_alive():
+            #     if fail_wx > 0:
+            #         log("  wechatbot recovered ✓")
+            #     # fail_wx = 0  # DISABLED
+            # else:
+            #     fail_wx += 1
+            #     log(f"  wechatbot not running! (consecutive={fail_wx})")
+            #     if fail_wx >= 3:
+            #         log("  Restarting wechatbot...")
+            #         restart_wechatbot()
+            #         # fail_wx = 0  # DISABLED
 
         except Exception as e:
             log(f"  ⚠️ Check error: {e}")

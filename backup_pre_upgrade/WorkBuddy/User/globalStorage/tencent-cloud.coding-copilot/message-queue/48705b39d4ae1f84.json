@@ -1,0 +1,43 @@
+{
+  "version": 2,
+  "lastUpdated": 1776508585881,
+  "conversations": {
+    "c048dc28f39d4c95b3ddf6255e8c2e8a": {
+      "version": 2,
+      "conversationId": "c048dc28f39d4c95b3ddf6255e8c2e8a",
+      "updatedAt": 1776508585881,
+      "runtime": {
+        "activated": true,
+        "paused": false,
+        "awaitingSessionIdle": false,
+        "updatedAt": 1776508585881
+      },
+      "items": [
+        {
+          "id": "mq-1776507473112-gf3uwk",
+          "conversationId": "c048dc28f39d4c95b3ddf6255e8c2e8a",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "command 'tencentcloud.codingcopilot.chat.sendMessage' not found",
+              "_meta": {
+                "codebuddy.ai": {
+                  "mode": "craft",
+                  "model": "auto"
+                }
+              }
+            }
+          ],
+          "previewText": "command 'tencentcloud.codingcopilot.chat.sendMessage' not found",
+          "status": "sent",
+          "order": 0,
+          "createdAt": 1776507473112,
+          "updatedAt": 1776507584941,
+          "modeId": "craft",
+          "modelId": "auto",
+          "lastAttemptAt": 1776507584820
+        }
+      ]
+    }
+  }
+}

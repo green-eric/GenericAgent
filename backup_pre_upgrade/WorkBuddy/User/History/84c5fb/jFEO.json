@@ -1,0 +1,43 @@
+{
+    "codingcopilot.httpProxySettings": "system",
+    "codingcopilot.enableInlineChat": true,
+    "codingcopilot.enableInlineChatIDEShortcutsTip": false,
+    "codingcopilot.commitMessageStyle": "Auto",
+    "codingcopilot.commitMessageLanguage": "zh_CN",
+    "codingcopilot.toolbarOnSelection": false,
+    "codingcopilot.enableAutoCompletions": true,
+    "codingcopilot.enableNextEditSuggestions": true,
+    "codingcopilot.generationPreference": "intelligentMode",
+    "codingcopilot.selectedCompletionModel": "",
+    "codingcopilot.enableCompletionLanguage": {
+		"scmInput": false
+	},
+    "codingcopilot.enableFloatShortcut": true,
+	"codingcopilot.enableIDENotification": true,
+	"claw.channels": {
+		"weixinClawBot": {
+			"enabled": true,
+			"channelId": "f9a2c89b5aa6@im.bot",
+			"connectionMode": "websocket",
+			"botToken": "f9a2c89b5aa6@im.bot:060000c5d5f536cb691fd506a51fb51ef06b7b",
+			"baseUrl": "https://ilinkai.weixin.qq.com",
+			"accountId": "f9a2c89b5aa6@im.bot",
+			"userId": "o9cq80-1u4kvzb2osLB4FHV0X-Zo@im.wechat",
+			"registration": {
+				"webhookUrl": "",
+				"sessionId": ""
+			}
+		},
+		"wechatmp": {
+			"enabled": true,
+			"connectionMode": "webhook",
+			"registration": {
+				"webhookUrl": "",
+				"sessionId": "caf8ccdd-a618-4701-8ede-6d8d13cf2920_c74c62475196c2ac416bb8ee644d9af12c820275d667eb8a80edc326c25d857e_3f99b92a7ab222555c0ff0d9da8e0d2bae20585bf94b508541fbf6e4c2acc1ab"
+			}
+		}
+	},
+	"wecom.wechatmp.artifactUploadEnabled": true,
+	"wecom.wechatMpEnabled": true,
+	"window.restoreWindows": "one"
+}

@@ -1,0 +1,96 @@
+===============================================
+  Windows 10 升级后 - 手动安装软件清单
+  生成时间: 2026-05-12
+  共 14 个软件需要手动安装
+===============================================
+
+# 开发/运行环境
+─────────────────────────────────────────────
+1. Docker Desktop
+   版本: 4.69.0
+   下载: https://www.docker.com/products/docker-desktop
+   说明: 安装后原有容器需重新导入
+
+2. WSL (Windows Subsystem for Linux)
+   版本: 2.6.3.0
+   安装: 控制面板 → 程序 → 启用或关闭Windows功能 → 勾选 "适用于Linux的Windows子系统"
+   说明: 然后从 Microsoft Store 安装 Ubuntu
+
+# 网络工具
+─────────────────────────────────────────────
+3. Clash Verge
+   版本: 2.4.7
+   下载: https://github.com/clash-verge-rev/clash-verge-rev/releases
+   说明: 配置文件备份在 D:\GenericAgentackup_pre_upgrade\ga_config\ 检查是否有 clash 配置
+
+# 通讯软件
+─────────────────────────────────────────────
+4. 微信 (WeChat)
+   版本: 最新
+   下载: https://weixin.qq.com
+   说明: 聊天记录如未单独备份会丢失！
+
+# AI 工具
+─────────────────────────────────────────────
+5. Ollama
+   版本: 最新
+   下载: https://ollama.com/download
+   说明: 模型文件在 D:\Ollama 目录下，安装后修改模型路径指向D盘即可，无需重新下载
+
+# 办公软件
+─────────────────────────────────────────────
+6. Microsoft Office Home and Student 2019
+   版本: 16.0.19127.20302
+   下载: 需要原始安装包或 Microsoft 账户重新下载
+   说明: 需重新激活
+
+7. 微软 OfficePLUS
+   版本: 3.16.0.46159
+   下载: https://www.officeplus.cn
+
+# 终端/编辑器
+─────────────────────────────────────────────
+8. WezTerm
+   版本: 20240203-110809-5046fc22
+   下载: https://github.com/wez/wezterm/releases
+   说明: 配置文件可能在 %USERPROFILE%\.wezterm.lua，需单独备份
+
+9. Aegisub
+   版本: 3.4.2
+   下载: https://aegisub.org/downloads
+   说明: 字幕编辑工具
+
+# 金融/交易
+─────────────────────────────────────────────
+10. 国元领航金融终端
+    版本: 8.76
+    下载: 联系国元证券客服或营业部获取安装包
+    说明: 需重新配置账户和自选股
+
+11. Binance (币安)
+    版本: 1.54.19
+    下载: https://www.binance.com/en/download
+    说明: 2FA需重新绑定
+
+# 其他
+─────────────────────────────────────────────
+12. Alibaba Cloud Client (阿里云)
+    版本: 2.3.0
+    下载: https://www.aliyun.com/product/cloudshell
+
+13. Kraken Desktop
+    版本: 1.9.1
+    下载: https://github.com/Kraken-Dev/Kraken-Desktop/releases (或官网)
+    说明: 加密货币交易终端
+
+14. CC Switch
+    版本: 3.14.1
+    下载: 需确认具体来源
+
+===============================================
+  安装完成后请运行以下命令验证:
+  python --version
+  git --version
+  docker --version
+  ollama --version
+===============================================
