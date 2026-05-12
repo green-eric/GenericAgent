@@ -1,0 +1,9 @@
+# Profile Enhancement Merge Template for Clash Verge
+# 锁定 TUN 模式为关闭，更新订阅后依然生效
+
+profile:
+  store-selected: true
+
+# 强制关闭 TUN 模式（防止订阅更新后被打开）
+tun:
+  enable: false
