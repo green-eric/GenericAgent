@@ -1,9 +1,8 @@
 import json, threading, time, uuid, queue, socket, requests, traceback
-from typing import Dict, Any, Optional, List  
-from simple_websocket_server import WebSocketServer, WebSocket  
-from bs4 import BeautifulSoup  
-import bottle, random
-from bottle import route, template, request, response
+from typing import Any
+from simple_websocket_server import WebSocketServer, WebSocket
+import bottle
+from bottle import request
 
 class Session:
     def __init__(self, session_id, info, client=None):
@@ -69,7 +68,7 @@ class TMWebDriver:
                 try:
                     msg = msgQ.get(timeout=0.2)
                     try: self.acks[json.loads(msg).get('id','')] = True
-                    except: traceback.print_exc()
+                    except Exception: traceback.print_exc()
                     return msg
                 except queue.Empty: continue
             return json.dumps({"id": "", "ret": "next long-poll"})
@@ -204,7 +203,8 @@ class TMWebDriver:
                     raise ValueError(f"会话ID {session_id} 未连接")  
 
         tp = session.type
-        assert tp in ['ws', 'http', 'ext_ws'], f"Unsupported session type: {tp}"
+        if tp not in ('ws', 'http', 'ext_ws'):
+            raise ValueError(f"Unsupported session type: {tp}")
         exec_id = str(uuid.uuid4())  
         payload_dict = {'id': exec_id, 'code': code}
         if tp == 'ext_ws': payload_dict['tabId'] = int(session.id)
@@ -243,7 +243,7 @@ class TMWebDriver:
         return rr
     
     def _remote_cmd(self, cmd):
-        try: return requests.post(self.remote, headers={"Content-Type": "application/json"}, json=cmd).json()
+        try: return requests.post(self.remote, headers={"Content-Type": "application/json"}, json=cmd, timeout=30).json()
         except (ConnectionError, requests.exceptions.ConnectionError):
             raise ConnectionError("TMWebDriver master未运行，看tmwebdriver_sop启动master")
 

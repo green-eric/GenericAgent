@@ -323,6 +323,11 @@ class WxBotClient:
             'status': 2 if cancel else 1,
             'base_info': {'channel_version': VER}})
 
+    def get_typing_ticket(self, to_user_id, context_token=''):
+        payload = {'ilink_user_id': to_user_id}
+        if context_token: payload['context_token'] = context_token
+        return self._post('ilink/bot/getconfig', payload).get('typing_ticket', '')
+
     def _enc(self, raw, aes_key):
         pad = 16 - (len(raw) % 16)
         return AES.new(aes_key, AES.MODE_ECB).encrypt(raw + bytes([pad] * pad))
@@ -807,7 +812,6 @@ def on_message(bot, msg):
             # ═══ 接收 agent 输出（只发最终done消息，不发中间chunk） ═══
             max_turns = 10
             turn_count = 0
-
             try:
                 while True:
                     item = dq.get(timeout=120)

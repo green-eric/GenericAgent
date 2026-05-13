@@ -33,7 +33,7 @@ print(get_todo())       # 查看待办
 0. 重读本sop
 1. 在cwd写报告（文件名任意），若有记忆更新建议，附在报告末尾
 2. `from/import helper; complete_task(tasktitle, historyline, report_path)` → 自动编号+移报告到 autonomous_reports/+prepend history（historyline 格式：`类型 | 主题 | 结论`，严格单行）
-3. `set_todo()` 获取TODO路径 → 将已完成条目标记为 `[x]`
+3. `set_todo()` 获取TODO路径 → 将已完成条目标记为 `[x]`（注意前缀）
 4. 结束，剩余TODO留到下次再做
 
 ## 权限边界

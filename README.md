@@ -6,7 +6,7 @@
 </div>
 
 <p align="center">
-  <a href="#english">English</a> | <a href="#chinese">中文</a> | 📄 Technical Report:&nbsp;<a href="https://arxiv.org/abs/2604.17091"><img src="https://img.shields.io/badge/arXiv-2604.17091-b31b1b?logo=arxiv&logoColor=white" alt="arXiv" height="18"/></a>&nbsp;<a href="assets/GenericAgent_Technical_Report.pdf"><img src="https://img.shields.io/badge/-PDF-EA4335?logo=adobeacrobatreader&logoColor=white" alt="Technical Report PDF" height="18"/></a>&nbsp;<a href="https://github.com/JinyiHan99/GA-Technical-Report"><img src="https://img.shields.io/badge/-Code%20%26%20Data-181717?logo=github&logoColor=white" alt="Experiments & Reproduction Repo" height="18"/></a> | 📘 <a href="https://datawhalechina.github.io/hello-generic-agent/">教程</a>
+  <a href="#english">English</a> | <a href="#chinese">中文</a> | 📄 Technical Report:&nbsp;<a href="https://arxiv.org/abs/2604.17091"><img src="https://img.shields.io/badge/arXiv-2604.17091-b31b1b?logo=arxiv&logoColor=white" alt="arXiv" height="18"/></a>&nbsp;<a href="assets/GenericAgent_Technical_Report.pdf"><img src="https://img.shields.io/badge/-PDF-EA4335?logo=adobeacrobatreader&logoColor=white" alt="Technical Report PDF" height="18"/></a>&nbsp;<a href="https://github.com/JinyiHan99/GA-Technical-Report"><img src="https://img.shields.io/badge/-Code%20%26%20Data-181717?logo=github&logoColor=white" alt="Experiments & Reproduction Repo" height="18"/></a> | 📘 <a href="https://datawhalechina.github.io/hello-generic-agent/">教程</a> | <a href="https://fudankw.cn/sophub">Sophub</a>
 </p>
 
 > 📌 **Official channel**: This GitHub repository is the sole official source for GenericAgent. We have no affiliation with any third-party website using the GenericAgent name.
@@ -80,8 +80,9 @@ After a few weeks, your agent instance will have a skill tree no one else in the
 git clone https://github.com/lsdefine/GenericAgent.git
 cd GenericAgent
 
-# 2. Install minimal dependencies
-pip install requests streamlit pywebview
+# 2. Install dependencies
+pip install requests streamlit pywebview   # Desktop GUI (launch.pyw)
+pip install requests textual               # Terminal UI (tuiapp.py)
 
 # 3. Configure API Key
 cp mykey_template.py mykey.py
@@ -98,6 +99,7 @@ If you prefer a modern Python workflow, GenericAgent also provides a minimal `py
 ```bash
 git clone https://github.com/lsdefine/GenericAgent.git
 cd GenericAgent
+uv venv
 uv pip install -e ".[ui]"        # Core + GUI dependencies
 cp mykey_template.py mykey.py
 python launch.pyw
@@ -109,7 +111,43 @@ Full guide: [GETTING_STARTED.md](GETTING_STARTED.md)
 
 ---
 
-## 🤖 Bot Interface (Optional)
+## 🖥️ Desktop Frontends
+
+### Terminal UI
+
+A lightweight, keyboard-driven interface built on [Textual](https://github.com/Textualize/textual). Supports multiple concurrent sessions, real-time streaming, and runs anywhere a terminal does — no browser needed.
+
+```bash
+python frontends/tuiapp.py
+```
+
+### Other Desktop Frontends
+
+```bash
+python frontends/qtapp.py                # Qt-based desktop app
+streamlit run frontends/stapp2.py        # Alternative Streamlit UI
+```
+
+### Codeg
+
+<table><tr>
+<td width="70%">
+
+[Codeg](https://github.com/yiqi-017/codeg) (`feat/genericagent-integration` branch) is a desktop/web UI that connects GenericAgent alongside other agents (Claude Code, Gemini, Codex, etc.) in a unified interface with a polished, modern UI.
+
+> This integration is usable now. Some features are still being refined — feedback welcome.
+
+Place your GenericAgent directory alongside the codeg project. Codeg will auto-detect `frontends/genericagent_acp_bridge.py` and launch GenericAgent as a local ACP agent.
+
+</td>
+<td width="30%">
+<img src="assets/demo/codeg-demo.gif" width="90%" alt="Codeg Demo">
+</td>
+</tr></table>
+
+---
+
+## 💬 Bot Interface (IM)
 
 ### Telegram Bot
 
@@ -121,15 +159,6 @@ tg_allowed_users = [YOUR_USER_ID]
 
 ```bash
 python frontends/tgapp.py
-```
-
-### Alternative App Frontends
-
-Besides the default Streamlit web UI, you can also try other frontend styles:
-
-```bash
-python frontends/qtapp.py                # Qt-based desktop app
-streamlit run frontends/stapp2.py        # Alternative Streamlit UI
 ```
 
 ### Common Chat Commands
@@ -151,6 +180,34 @@ The default Streamlit desktop UI started by `python launch.pyw`, plus the QQ / T
 | **OS Control** | Mouse/kbd, vision, ADB | Multi-agent delegation | File + terminal |
 | **Self-Evolution** | Autonomous skill growth | Plugin ecosystem | Stateless between sessions |
 | **Out of the Box** | A few core files + starter skills | Hundreds of modules | Rich CLI toolset |
+
+
+## 📈 Evaluation — Five Dimensions
+
+> 📂 Full evaluation datasets and results: <https://github.com/JinyiHan99/GA-Technical-Report/tree/main>
+
+| Dimension | Question | Benchmarks used |
+|---|---|---|
+| **1. Task Completion & Token Efficiency** | Can GA complete hard tasks more cheaply than leading agents? | SOP-Bench, Lifelong AgentBench, RealFin-Benchmark |
+| **2. Tool-Use Efficiency** | Can a minimal atomic toolset solve what specialized toolsets solve, with less overhead? | Tool Efficiency Benchmark (11 simple + 5 long-horizon tasks) |
+| **3. Memory System Effectiveness** | Does condensed hierarchical memory beat full/redundant memory and embedding-based retrievers? | SOP-Bench (dangerous goods), LoCoMo, 20-skill stress test |
+| **4. Self-Evolution Capability** | Can the agent distill experience into reusable SOPs and code, without intervention? | 9-round LangChain longitudinal study, 8-task cross-task web benchmark |
+| **5. Web Browsing Capability** | Does density-driven design survive the open web? | WebCanvas, BrowseComp-ZH, Custom Tasks (22) |
+
+Baselines across these dimensions include **Claude Code**, **OpenAI CodeX**, and **OpenClaw**, evaluated under *Claude Sonnet 4.6*, *Claude Opus 4.6*, *GPT-5.4*, and *MiniMax M2.7* backbones.
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="assets/images/result_radar.png" width="100%" alt="Tool-use efficiency radar"/><br/>
+      <sub><b>Tool-use efficiency radar.</b> GA dominates token, request, and tool-call axes while preserving quality across four task dimensions.</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="assets/images/result_convergence.png" width="100%" alt="Cross-task self-evolution convergence"/><br/>
+      <sub><b>Cross-task self-evolution.</b> Second- and third-run GA executions converge to a stable low-cost regime across eight web tasks, while OpenClaw shows no such convergence.</sub>
+    </td>
+  </tr>
+</table>
 
 
 ## 🧠 How It Works
@@ -207,7 +264,7 @@ You're also welcome to join our **GenericAgent Community Group** for discussion,
 <div align="center">
   <table>
     <tr>
-      <td align="center"><strong>WeChat Group 13</strong><br><img src="assets/images/wechat_group13.jpg" alt="WeChat Group 13 QR Code" width="250"/></td>
+      <td align="center"><strong>WeChat Group 17</strong><br><img src="assets/images/wechat_group17.jpg" alt="WeChat Group 17 QR Code" width="250"/></td>
     </tr>
   </table>
 </div>
@@ -295,12 +352,14 @@ MIT License — see [LICENSE](LICENSE)
 git clone https://github.com/lsdefine/GenericAgent.git
 cd GenericAgent
 
-# 2. 安装最小依赖
-pip install requests streamlit pywebview
+# 2. 安装依赖
+pip install requests streamlit pywebview   # 桌面 GUI (launch.pyw)
+pip install requests textual               # 终端 UI (tuiapp.py)
 
 # 3. 配置 API Key
 cp mykey_template.py mykey.py
 # 编辑 mykey.py，填入你的 LLM API Key
+# 或使用交互式向导：python assets/configure_mykey.py
 
 # 4. 启动
 python launch.pyw
@@ -328,7 +387,43 @@ python launch.pyw
 
 ---
 
-## 🤖 Bot 接口（可选）
+## 🖥️ 桌面前端
+
+### 终端 UI
+
+基于 [Textual](https://github.com/Textualize/textual) 的轻量键盘驱动界面。支持多会话并发、实时流式输出，有终端就能跑，无需浏览器。
+
+```bash
+python frontends/tuiapp.py
+```
+
+### 其他桌面前端
+
+```bash
+python frontends/qtapp.py                # 基于 Qt 的桌面应用
+streamlit run frontends/stapp2.py        # 另一种 Streamlit 风格 UI
+```
+
+### Codeg前端
+
+<table><tr>
+<td width="70%">
+
+[Codeg](https://github.com/yiqi-017/codeg)（`feat/genericagent-integration` 分支）是一个桌面/Web UI，可以将 GenericAgent 与其他代理（Claude Code、Gemini、Codex 等）在统一界面中并行使用，UI 更加精美。
+
+> 此集成已可使用，部分功能仍在完善中，欢迎体验反馈。
+
+将 GenericAgent 目录放在 codeg 项目同级目录下，Codeg 会自动检测 `frontends/genericagent_acp_bridge.py` 并将 GenericAgent 作为本地 ACP 代理启动。
+
+</td>
+<td width="30%">
+<img src="assets/demo/codeg-demo.gif" width="90%" alt="Codeg Demo">
+</td>
+</tr></table>
+
+---
+
+## 💬 Bot 接口（IM）
 
 ### 微信 Bot（个人微信）
 
@@ -410,15 +505,6 @@ dingtalk_client_secret = "your_app_secret"
 dingtalk_allowed_users = ["your_staff_id"]  # 或 ['*']
 ```
 
-### 其他 App 前端
-
-除默认的 Streamlit Web UI 外，还可以尝试不同风格的前端：
-
-```bash
-python frontends/qtapp.py                # 基于 Qt 的桌面应用
-streamlit run frontends/stapp2.py        # 另一种 Streamlit 风格 UI
-```
-
 ### 通用聊天命令
 
 默认通过 `python launch.pyw` 启动的 Streamlit 桌面 UI，以及 QQ / Telegram / 飞书 / 企业微信 / 钉钉前端，都支持以下命令：
@@ -438,6 +524,34 @@ streamlit run frontends/stapp2.py        # 另一种 Streamlit 风格 UI
 | **OS 控制** | 键鼠、视觉、ADB | 多 Agent 委派 | 文件 + 终端 |
 | **自我进化** | 自主生长 Skill 和工具 | 插件生态 | 会话间无状态 |
 | **出厂配置** | 几个核心文件 + 少量初始 Skills | 数百模块 | 丰富 CLI 工具集 |
+
+
+## 📈 评测 — 五大维度
+
+> 📂 完整的评测数据集以及评测结果见：<https://github.com/JinyiHan99/GA-Technical-Report/tree/main>
+
+| 维度 | 核心问题 | 使用的基准 |
+|---|---|---|
+| **1. 任务完成度与 Token 效率** | GA 能否以更低成本完成高难度任务？ | SOP-Bench、Lifelong AgentBench、RealFin-Benchmark |
+| **2. 工具使用效率** | 最小原子工具集能否以更低开销替代专用工具集？ | Tool Efficiency Benchmark |
+| **3. 记忆系统有效性** | 精简分层记忆能否超越冗余记忆和基于 Embedding 的检索器？ | SOP-Bench、LoCoMo、20-skill 压力测试 |
+| **4. 自我进化能力** | Agent 能否在无人干预下将经验提炼为可复用的 SOP 与代码？ | 9 轮 LangChain 纵向研究、8 任务跨任务 Web 基准 |
+| **5. 网页浏览能力** | 信息密度驱动设计能否适应开放网页？ | WebCanvas、BrowseComp-ZH、自定义任务 |
+
+以上维度的基线包括 **Claude Code**、**OpenAI CodeX** 和 **OpenClaw**，分别在 *Claude Sonnet 4.6*、*Claude Opus 4.6*、*GPT-5.4* 和 *MiniMax M2.7* 底座上进行评测。
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="assets/images/result_radar.png" width="100%" alt="工具使用效率雷达图"/><br/>
+      <sub><b>工具使用效率雷达图。</b>GA 在 Token、请求数和工具调用轴上全面领先，同时在四个任务维度上保持质量。</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="assets/images/result_convergence.png" width="100%" alt="跨任务自我进化收敛曲线"/><br/>
+      <sub><b>跨任务自我进化。</b>GA 的第二轮和第三轮执行在 8 个 Web 任务上收敛至稳定的低成本区间。</sub>
+    </td>
+  </tr>
+</table>
 
 
 ## 🧠 工作机制
@@ -492,7 +606,7 @@ GenericAgent 通过**分层记忆 × 最小工具集 × 自主执行循环**完�
 <div align="center">
   <table>
     <tr>
-      <td align="center"><strong>微信群 13</strong><br><img src="assets/images/wechat_group13.jpg" alt="微信群 13 二维码" width="250"/></td>
+      <td align="center"><strong>微信群 17</strong><br><img src="assets/images/wechat_group17.jpg" alt="微信群 17 二维码" width="250"/></td>
     </tr>
   </table>
 </div>
