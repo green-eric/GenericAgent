@@ -830,29 +830,6 @@ def _ensure_cdp():
     sock2.close()
     print(f'[CDP] {"[OK] 已启动" if ok else "[FAIL] 启动失败"}', file=sys.__stdout__)
 
-if __name__ == '__main__':
-    # ★ 抑制 Windows 崩溃弹窗（pythonw 无 stdout，任何未捕获异常都会弹 Windows 错误对话框）
-    if os.name == 'nt':
-        import ctypes
-        # SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX | SEM_NOOPENFILEERRORBOX
-        ctypes.windll.kernel32.SetErrorMode(0x0001 | 0x0002 | 0x8000)
-        # 同时设置未处理异常过滤器，静默退出
-        import sys as _sys
-        _orig_except = _sys.excepthook
-        def _silent_except(exc_type, exc_val, exc_tb):
-            _trace.write(f'[{time.strftime("%H:%M:%S")}] FATAL: {exc_type.__name__}: {exc_val}\n')
-            _trace.flush()
-            # 不调用 _orig_except（避免弹窗），直接退出
-            os._exit(1)
-        _sys.excepthook = _silent_except
-
-    _trace.write(f'[{time.strftime("%H:%M:%S")}] TRACE: entering __main__\n')
-    _trace.flush()
-    _ensure_cdp()  # 启动前确保 CDP 可用
-    _trace.write(f'[{time.strftime("%H:%M:%S")}] TRACE: after _ensure_cdp\n')
-    _trace.flush()
-    if not _ensure_single(): sys.exit(1)
-    main()
 def _ensure_single():
     global _lock_socket
     try:
@@ -952,4 +929,21 @@ def main():
     bot.run_loop(_on_message)
 
 if __name__ == '__main__':
+    # ★ 抑制 Windows 崩溃弹窗
+    if os.name == 'nt':
+        import ctypes
+        ctypes.windll.kernel32.SetErrorMode(0x0001 | 0x0002 | 0x8000)
+        import sys as _sys
+        _orig_except = _sys.excepthook
+        def _silent_except(exc_type, exc_val, exc_tb):
+            _trace.write(f'[{time.strftime("%H:%M:%S")}] FATAL: {exc_type.__name__}: {exc_val}\n')
+            _trace.flush()
+            os._exit(1)
+        _sys.excepthook = _silent_except
+
+    _trace.write(f'[{time.strftime("%H:%M:%S")}] TRACE: entering __main__\n')
+    _trace.flush()
+    _ensure_cdp()  # 启动前确保 CDP 可用
+    _trace.write(f'[{time.strftime("%H:%M:%S")}] TRACE: after _ensure_cdp\n')
+    _trace.flush()
     main()
