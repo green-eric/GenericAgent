@@ -1,9 +1,8 @@
 # [Global Memory Insight]
 需要时read L2 或 ls ../memory/ 查L3
 L0(META-SOP): memory_management_sop
-L2: global_mem.txt(微信bot关键事实+代理排障+ScoreSys回测(V13.7夏普1.4回撤16.29%; V13.7-fix2夏普6.535回撤7.68%+行业中性化bug修复)+IC分析与权重演进+因子修复+因子rank归一化+本机硬件环境+ScoreSys/BfM项目路径+DB表名+quotes索引优化+BfM架构总览+BfM文档体系+BfM技术栈+三项目一致性检查2026-05-10+regime自适应权重+项目逻辑Review2026-05-11+VETO修正+BfM八维权重+AUTO_WEIGHT_MODE+回复速度优化+格式自适应+C盘空间+P2P3执行2026-05-11+方案C_scorer_bug修复+_score_cache清理经验+run_full_eval修复+scores表入库+文档一致性修复V13.8+动量全局反转+token统计修复2026-05-11+ScoreSys V13.9架构升级:入口合并main.py+baostock批量K线+run_full_eval删除+scorer版本对齐+DB 5表完整结构+9因子权重最终版+并发写锁修复+估值脚本错误输出+三项目逻辑文档一致性检查2026-05-12:ScoreSys 9因子vs BfM八维+独立架构+文档修复完成(版本号对齐/权重引用yaml/交叉引用/微信Bot版本号))
-L3: memory_cleanup_sop(记忆整理) | token_stats(统计) | skill_search | ui_detect.py | ocr_utils.py | subagent | web_setup_sop | plan_sop 
-| procmem_scanner | keychain | ljqCtrl_sop+.py | tmwebdriver_sop | autonomous_operation_sop | scheduled_task_sop | vision_sop | adb_ui.py
+L2: global_mem.txt(微信Bot关键事实+代理/已知问题/当前状态+ScoreSys V13.9.3:9因子权重/main.py入口/5表DB+BfM八维+技术栈/本机硬件/GA崩溃恢复/项目路径/工具域经验)R109清理:457→76行-83%
+L3: memory_cleanup_sop(记忆整理) | memory_management_sop(META-SOP) | plan_sop(复杂任务规划) | autonomous_operation_sop(自主行动) | scheduled_task_sop(定时任务) | tmwebdriver_sop(浏览器特殊操作) | ljqCtrl_sop+.py(键鼠控制) | vision_sop(截图视觉) | web_setup_sop(网络配置) | verify_sop(验证) | cdp_bridge_sop(CDP桥接) | output_format_sop(输出格式) | wechat_bot_perf_sop(微信性能) | wechat_fix(微信修复) | github_contribution_sop(开源贡献) | bullish_stream_realtime_sop(实时流) | supervisor_sop(监控) | procmem_scanner_sop(进程内存扫描) | mini_sop_env_scan(环境扫描) | mini_sop_memory_update(记忆更新) | mini_sop_tool_wrapping(工具封装) | subagent(子代理) | token_report(统计报告) | adb_ui.py(手机) | keychain(密钥) | ljqCtrl.py(键鼠) | ocr_utils.py(OCR) | ui_detect.py(界面检测) | vision_api.py(视觉API) | procmem_scanner.py(进程扫描)
 L4: L4_raw_sessions/ 历史会话
 
 浏览器特殊操作: tmwebdriver_sop(文件上传/图搜/PDF blob/物理坐标/HttpOnly Cookie/autofill突破/跨域iframe/CDP/跨tab)
