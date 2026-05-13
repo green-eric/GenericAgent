@@ -517,7 +517,7 @@ class BaseSession:
         if 'deepseek' in self.model.lower():
             default_context_win = 70000; self.cut_msg_interval = 25; self.trim_keep_rate = 0.3
         self.context_win = cfg.get('context_win', default_context_win)
-        self.history = []; self.lock = threading.Lock(); self.system = ""
+        self.history = []; self.lock = threading.Lock(); self.system = 
         self.name = cfg.get('name', self.model)
         proxy = cfg.get('proxy'); 
         self.proxies = {"http": proxy, "https": proxy} if proxy else None
