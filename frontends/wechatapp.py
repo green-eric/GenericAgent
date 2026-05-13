@@ -8,8 +8,8 @@ from urllib.parse import quote
 # ── 自启动日志重定向 ──
 _LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'temp')
 os.makedirs(_LOG_DIR, exist_ok=True)
-_logf = open(os.path.join(_LOG_DIR, 'wechatbot_stdout.log'), 'a', encoding='utf-8')
-_logf_err = open(os.path.join(_LOG_DIR, 'wechatbot_stderr.log'), 'a', encoding='utf-8')
+_logf = open(os.path.join(_LOG_DIR, 'wechatbot_stdout.log'), 'a', encoding='utf-8', buffering=1)
+_logf_err = open(os.path.join(_LOG_DIR, 'wechatbot_stderr.log'), 'a', encoding='utf-8', buffering=1)
 sys.stdout = _logf
 sys.stderr = _logf_err
 sys.__stdout__ = _logf
@@ -291,27 +291,6 @@ class WxBotClient:
                 pass
             time.sleep(2)
         return False
-
-    def get_updates(self, timeout=60):
-        try:
-            resp = self._post('ilink/bot/getupdates',
-                              {'get_updates_buf': self._buf or '',
-                               'base_info': {}},
-                              timeout=timeout + 5)
-        except requests.exceptions.ReadTimeout:
-            return []
-        if resp.get('errcode'):
-            print(f'[getUpdates] err: {resp.get("errcode")} {resp.get("errmsg","")}', file=sys.__stdout__)
-            if resp['errcode'] == -14:
-                # Token 过期，设置标记，由 run_loop 处理重新登录
-                print('[getUpdates] Token 过期，需要重新登录', file=sys.__stdout__)
-                self._buf = ''
-                self._save()
-                self._token_expired = True
-            return []
-        nb = resp.get('get_updates_buf', '')
-        if nb: self._buf = nb; self._save()
-        return resp.get('msgs') or []
 
     def send_text(self, uid, text, context_token='', media_paths=None):
         """发送文本消息，带重试。返回 True=成功。"""
@@ -814,8 +793,12 @@ def _ensure_cdp():
     """确保 Chrome CDP 9222 可用。不可用时自动启动 headless 隐身 Chrome。"""
     import socket as _sk
     sock = _sk.socket(_sk.AF_INET, _sk.SOCK_STREAM)
-    if sock.connect_ex(('127.0.0.1', 9222)) == 0:
-        sock.close(); print('[CDP] 已可用', file=sys.__stdout__); return
+    sock.settimeout(3)
+    try:
+        if sock.connect_ex(('127.0.0.1', 9222)) == 0:
+            sock.close(); print('[CDP] 已可用', file=sys.__stdout__); return
+    except (socket.timeout, OSError):
+        pass
     sock.close()
     print('[CDP] 未检测到，启动 Chrome headless 隐身模式...', file=sys.__stdout__)
     chrome_exe = r'C:\Program Files\Google\Chrome\Application\chrome.exe'
@@ -826,7 +809,11 @@ def _ensure_cdp():
                      creationflags=subprocess.CREATE_NO_WINDOW)
     time.sleep(8)
     sock2 = _sk.socket(_sk.AF_INET, _sk.SOCK_STREAM)
-    ok = sock2.connect_ex(('127.0.0.1', 9222)) == 0
+    sock2.settimeout(3)
+    try:
+        ok = sock2.connect_ex(('127.0.0.1', 9222)) == 0
+    except (socket.timeout, OSError):
+        ok = False
     sock2.close()
     print(f'[CDP] {"[OK] 已启动" if ok else "[FAIL] 启动失败"}', file=sys.__stdout__)
 
@@ -877,7 +864,7 @@ def main():
         bot.send_text(uid, '⏳ 处理中...', context_token=ctx)
 
         try:
-            agent = GeneraticAgent(session_key=f'wx_{uid}', model=None)
+            agent = GeneraticAgent()
             reply = agent.run(text)
             reply = clean(reply)
             reply = _format_for_device(reply, device)
@@ -918,7 +905,7 @@ def main():
     def _agent_wrapper():
         print('[Bot] Agent线程启动', file=sys.__stdout__)
         try:
-            agent = GeneraticAgent(session_key='wx_agent', model=None)
+            agent = GeneraticAgent()
             agent.run()
         except Exception as e:
             print(f'[Bot] Agent异常: {e}', file=sys.__stderr__)
@@ -936,7 +923,9 @@ if __name__ == '__main__':
         import sys as _sys
         _orig_except = _sys.excepthook
         def _silent_except(exc_type, exc_val, exc_tb):
+            import traceback as _tb
             _trace.write(f'[{time.strftime("%H:%M:%S")}] FATAL: {exc_type.__name__}: {exc_val}\n')
+            _tb.print_exception(exc_type, exc_val, exc_tb, file=_trace)
             _trace.flush()
             os._exit(1)
         _sys.excepthook = _silent_except
