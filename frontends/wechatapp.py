@@ -851,10 +851,8 @@ if __name__ == '__main__':
     _ensure_cdp()  # 启动前确保 CDP 可用
     _trace.write(f'[{time.strftime("%H:%M:%S")}] TRACE: after _ensure_cdp\n')
     _trace.flush()
-    # Prevent multiple instances: check for other wechatapp.py processes via PowerShell
-    _my_pid = os.getpid()
-    _dup = False
-
+    if not _ensure_single(): sys.exit(1)
+    main()
 def _ensure_single():
     global _lock_socket
     try:
