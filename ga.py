@@ -470,23 +470,11 @@ class GenericAgentHandler(BaseHandler):
             try:
                 with open(abs_path, 'w', encoding='utf-8') as f: f.write(str(content))
                 result["js_return"] += f"\n\n[已保存完整内容到 {abs_path}]"
-<<<<<<< HEAD
             except:
                 result['js_return'] += f"\n\n[保存失败，无法写入文件 {abs_path}]"
         result = json.dumps(result, ensure_ascii=False, default=json_default)
         next_prompt = self._get_anchor_prompt(skip=args.get('_index', 0) > 0)
         return StepOutcome(smart_format(result, max_str_len=8000), next_prompt=next_prompt)
-=======
-            except: result['js_return'] += f"\n\n[保存失败，无法写入文件 {abs_path}]"
-        show = smart_format(json.dumps(result, ensure_ascii=False, indent=2, default=json_default), max_str_len=300)
-        try: print("Web Execute JS Result:", show)
-        except: pass
-        yield f"JS 执行结果:\n{show}\n"
-        next_prompt = self._get_anchor_prompt(skip=args.get('_index', 0) > 0)
-        result = json.dumps(result, ensure_ascii=False, default=json_default)
-        maxlen = 8000 // args.get('_tool_num', 1)
-        return StepOutcome(smart_format(result, max_str_len=maxlen), next_prompt=next_prompt)
->>>>>>> upstream/main
     
     def do_file_patch(self, args, response):
         path = self._get_abs_path(args.get("path", ""))
@@ -574,7 +562,6 @@ class GenericAgentHandler(BaseHandler):
         next_prompt = self._get_anchor_prompt(skip=args.get('_index', 0) > 0)
         return StepOutcome({"result": "working key_info updated"}, next_prompt=next_prompt)
 
-<<<<<<< HEAD
     def do_web_search(self, args, response):
         '''搜索互联网获取实时信息。'''
         query = args.get("query", "")
@@ -605,12 +592,10 @@ class GenericAgentHandler(BaseHandler):
             return StepOutcome(result, next_prompt=f"\n{summary}\n")
         else:
             return StepOutcome(result, next_prompt=f"\n[Error] 搜索失败: {result.get('msg', '未知错误')}\n")
-=======
     def _retry_or_exit(self, prompt):
         self._empty_ct = getattr(self, '_empty_ct', 0) + 1
         if self._empty_ct >= 3: return StepOutcome({}, should_exit=True)
         return StepOutcome({}, next_prompt=prompt)
->>>>>>> upstream/main
 
     def do_no_tool(self, args, response):
         '''这是一个特殊工具，由引擎自主调用，不要包含在TOOLS_SCHEMA里。
