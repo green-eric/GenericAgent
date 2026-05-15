@@ -147,12 +147,29 @@
 ## subagent 环境状态
 - ⚠️ agentmain.py直接运行缺llmcore模块，subagent不可用；主agent自行评审
 
-## R148-R151 自主行动 (2026-05-16)
+## R148-R154 自主行动 (2026-05-16)
 - R148: proxy_health_check.py 代理稳定性探测，7897端口可用但系统代理未开
 - R149: CPU轻量模型推理实测，i5-1135G7上Transformer<2ms，Intel Iris Xe无法GPU推理
 - R150: history.txt去重 131→125条(-4.6%)，删除6条重复/碎片
 - R151: TODO.txt重置，R147批次归档，R151批次仅留2条P0(融合选股+上游同步)
-- TODO当前状态: R151批次2条P0未完成
+- R154: P0-1 proxy_health_check.py 提交(38de558) | P0-2 RPS20xScoreSys交叉分析(3aa2baa)
+
+## RPS20×ScoreSys 交叉分析 (2026-05-16 R154)
+- 报告: D:\GenericAgent\temp\autonomous_reports\R154_RPS20xScoreSys交叉分析.md
+- 代码映射: 通达信7位代码去第2位→6位标准代码 (0002747→002747)
+- 覆盖率: 171/431 (39%) RPS20股票被ScoreSys评分覆盖
+- 核心发现:
+  - RPS20平均总分低于全市场约5分，D级占比48.5%
+  - RPS20中A+/A级仅26/171 (15%)，全市场A+/A级498/4344 (11.5%)
+  - RPS20动量因子均值显著高于全市场(符合预期)
+  - TOP双优: 利仁科技99.89, 鹏鼎控股99.02, 广合科技98.68
+- 结论: RPS20动量预筛选 + ScoreSys基本面过滤(仅选A+/A级) = 融合选股v2核心逻辑
+- 建议: 256只未覆盖股票需补充评分数据
+
+## TODO当前状态 (2026-05-16)
+- ✅ P0-1 融合选股: RPS20xScoreSys交叉分析完成，融合逻辑已明确
+- ⬜ P0-2 上游同步: 待执行
+- 💡 新发现: RPS20中256只(60%)未被ScoreSys覆盖，需排查原因
 
 ## 工具域经验 & 修复教训
 - web_search: baidu最稳定(无需key) | google可能anti-bot
