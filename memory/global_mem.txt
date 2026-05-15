@@ -101,6 +101,20 @@
 - 功能: 读ScoreSys scores表→EventBus SSE推送到前端，纯sqlite3零import依赖
 - ✅ 修复(2026-05-15): server.py _handle_scoresys_refresh改为同步调用_worker()绕过防抖+线程问题
 
+## 通达信RPS20选股系统深度探测 (2026-05-15)
+- 位置: D:\Programs\zd_gyzq_gm (通达信官方版)
+- RPS20板块: T0002\blocknew\RPS2090.blk(432只股票代码) + RPS2090.dat(34480字节,每只含代码+RPS值+涨跌幅,定长记录)
+- 日线数据: vipdoc\ds\lday\74#MARPS.day(1133条×32字节,2021-08起)
+- 配置: T0002\cloud_cfg\gp_gz_rpsxg.xml — 三周期RPS筛选
+  - 时1: 1m/3m/5m/10m 对应RPS阈值60-99
+  - 时2: 20d/30d 对应RPS阈值60-99
+  - 时3: 60d/120d/250d 对应RPS阈值60-99
+  - 默认: 时1=10m/RPS80, 时2=20d/RPS80, 时3=60d/RPS80
+- 原理: RPS = 个股涨幅在全市场股票中的百分位排名(0-100)
+- 选股逻辑: 三周期RPS均≥阈值(默认80)的股票进入板块
+- DAT记录格式: 股票代码(ASCII) + 填充 + float(RPS1) + float(Growth1) + uint32 + uint32 + 标志位
+- 💡 可借鉴: RPS20三周期共振(短中长)思路可用于ScoreSys因子设计
+
 ## ScoreSys 回测参数自动优化器 (2026-05-15 R142)
 - 工具: D:/Project/ScoreSys/param_optimizer.py (348行)
 - 提交: 8bb391d
