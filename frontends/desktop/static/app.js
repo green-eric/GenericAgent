@@ -941,6 +941,10 @@ function buildTurn(kind, text, collapsed, index) {
   return turn;
 }
 
+function isNearBottom(threshold = 150) {
+  return messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight < threshold;
+}
+
 function scrollToBottom(smooth = true) {
   messagesEl.scrollTo({ top: messagesEl.scrollHeight, behavior: smooth ? 'smooth' : 'auto' });
 }
@@ -1091,7 +1095,7 @@ function renderAssistantDraftInPlace(sess, draft) {
   renderStructuredMarkdownInto(body, draft.text || '');
   injectCopyButtons(body);
   body.insertAdjacentHTML('beforeend', '<span class="cursor"></span>');
-  scrollToBottom(false);
+  if (isNearBottom()) scrollToBottom(false);
   return wrap;
 }
 
@@ -1115,7 +1119,7 @@ function appendAssistantChunk(sess, text) {
   ensureAssistantTaskElapsed(wrap, draft.taskStartedAt || runtime.taskStartedAt);
   renderStructuredMarkdownInto(body, draft.text);
   body.insertAdjacentHTML('beforeend', '<span class="cursor"></span>');
-  scrollToBottom(false);
+  if (isNearBottom()) scrollToBottom(false);
 }
 
 function appendStreamChunk(sess, kind, text) {
@@ -1148,7 +1152,7 @@ function appendStreamChunk(sess, kind, text) {
   }
   // Only render the clean body text (no summary-hint in body)
   body.innerHTML = renderMarkdown(cleanText) + '<span class="cursor"></span>';
-  scrollToBottom(false);
+  if (isNearBottom()) scrollToBottom(false);
 }
 
 function appendTurn(sess, kind, text, collapsed) {
@@ -1159,7 +1163,7 @@ function appendTurn(sess, kind, text, collapsed) {
   prepareMessagesForContent();
   const wrap = getLiveAssistantWrap(sess);
   wrap.appendChild(buildTurn(kind, text, collapsed, nextTurnIndexForWrap(wrap)));
-  scrollToBottom(false);
+  if (isNearBottom()) scrollToBottom(false);
 }
 
 function createStreamingTurn(sess, kind) {
@@ -1422,12 +1426,8 @@ async function handleSlash(cmd) {
         '  /new        New session',
         '  /clear      Clear current session display',
         '  /stop       Cancel the current request',
-        '  /continue   List & restore past sessions',
         '  /theme      Switch theme (light|dark|auto)',
       ].join('\n'));
-      break;
-    case 'continue':
-      await handleContinueCommand(arg);
       break;
     case 'new':
       await newSession();
@@ -1475,238 +1475,6 @@ async function handleSlash(cmd) {
       break;
     default:
       showSystem(`Unknown command: /${name}. Try /help.`);
-  }
-}
-
-/**
- * Filter restored history from bridge: show only the first user input,
- * a summary placeholder for omitted middle turns, and the last assistant output.
- * This avoids rendering hundreds of system/tool messages from the full context.
- */
-function filterRestoredHistory(history) {
-  const SYSTEM_MARKERS = [
-    '[WORKING MEMORY]', '[SYSTEM TIPS]', 'tool_result', '<earlier_context>',
-    '<history>', '<key_info>', '### [WORKING MEMORY]', '[CONSTITUTION]',
-    '[Memory]', '[RULES]', '[FILE]', '### Action Protocol',
-    '<function_calls>', 'Current turn:', '[DANGER]'
-  ];
-
-  // Collect all real user messages and the last meaningful assistant message
-  const userMessages = [];
-  let lastAssistant = null;
-
-  for (const entry of history) {
-    if (entry.role === 'user') {
-      const text = (entry.text || '').trim();
-      if (!text || text.length <= 5) continue;
-      const isSystem = SYSTEM_MARKERS.some(marker => text.includes(marker));
-      if (isSystem) continue;
-      userMessages.push(text);
-    } else if (entry.role === 'assistant') {
-      let cleaned = cleanRestoredAssistantText(entry.text || '');
-      cleaned = cleaned.replace(/<summary>[\s\S]*?<\/summary>\s*/g, '').trim();
-      if (cleaned) lastAssistant = cleaned;
-    }
-  }
-
-  // Build minimal result: first user input + omission note + last assistant
-  const result = [];
-  if (userMessages.length > 0) {
-    result.push({ role: 'user', text: userMessages[0] });
-  }
-  if (userMessages.length > 1) {
-    result.push({ role: 'system', text: `… ${userMessages.length - 1} earlier turns omitted …` });
-  }
-  if (lastAssistant) {
-    result.push({ role: 'assistant', text: lastAssistant });
-  }
-  return result;
-}
-
-/**
- * Defensive parser for restored assistant text from bridge.
- * Bridge may return raw Python list repr like:
- *   [{'text': '...', 'type': 'text'}, {'id': '...', 'type': 'tool_use'}]
- * This function extracts all 'text' fields from type='text' entries and joins them.
- * Strategy: convert Python repr to valid JSON then parse, with multiple fallbacks.
- */
-function cleanRestoredAssistantText(raw) {
-  if (!raw || typeof raw !== 'string') return raw || '';
-  const trimmed = raw.trim();
-  // Only process if it looks like a Python/JSON list of dicts
-  if (!/^\[/.test(trimmed)) return raw;
-  // Attempt 1: direct JSON parse (double-quoted format)
-  try {
-    const parsed = JSON.parse(trimmed);
-    if (Array.isArray(parsed)) {
-      const texts = parsed.filter(e => e && e.type === 'text' && e.text).map(e => e.text);
-      if (texts.length > 0) return texts.join('\n');
-    }
-  } catch (_) { /* not JSON */ }
-  // Attempt 2: Python repr → JSON conversion then parse
-  // Convert single quotes to double quotes carefully, handling escaped quotes
-  if (/'type'\s*:\s*'text'/.test(trimmed) || /"type"\s*:\s*"text"/.test(trimmed)) {
-    try {
-      // Strategy: use Python-style ast.literal_eval equivalent
-      // Replace Python True/False/None with JSON equivalents
-      let jsonStr = trimmed
-        .replace(/\bTrue\b/g, 'true')
-        .replace(/\bFalse\b/g, 'false')
-        .replace(/\bNone\b/g, 'null');
-      // Convert single-quoted strings to double-quoted
-      // This is a simplified approach: replace ' with " but handle escapes
-      jsonStr = pythonReprToJson(jsonStr);
-      const parsed = JSON.parse(jsonStr);
-      if (Array.isArray(parsed)) {
-        const texts = parsed.filter(e => e && e.type === 'text' && e.text).map(e => e.text);
-        if (texts.length > 0) return texts.join('\n');
-      }
-    } catch (_) { /* conversion failed */ }
-  }
-  // Attempt 3: regex extraction as last resort - find 'type': 'text' entries
-  // and extract their 'text' value using a state-machine approach
-  if (/'type'\s*:\s*'text'/.test(trimmed)) {
-    const extracted = extractTextFromPythonRepr(trimmed);
-    if (extracted) return extracted;
-  }
-  return raw;
-}
-
-/** Convert Python repr string to JSON string (best-effort) */
-function pythonReprToJson(s) {
-  let result = '';
-  let i = 0;
-  while (i < s.length) {
-    if (s[i] === "'") {
-      // Find matching closing single quote, handling escapes
-      result += '"';
-      i++;
-      while (i < s.length && s[i] !== "'") {
-        if (s[i] === '\\' && i + 1 < s.length) {
-          if (s[i + 1] === "'") { result += "'"; i += 2; }
-          else if (s[i + 1] === '"') { result += '\\"'; i += 2; }
-          else if (s[i + 1] === 'n') { result += '\\n'; i += 2; }
-          else if (s[i + 1] === 't') { result += '\\t'; i += 2; }
-          else if (s[i + 1] === '\\') { result += '\\\\'; i += 2; }
-          else { result += s[i]; i++; }
-        } else if (s[i] === '"') {
-          result += '\\"'; i++;
-        } else if (s[i] === '\n') {
-          result += '\\n'; i++;
-        } else if (s[i] === '\t') {
-          result += '\\t'; i++;
-        } else {
-          result += s[i]; i++;
-        }
-      }
-      result += '"';
-      if (i < s.length) i++; // skip closing '
-    } else {
-      result += s[i]; i++;
-    }
-  }
-  return result;
-}
-
-/** State-machine extraction: find all dicts with 'type':'text' and get their 'text' value */
-function extractTextFromPythonRepr(s) {
-  const texts = [];
-  // Find each {'text': '...', 'type': 'text'} or {'type': 'text', 'text': '...'}
-  // by locating 'type': 'text' markers and then finding the associated 'text' value
-  const typeTextPattern = /'type'\s*:\s*'text'/g;
-  let match;
-  while ((match = typeTextPattern.exec(s)) !== null) {
-    // Search backwards for the opening { of this dict entry
-    let braceStart = s.lastIndexOf('{', match.index);
-    if (braceStart === -1) continue;
-    // Search forward for the closing } - need to handle nested braces
-    let depth = 0;
-    let braceEnd = -1;
-    for (let j = braceStart; j < s.length; j++) {
-      if (s[j] === '{') depth++;
-      else if (s[j] === '}') { depth--; if (depth === 0) { braceEnd = j; break; } }
-      else if (s[j] === "'" ) {
-        // Skip string content
-        j++;
-        while (j < s.length && s[j] !== "'") {
-          if (s[j] === '\\') j++;
-          j++;
-        }
-      }
-    }
-    if (braceEnd === -1) continue;
-    const dictStr = s.substring(braceStart, braceEnd + 1);
-    // Extract 'text': '...' from this dict
-    const textMatch = dictStr.match(/'text'\s*:\s*'/);
-    if (!textMatch) continue;
-    // Find the value - parse the string starting after 'text': '
-    const valStart = textMatch.index + textMatch[0].length;
-    let val = '';
-    let k = valStart;
-    while (k < dictStr.length && dictStr[k] !== "'") {
-      if (dictStr[k] === '\\' && k + 1 < dictStr.length) {
-        const next = dictStr[k + 1];
-        if (next === 'n') { val += '\n'; k += 2; }
-        else if (next === 't') { val += '\t'; k += 2; }
-        else if (next === "'") { val += "'"; k += 2; }
-        else if (next === '\\') { val += '\\'; k += 2; }
-        else { val += dictStr[k]; k++; }
-      } else {
-        val += dictStr[k]; k++;
-      }
-    }
-    if (val) texts.push(val);
-  }
-  return texts.length > 0 ? texts.join('\n') : null;
-}
-
-async function handleContinueCommand(arg) {
-  if (!arg) {
-    // List available sessions
-    const res = await window.ga.rpc('list_continuable_sessions', {});
-    if (res.error) { showSystem('Error: ' + (res.error.message || res.error)); return; }
-    const sessions = (res.result && res.result.sessions) || [];
-    if (sessions.length === 0) { showSystem('No continuable sessions found.'); return; }
-    const lines = ['Continuable sessions (/continue N to restore):'];
-    sessions.forEach((s, i) => {
-      const preview = s.firstUser || '(empty)';
-      lines.push(`  ${i + 1}. [${s.mtimeStr}] (${s.nRounds} rounds) ${preview}`);
-    });
-    // Store session list for later selection
-    const sess = state.sessions.get(state.activeId);
-    if (sess) sess._continueList = sessions;
-    showSystem(lines.join('\n'));
-  } else {
-    // Restore session N
-    const idx = parseInt(arg, 10);
-    const sess = state.sessions.get(state.activeId);
-    const list = sess && sess._continueList;
-    if (!list || isNaN(idx) || idx < 1 || idx > list.length) {
-      showSystem('Usage: /continue (list) or /continue N (restore Nth session)');
-      return;
-    }
-    const chosen = list[idx - 1];
-    showSystem(`Restoring session from ${chosen.mtimeStr}…`);
-    const res = await window.ga.rpc('restore_session', { path: chosen.path });
-    if (res.error) { showSystem('Error: ' + (res.error.message || res.error)); return; }
-    const history = (res.result && res.result.history) || [];
-    if (history.length === 0) { showSystem('Session is empty.'); return; }
-    // Populate current tab with restored history — filter out system/tool messages
-    if (sess) {
-      sess.messages = [];
-      const filtered = filterRestoredHistory(history);
-      for (const entry of filtered) {
-        if (entry.role === 'user') {
-          sess.messages.push({ role: 'user', content: entry.text });
-        } else if (entry.role === 'assistant') {
-          sess.messages.push({ role: 'assistant', content: entry.text });
-        } else if (entry.role === 'system') {
-          sess.messages.push({ role: 'system', content: entry.text });
-        }
-      }
-      renderMessages();
-    }
-    showSystem(`Restored session (${sess.messages.length} visible messages from ${history.length} total).`);
   }
 }
 

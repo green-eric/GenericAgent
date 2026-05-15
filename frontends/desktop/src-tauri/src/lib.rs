@@ -68,6 +68,10 @@ fn find_python() -> String {
     { "python3".to_string() }
 }
 
+fn is_bridge_running() -> bool {
+    TcpStream::connect(("127.0.0.1", 14168)).is_ok()
+}
+
 fn wait_for_port(port: u16, timeout: Duration) -> bool {
     let start = Instant::now();
     while start.elapsed() < timeout {
@@ -117,26 +121,19 @@ fn start_bridge() {
     }
 }
 
-fn stop_bridge() {
-    if let Some(mut child) = BRIDGE_PROCESS.lock().unwrap().take() {
-        eprintln!("[tauri] stopping bridge PID={}", child.id());
-        let _ = child.kill();
-        let _ = child.wait();
+fn ensure_bridge_running() {
+    if is_bridge_running() {
+        eprintln!("[tauri] bridge already running on 127.0.0.1:14168; reusing it");
+        return;
     }
+    start_bridge();
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    start_bridge();
+    ensure_bridge_running();
 
     tauri::Builder::default()
-        .on_window_event(|_window, event| {
-            if let tauri::WindowEvent::Destroyed = event {
-                stop_bridge();
-            }
-        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
-
-    stop_bridge();
 }
