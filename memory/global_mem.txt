@@ -1,76 +1,128 @@
-# [Global Memory - L2] (R109清理 @ 2026-05-13)
+# [Global Memory - L2] (R142 @ 2026-05-15)
+
+## ScoreSys 回测参数自动优化器 (R142 完成)
+- 代码: D:/Project/ScoreSys/param_optimizer.py (348行)
+- 提交: 8bb391d "feat(param_optimizer): 回测参数自动优化器 - 网格搜索+多目标评分"
+- 功能: 网格搜索 top_n×min_score×rebalance_months 三维参数空间，多目标加权评分(夏普0.4+收益0.3-回撤0.2+胜率0.1)
+- 验证: 8/8组合全部成功，最优参数 top_n=30, min_score=30, rebalance=6m，夏普=6.728
+- 输出: MD报告 + JSON原始数据
+## ScoreSys+BfM 动态权重融合选股工具 (2026-05-15 完成)
+- 代码: D:/Project/ScoreSys/fusion_picker.py (392行, 13.8KB)
+- 提交: 7d5b899 "feat: ScoreSys+BfM动态权重融合选股工具fusion_picker.py"
+- 功能: 根据market_regime自适应权重融合两套系统评分并排序输出 (bull: S30%+B70% | bear: S70%+B30% | range: 各50%)
+- 数据源: ScoreSys stock_data.db (scores表+quotes表)，自动推断regime
+- 验证: 4344只股票融合成功，基于R131回测结论（两套系统负相关-0.3976）
+
+## BfM 前端 - ScoreSys BfM信号叠加 (2026-05-15 完成)
+- 提交: f1c9026 "feat(ui): ScoreSys看板叠加BfM信号高亮标记"
+- 修改: src/ts/modules/ui.ts (updateScoreSysRanking函数)
+- 功能: ScoreSys评分榜匹配BfM picks → 琥珀色边框+"BfM选中"标签+计数徽章
+- 关联: scoresys_bridge.py (6008318) + SSE实时流 (8b257e3) 形成完整链路
+
 ## 微信 Bot (wechatapp.py) - 关键事实
-- 代码位置: D:/GenericAgent/frontends/wechatapp.py | 版本: v1.0.0
-- Token 统计: token_stats.py (项目根目录，唯一入口)，报告保存到 memory/token_report.md
-- 服务名: wechatbot (sc 管理) | 日志: D:/GenericAgent/temp/wechatapp.log
-- API: https://ilinkai.weixin.qq.com (真实IP: 36.155.182.76:443)
-- 代理: Clash Verge (verge-mihomo.exe) → 127.0.0.1:7897；杀PID后自动重启
-- 用户ID: o9cq80-1u4kvzb2osLB4FHV0X-Zo@im.wechat | bot_id随重登变化（勿依赖固定值）
-- ⚠️ 多实例互踢: 多个pythonw.exe同时运行会互踢token导致-14死循环；启动前必须先杀旧实例
-- ⚠️ Lock机制不可靠: wechatbot.lock不一定被创建，不能用lock判断唯一实例
-- ⚠️ 幻觉事故教训: 调试API连通性必须从源码读取真实地址，禁止猜测/编造IP
-- 当前状态(2026-05-13): max_turns=25, 流式发送, poll_timeout=5s, 预编译18个正则, send ok验证通过
-- 遗留: qrcode_img_content为空时用qr_id(32hex)生成二维码太小，需下次重登录时确认API返回的正确二维码URL字段
+- 代码: D:/GenericAgent/frontends/wechatapp.py | v2.0.0 | ~938行
+- Token统计: token_stats.py (项目根目录) | 服务名: wechatbot (sc管理)
+- API: https://ilinkai.weixin.qq.com | 代理: Clash 127.0.0.1:7897
+- 用户ID: o9cq80-1u4kvzb2osLB4FHV0X-Zo@im.wechat | bot_id随重登变化
+- ⚠️ 多实例互踢: 多pythonw.exe互踢token→-14死循环；启动前必须先杀旧实例
+- ⚠️ Lock不可靠: wechatbot.lock不一定被创建；端口38765单实例锁
+- ✅ 2026-05-15修复: 启动检测超时→触发重登 | token空/过期→直接login_qr() | _check_proxy()改用HEAD api.weixin.qq.com(3s)
+- ✅ 2026-05-15状态: Bot独立进程启动(launch.pyw L150-158)，杀Bot不影响GA
+- 遗留: qrcode生成太小，需确认API返回的正确二维码URL字段
 - CDP: Chrome需以 --remote-debugging-port=9222 --incognito 启动
+- ⚠️ __main__块: _ensure_single()和main()必须在模块级(缩进0)；不能有重复if __main__块
 
 ## Token 统计 (2026-05-11修复)
-- 修复: input=0时用tiktoken估算兜底; _parse_claude_sse合并evt["usage"]; Ollama不返回usage字段问题
-- chat_completions模式key映射: prompt_tokens→input, completion_tokens→output
-- 结论: 从修复后新记录开始input不再为0；旧记录(351条)为修复前遗留
+- 修复: input=0时用tiktoken估算兜底; _parse_claude_sse合并evt["usage"]
+- chat_completions模式: prompt_tokens→input, completion_tokens→output
 
 ## GA 崩溃恢复机制
-- Watchdog: D:/GenericAgent/scripts/ga_watchdog.py | 开机自启: 启动文件夹 GA_Watchdog.vbs
-- 监控: launch.pyw(连续2次丢失→重启) + wechatbot服务(3次丢失→nssm restart)
-- 日志: D:/GenericAgent/temp/watchdog.log | 限制: 无管理员权限
+- Watchdog: D:/GenericAgent/scripts/ga_watchdog.py
+- 开机自启(2026-05-15配置): 启动文件夹 GA_Watchdog.bat(延迟30s启动watchdog) + GA_AutoStart.bat(延迟10s直接启动GA)
+- schtasks创建计划任务失败(拒绝访问无管理员权限)，改用启动文件夹方案
+- 监控: launch.pyw(连续2次丢失→重启) + wechatbot服务(已禁用监控)
+- 日志: D:/GenericAgent/temp/watchdog.log
+- ⚠️ GA"退出"多为Windows系统重启导致(watchdog日志空白期=系统重启)，非GA自身崩溃
+- 验证方法: Get-WinEvent查Kernel-General ID=12确认系统启动时间，对比GA进程CreationDate
+
+## 微信Bot 独立启动方式 (2026-05-15 验证)
+- 进程: pythonw.exe D:/GenericAgent/frontends/wechatapp.py
+- 日志: D:/GenericAgent/temp/wechatbot_stdout.log | stderr: D:/GenericAgent/temp/wechatbot_stderr.log
+- bot_id: fa73257b02c1@im.bot | 单实例锁: port 38765
+- ⚠️ Windows重启后Bot不自动拉起(未加入启动文件夹)，需手动重启
+- 桌面已放重启脚本: 重启微信Bat.bat / 重启微信Bot_静默.vbs
+
+## Windows 桌面黑屏修复 (2026-05-15 验证)
+- 根因: dwm.exe(桌面窗口管理器)崩溃，dwmcore.dll异常0xc00001ad
+- 现象: 黑屏但系统运行中(explorer/dwm进程可能仍存在)
+- 修复: Stop-Process -Name explorer -Force; Start-Process explorer
+- 非GA/Bot导致，是Windows Insider Preview不稳定
 
 ## ScoreSys 选股系统
-- 位置: D:/Project/ScoreSys (有 .git) | 版本: V13.9.3
-- 入口: main.py统一入口(V13.9架构升级，run_full_eval.py已删除)
-  - --all: 全股评分 | --from-db: 本地DB评分 | --real --fetch-only: 仅获取数据 | --save-db: 写入scores表
-- ⚠️ ScoreSys先不动 — DB数据正在刷新中(2026-05-13)，fetch-only模式运行中
-- 9因子权重(V13.9): industry_momentum 25% | growth 18% | valuation 15% | reversal 15% | turnover 12% | momentum 8% | leverage 4% | cash_flow 2% | profitability 1%
-- 动量全局反转(V13.9): A股反转效应，momentum/reversal/growth/industry_momentum均为负IC因子(低原始值→高分)
-- Regime自适应权重: 始终启用(V13.9.3起AUTO_WEIGHT_MODE已移除)，负IC因子自动零化
-- VETO_RULES: min_cashflow_score=10 | max_de_ratio=80.0 | max_asset_liability=90.0 | min_ocf_ttm=-100亿 | financial_industry_exempt=True
-- 数据库: D:/Project/ScoreSys/stock_data.db (截面数据4344行)
-  - 历史日K线备份库: db_backup/stock_data_backup_20260512_171929.db (5GB, 2015~2026, 938万行)
-  - 5表: quotes(25字段) | financials(22字段) | scores(16字段) | stocks(6字段) | _score_cache(16字段)
-  - 索引: idx_quotes_sym_date | idx_q_cover_mv | idx_q_cover_pe | idx_q_cover_quote | idx_quotes_date
-- ⚠️ DB数据问题: quotes估值字段41%+空(数据源覆盖不足); stocks表list_date/market 100%空; financials表report_type 100%空
-- 回测最佳结果: V13.7-fix2 夏普6.535 回撤7.68% (行业中性化修复后)
-- 行业中性化bug(2026-05-11修复): SQL引用financials表不存在列，异常被吞→从未生效
+- 位置: D:/Project/ScoreSys (有 .git) | 版本: V13.12
+- 入口: main.py统一入口 (--all全股评分 |--from-db本地DB |--real --fetch-only仅获取 |--save-db写入)
+- 12因子: 8核心 + 4个Alpha移植因子(alpha_momentum/alpha_rsi/alpha_vol_ratio/alpha_023)
+- 动量全局反转(V13.9): momentum/reversal/growth/industry_momentum均为负IC因子(低原始值→高分)
+- Regime自适应权重: 始终启用，负IC因子取min_weight=3%
+- VETO_RULES: min_cashflow_score=10 | max_de_ratio=80% | max_asset_liability=90% | min_ocf_ttm=-100亿 | financial_industry_exempt=True
+- 数据库: D:/Project/ScoreSys/stock_data.db
+  - 5表: quotes(322.6万行,最新2026-05-15) | financials(19.3万行) | scores(4466行) | stocks(4344行) | _score_cache(8800行)
+  - 备份库: db_backup/stock_data_backup_20260512_171929.db (5GB, 2015~2026)
+- ⚠️ DB问题: quotes估值字段41%+空; stocks表list_date/market 100%空; financials表report_type 100%空
+- 最佳回测: V13.7-fix2 夏普6.535 回撤7.68% (行业中性化修复后)
 - 推送链路: main.py评分→reports/→score_monitor --check→push_report→send_text到微信 ✅
-- Alpha023移植(V13.10): alpha023(5日动量) IC=+0.0657 ICIR=+1.097 ✅ 已commit e7215a1
 
-## BfM (BullishForMonitoring)
-- 位置: D:/Project/BullishForMonitoring (有 .git, master分支)
-- 版本: 10.0(文档标号) | 技术栈: Vite 5 + TypeScript 5.3 + TailwindCSS 4.2 + ECharts 6
-- 后端: 纯标准库(http.server + threading), 默认端口9004, 无Flask/Django/FastAPI
-- 八维权重(default): 资金20/业绩20/稳定性16/强势14/量价12/板块8/情绪6/龙头4
-- 市场环境自适应: bull(threshold=50,seal↑vp↑) | bear(threshold=65,stability↑fund↑performance↑) | range(默认)
-- 数据流: 东方财富行情流→EventBus(内存发布订阅)→SSE广播→前端实时展示
-- SSE: /api/stream端点, 每客户端uuid8位ID, 专属Queue(2000容量), 15s心跳, 端到端65.5ms
-- 文档体系: README.md(54行纯入口) | KT_DOC.md(1485行架构) | SCORE_DOC.md(741行评分) | CONFIG_DOC.md(458行配置) | DEPLOY.md(483行部署)
-- stream-realtime已合并到master(commit f33efd9)
+## BfM
+- 位置: D:/Project/BfM (有 .git, master分支)
+- 版本: 10.0 | 技术栈: Vite 5 + TypeScript 5.3 + TailwindCSS 4.2 + ECharts 6
+- 后端: 纯标准库(http.server + threading), 端口9004
+- 八维权重: 资金20/业绩20/稳定性16/强势14/量价12/板块8/情绪6/龙头4
+- 市场环境自适应: bull(threshold=50) | bear(threshold=65) | range(默认)
+- 数据流: 东方财富行情流→EventBus→SSE广播→前端实时展示
+- SSE: /api/stream端点, uuid8位ID, Queue(2000容量), 15s心跳, 端到端65.5ms
+- ✅ EventBus并发修复(2026-05-15): 10万次并发零丢失，毒丸0.21s正常退出
+- 文档: README.md(54行) | KT_DOC.md(1485行) | SCORE_DOC.md(741行) | CONFIG_DOC.md(458行) | DEPLOY.md(483行)
+
+## Python 依赖包 (R111 @ 2026-05-13)
+- 第三方包: 48个(20本地+28pip) | 核心必装: requests, beautifulsoup4, bottle, simple-websocket-server
+- ⚠️ qq-botpy import名是botpy(非qq_botpy) | 安装: 批量易超时，建议逐个+timeout≥120s，清华镜像
 
 ## 本机硬件环境
-- CPU: Intel Core i5-1135G7 @ 2.40GHz (4核8线程)
-- GPU: Intel Iris Xe Graphics (2GB共享显存) | 无NVIDIA GPU | CUDA不可用
-- RAM: 10GB (5x2GB DDR4 4267MHz) | OS: Windows 10.0.29560 Insider Preview
-- PyTorch: 2.11.0+cpu | onnxruntime: 1.25.1 | 不适合本地大模型，保持云端API方案
-
-## GA web_search
-- 默认引擎: duckduckgo (DDG HTML唯一可靠) | 百度不可用 | Google可能被anti-bot拦截
-- 代理: 全部通过Clash (127.0.0.1:7897)
+- CPU: i5-1135G7 @ 2.40GHz (4核8线程) | GPU: Iris Xe(2GB共享) | 无CUDA
+- RAM: 10GB DDR4 4267MHz | OS: Windows 10.0.29560 Insider Preview
+- PyTorch: 2.11.0+cpu | onnxruntime: 1.25.1 | 保持云端API方案
 
 ## 项目路径汇总
-- GA: D:/GenericAgent/ | ScoreSys: D:/Project/ScoreSys/ | BfM: D:/Project/BullishForMonitoring/
-- AlphaTrading因子库: D:/GenericAgent/temp/alphas/ (alphas.py/alphas101.py/alphas191.py/datas.py)
-- stock_data.db: D:/Project/ScoreSys/stock_data.db (59.7MB截面) | db_backup: D:/Project/ScoreSys/db_backup/ (5GB历史日K线)
+- GA: D:/GenericAgent/ | ScoreSys: D:/Project/ScoreSys/ | BfM: D:/Project/BfM/
+- Alpha因子库: D:/GenericAgent/temp/alphas/ | stock_data.db: D:/Project/ScoreSys/stock_data.db (59.7MB)
 
-## 工具域经验
-- web_search: baidu引擎最稳定(无需API key)；google可能被anti-bot拦截
-- web_execute_js: 必须用原生setter(value=...)+dispatchEvent(new Event('input',{bubbles:true}))
-- file_patch: 修改前必须先file_read获取精确内容，禁止凭印象写old_content
-- sqlite3探测: PRAGMA table_info(table)查列名，SELECT * LIMIT 3看数据
-- psutil.kill优于taskkill: 系统进程用psutil
+## ScoreSys→BfM 桥接模块 (2026-05-15 commit 8b257e3)
+- 代码: D:\Project\BfM\modules\server\scoresys_bridge.py (239行)
+- 功能: 读ScoreSys scores表→EventBus SSE推送到前端，纯sqlite3零import依赖
+- ✅ 修复(2026-05-15): server.py _handle_scoresys_refresh改为同步调用_worker()绕过防抖+线程问题
+
+## ScoreSys 回测参数自动优化器 (2026-05-15 R142)
+- 工具: D:/Project/ScoreSys/param_optimizer.py (348行)
+- 提交: 8bb391d
+- 功能: 网格搜索 top_n×min_score×rebalance_months，多目标加权(夏普0.4+收益0.3-回撤0.2+胜率0.1)
+- 验证: 8/8成功，最优 top_n=30/min_score=30/rebalance=6m，夏普=6.728
+- 输出: MD报告 + JSON数据
+
+## ScoreSys 因子冗余分析 (2026-05-15 R142)
+- 工具: D:/Project/ScoreSys/factor_redundancy.py (245行) + factor_redundancy_report.md
+- 提交: 7b27cf9 "feat: add factor_redundancy.py - correlation analysis & dimensionality reduction tool"
+- 数据: 4344只股票 × 9因子，最新日期2026-05-15
+- 结论: |r|>=0.9阈值下无冗余因子对 → 9因子设计合理独立
+- 最高相关: profitability↔valuation r=+0.66, momentum↔reversal r=+0.47
+- ⚠️ R134报告的momentum-reversal r=-0.989在截面数据中不成立（实际+0.47），可能是时间序列vs截面差异
+- turnover因子数据缺失严重(仅40.8%非零)，后续需排查
+
+## subagent 环境状态
+- ⚠️ agentmain.py直接运行缺llmcore模块，subagent不可用；主agent自行评审
+
+## 工具域经验 & 修复教训
+- web_search: baidu最稳定(无需key) | google可能anti-bot
+- web_execute_js: 原生setter(value=...)+dispatchEvent(new Event('input',{bubbles:true}))
+- file_patch: 改前必须先file_read，禁止凭印象写old_content
+- sqlite3探测: PRAGMA table_info查列名，SELECT * LIMIT 3看数据
+- wechatapp.py教训: API返回item.text_item.text(非item.text) | 回调参数签名一致 | 模块级函数名别和类内方法名冲突
