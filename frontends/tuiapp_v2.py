@@ -158,6 +158,11 @@ class AgentSession:
     task_seq: int = 0
     current_task_id: Optional[int] = None
     current_display_queue: Optional[queue.Queue] = None
+    # Per-session input box state. Restored into the shared InputArea on session switch.
+    input_text: str = ""
+    input_history: list[str] = field(default_factory=list)
+    input_pastes: dict[int, str] = field(default_factory=dict)
+    input_paste_counter: int = 0
     buffer: str = ""
 
 
@@ -241,31 +246,32 @@ def _read_clipboard_text() -> str:
         return ""
 
 
-def _save_clipboard_image() -> Optional[str]:
+_IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp", ".tiff", ".tif", ".ico"}
+
+
+def _grab_clipboard_file() -> Optional[tuple[str, bool]]:
+    """Return (path, is_image) from clipboard. is_image distinguishes image files
+    (rendered inline as `[Image #N]`) from any other file (folded as `[File #N]`)."""
     try:
         from PIL import ImageGrab, Image
-    except Exception:
-        return None
-    try:
         data = ImageGrab.grabclipboard()
     except Exception:
         return None
-    if data is None:
+    if isinstance(data, list):
+        for item in data:
+            if isinstance(item, str) and os.path.isfile(item):
+                is_img = os.path.splitext(item)[1].lower() in _IMAGE_EXTS
+                return (item, is_img)
         return None
-    try:
-        if isinstance(data, list):
-            for item in data:
-                if isinstance(item, str) and os.path.isfile(item):
-                    return item
-            return None
-        if isinstance(data, Image.Image):
+    if isinstance(data, Image.Image):
+        try:
             out_dir = os.path.join(tempfile.gettempdir(), "genericagent_tui_clipboard")
             os.makedirs(out_dir, exist_ok=True)
             path = os.path.join(out_dir, f"clipboard_{int(time.time() * 1000)}.png")
             data.save(path, "PNG")
-            return path
-    except Exception:
-        return None
+            return (path, True)
+        except Exception:
+            return None
     return None
 
 
@@ -274,6 +280,8 @@ class InputArea(TextArea):
     # `[Image #N]` is the folded form; expand_placeholders restores the raw path at submit time.
     # The longer `[Image #N: ...]` form is tolerated for backward compatibility only.
     _IMAGE_RE = re.compile(r'\[Image #(\d+)(?::[^\]]*)?\]')
+    _FILE_RE = re.compile(r'\[File #(\d+)\]')
+    _PLACEHOLDER_RES = (_PASTE_RE, _IMAGE_RE, _FILE_RE)
 
     BINDINGS = [
         Binding("ctrl+j",      "newline", "Newline", show=False),
@@ -313,14 +321,16 @@ class InputArea(TextArea):
             except Exception:
                 pass
 
-    def _paste_image_from_clipboard(self) -> bool:
-        path = _save_clipboard_image()
-        if not path:
+    def _paste_file_from_clipboard(self) -> bool:
+        result = _grab_clipboard_file()
+        if not result:
             return False
+        path, is_image = result
         self._paste_counter += 1
         sid = self._paste_counter
         self._pastes[sid] = path
-        self._insert_via_keyboard(f"[Image #{sid}]")
+        marker = f"[Image #{sid}]" if is_image else f"[File #{sid}]"
+        self._insert_via_keyboard(marker)
         return True
 
     def _insert_paste_text(self, text: str) -> None:
@@ -334,14 +344,52 @@ class InputArea(TextArea):
         self._insert_via_keyboard(text)
 
     def action_paste(self) -> None:
-        if self.read_only or self._paste_image_from_clipboard():
+        if self.read_only or self._paste_file_from_clipboard():
             return
         text = _read_clipboard_text() or getattr(self.app, "clipboard", "")
         if text:
             self._insert_paste_text(text)
 
-    def action_paste_image(self) -> None:
-        self._paste_image_from_clipboard()
+    def action_paste_file(self) -> None:
+        self._paste_file_from_clipboard()
+
+    def _placeholder_adjacent(self, side: str) -> Optional[tuple[int, int, int, int]]:
+        """Return (row, start_col, end_col, sid) if a placeholder is flush against
+        the caret on the given side ('left' = backspace target, 'right' = delete target)."""
+        if self.selection.start != self.selection.end:
+            return None
+        row, col = self.cursor_location
+        try:
+            line = self.text.split("\n")[row]
+        except IndexError:
+            return None
+        for pat in self._PLACEHOLDER_RES:
+            for m in pat.finditer(line):
+                edge = m.end() if side == "left" else m.start()
+                if edge == col:
+                    return (row, m.start(), m.end(), int(m.group(1)))
+        return None
+
+    def _delete_placeholder(self, side: str) -> bool:
+        hit = self._placeholder_adjacent(side)
+        if not hit:
+            return False
+        row, start, end, sid = hit
+        self.delete((row, start), (row, end))
+        self._pastes.pop(sid, None)
+        try:
+            self.app._resize_input(self)
+        except Exception:
+            pass
+        return True
+
+    def action_delete_left(self) -> None:
+        if not self._delete_placeholder("left"):
+            super().action_delete_left()
+
+    def action_delete_right(self) -> None:
+        if not self._delete_placeholder("right"):
+            super().action_delete_right()
 
     async def _on_click(self, event: events.Click) -> None:
         if getattr(event, "button", 0) == 3 and not self.read_only:
@@ -364,14 +412,12 @@ class InputArea(TextArea):
         self._HISTORY_MAX = 200
 
     def expand_placeholders(self, text: str) -> str:
-        def repl_paste(m):
+        def repl(m):
             sid = int(m.group(1))
             return self._pastes.get(sid, m.group(0))
-        def repl_image(m):
-            sid = int(m.group(1))
-            return self._pastes.get(sid, m.group(0))
-        text = self._PASTE_RE.sub(repl_paste, text)
-        return self._IMAGE_RE.sub(repl_image, text)
+        for pat in self._PLACEHOLDER_RES:
+            text = pat.sub(repl, text)
+        return text
 
     # ---- history public API ----
     def record_history(self, raw_text: str) -> None:
@@ -430,7 +476,7 @@ class InputArea(TextArea):
         # Terminal Ctrl+V in bracketed-paste mode lands here, bypassing action_paste.
         if self.read_only:
             return
-        if self._paste_image_from_clipboard():
+        if self._paste_file_from_clipboard():
             event.stop(); event.prevent_default(); return
         self._insert_paste_text(event.text)
         event.stop(); event.prevent_default()
@@ -955,6 +1001,17 @@ class GenericAgentTUI(App[None]):
         # Two-stage quit: when no task is running, first press clears input and arms;
         # second press within 2s exits.
         try:
+            inp = self.query_one("#input", InputArea)
+        except Exception:
+            inp = None
+        # Copy precedence: focused InputArea selection first (screen-level selection
+        # doesn't cover TextArea internals), then screen drag selection.
+        if inp is not None and self.focused is inp and inp.selected_text:
+            try: self.copy_to_clipboard(inp.selected_text)
+            except Exception: pass
+            self._disarm_quit()
+            return
+        try:
             selected_text = self.screen.get_selected_text()
         except Exception:
             selected_text = None
@@ -971,10 +1028,6 @@ class GenericAgentTUI(App[None]):
         if self._quit_armed:
             self.exit()
             return
-        try:
-            inp = self.query_one("#input", InputArea)
-        except Exception:
-            inp = None
         if inp is not None and inp.text:
             inp.reset()
             try: self._resize_input(inp)
@@ -1717,9 +1770,41 @@ class GenericAgentTUI(App[None]):
 
     def _refresh_all(self):
         if not self.is_mounted: return
+        self._swap_input_for_session()
         self._refresh_topbar()
         self._refresh_sidebar()
         self._refresh_messages()
+
+    def _swap_input_for_session(self) -> None:
+        """Persist the InputArea's text/history/pastes per-session so switching
+        agents doesn't bleed input state across them."""
+        if self.current_id is None:
+            return
+        try:
+            inp = self.query_one("#input", InputArea)
+        except Exception:
+            return
+        prev_id = getattr(self, "_input_owner_id", None)
+        if prev_id == self.current_id:
+            return
+        if prev_id is not None and prev_id in self.sessions:
+            prev = self.sessions[prev_id]
+            prev.input_text = inp.text
+            prev.input_history = inp._input_history
+            prev.input_pastes = inp._pastes
+            prev.input_paste_counter = inp._paste_counter
+        sess = self.current
+        inp._input_history = sess.input_history
+        inp._pastes = sess.input_pastes
+        inp._paste_counter = sess.input_paste_counter
+        inp._history_index = -1
+        inp._history_stash = ""
+        try: inp._suppress_palette_next_change()
+        except Exception: pass
+        inp.text = sess.input_text
+        self._input_owner_id = self.current_id
+        try: self._resize_input(inp)
+        except Exception: pass
 
     def _refresh_topbar(self):
         if not self.is_mounted or self.current_id is None: return
