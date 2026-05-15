@@ -32,6 +32,7 @@ mykey.py
 tasks/
 
 *.zip
+*.exe
 
 memory/*
 !memory/__init__.py
