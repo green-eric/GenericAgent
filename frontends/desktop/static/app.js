@@ -504,7 +504,7 @@ function renderTurnTreeInto(container, turn) {
   const header = document.createElement('button');
   header.type = 'button';
   header.className = 'turn-header';
-  header.innerHTML = `<span class="turn-caret">▼</span><span class="turn-tag">${escapeHtml(turnHeaderLabel(turn.index, `Done. ${turn.label}`))}</span>`;
+  header.innerHTML = `<span class="turn-caret">▼</span><span class="turn-tag">${escapeHtml(turnHeaderLabel(turn.index, turn.label))}</span>`;
   header.addEventListener('click', () => node.classList.toggle('collapsed'));
   const body = document.createElement('div');
   body.className = 'turn-body md';
@@ -641,6 +641,11 @@ function createLocalSession(id, title, bridgeSessionId = id) {
 }
 
 function setActiveSession(id) {
+  // Save scroll position of current session before switching
+  if (state.activeId) {
+    const prevRuntime = state.runtimeBySessionId.get(state.activeId);
+    if (prevRuntime) prevRuntime.scrollPos = messagesEl.scrollTop;
+  }
   state.activeId = id;
   const sess = state.sessions.get(id);
   if (!sess) return;
@@ -788,10 +793,23 @@ async function getCwd() {
 }
 
 // ─── Messages rendering ──────────────────────────────────────────────────
+// DOM cache: sessionId -> { fragment, scrollTop }
+const _domCache = new Map();
+
 function renderMessages() {
   const sess = state.sessions.get(state.activeId);
-  messagesEl.innerHTML = '';
   const runtime = sess ? getSessionRuntime(sess) : null;
+
+  // Save current DOM + scroll to cache for previous session
+  if (state._prevRenderedId && state._prevRenderedId !== state.activeId) {
+    const frag = document.createDocumentFragment();
+    while (messagesEl.firstChild) frag.appendChild(messagesEl.firstChild);
+    _domCache.set(state._prevRenderedId, {
+      fragment: frag,
+      scrollTop: runtime ? (state.runtimeBySessionId.get(state._prevRenderedId)?.scrollPos ?? 0) : 0,
+    });
+  }
+
   if (runtime) {
     runtime.currentTurnEl = null;
     runtime.lastMessageType = null;
@@ -800,18 +818,33 @@ function renderMessages() {
   const hasSavedMessages = !!sess && sess.messages.length > 0;
   const hasDraft = !!runtime?.assistantDraft && !runtime.assistantDraft.finalized;
   if (!sess || (!hasSavedMessages && !hasDraft)) {
+    messagesEl.innerHTML = '';
     messagesEl.classList.add('empty');
     messagesEl.innerHTML = `
       <div class="empty-state">
         <div class="empty-title">New task</div>
         <div class="empty-sub">Task me anything. Type <code>/help</code> for commands.</div>
       </div>`;
+    state._prevRenderedId = state.activeId;
     return;
   }
+
   messagesEl.classList.remove('empty');
-  for (const m of sess.messages) renderMessage(m, false);
-  if (hasDraft) renderAssistantDraft(sess, runtime.assistantDraft);
-  scrollToBottom();
+
+  // Try to restore from cache
+  const cached = _domCache.get(state.activeId);
+  if (cached) {
+    messagesEl.innerHTML = '';
+    messagesEl.appendChild(cached.fragment);
+    _domCache.delete(state.activeId);
+    messagesEl.scrollTop = cached.scrollTop;
+  } else {
+    messagesEl.innerHTML = '';
+    for (const m of sess.messages) renderMessage(m, false);
+    if (hasDraft) renderAssistantDraft(sess, runtime.assistantDraft);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+  state._prevRenderedId = state.activeId;
 }
 
 function prepareMessagesForContent() {
