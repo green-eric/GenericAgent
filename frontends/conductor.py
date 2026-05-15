@@ -228,7 +228,8 @@ def conductor_readme() -> str:
         "POST /subagent\tbody: {\"prompt\": \"...\"}\t启动新subagent，返回 {\"id\": \"xxx\"}",
         'POST /subagent/{id}\tbody: {\"action\": \"keyinfo\", \"msg\": \"...\"}\t注入key_info（agent下轮可见）',
         'POST /subagent/{id}\tbody: {\"action\": \"input\", \"msg\": \"...\"}\t开新一轮任务（agent停下后追加）',
-        'POST /subagent/{id}\tbody: {\"action\": \"abort\"}\t停止该subagent',
+        'POST /subagent/{id}\tbody: {\"action\": \"stop\"}\t中断执行但保留（可继续input/reply）',
+        'POST /subagent/{id}\tbody: {\"action\": \"kill\"}\t彻底杀死（从卡片消失，不可复用）',
         "GET /chat?last=N\t返回最近N条对话（默认20）",
         "GET /subagent\t返回 {\"items\": [...]}\t查看所有subagent状态",
         "GET /readme\t本文档",
@@ -363,12 +364,12 @@ def api_subagent_action(sid: str, body: SubagentActionIn):
         result = input_subagent(sid, body.msg)
         result["instruction"] = "Task received. I'll handle it from here. You MUST stop now and end your reply."
         return result
-    if action == "abort":
+    if action in ("abort", "stop"):
         s.agent.abort()
-        s.status = "aborted"
+        s.status = "stopped"
         s.updated_at = time.time()
         push_cards()
-        return {"id": sid, "status": "aborted"}
+        return {"id": sid, "status": "stopped"}
     if action == "kill":
         s.agent.abort()
         s.status = "aborted"
