@@ -309,8 +309,11 @@ function formatTaskElapsed(ms, ended) {
   if (hours) parts.push(`${hours}h`);
   if (hours || minutes) parts.push(`${minutes}min`);
   parts.push(`${seconds}s`);
-  const text = `已运行 ${parts.join(' ')}`;
-  return ended ? `${text}. 已完成！` : text;
+  const elapsed = parts.join(' ');
+  if (ended) return `Done ✓ ${elapsed}`;
+  const spinner = '⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏';
+  const frame = spinner[Math.floor(Date.now() / 1000) % spinner.length];
+  return `${frame} ${elapsed}`;
 }
 
 function getSessionRuntime(sess) {
@@ -420,8 +423,8 @@ function ensureAssistantTaskElapsed(wrap, startedAt, endedAt) {
 function turnLabelForSegment(seg, index) {
   const summary = summarizeStructuredBlock(seg.kind, seg.text);
   if (seg.kind === 'LLM_RUNNING') return summary || `Turn ${index + 1}`;
-  if (seg.kind === 'TOOL_CALL') return '工具调用';
-  if (seg.kind === 'TOOL_RESULT') return '工具结果';
+  if (seg.kind === 'TOOL_CALL') return 'Tool';
+  if (seg.kind === 'TOOL_RESULT') return 'Result';
   return summary || seg.kind || `Turn ${index + 1}`;
 }
 
@@ -501,7 +504,7 @@ function renderTurnTreeInto(container, turn) {
   const header = document.createElement('button');
   header.type = 'button';
   header.className = 'turn-header';
-  header.innerHTML = `<span class="turn-caret">▼</span><span class="turn-tag">${escapeHtml(turnHeaderLabel(turn.index, `已处理. ${turn.label}`))}</span>`;
+  header.innerHTML = `<span class="turn-caret">▼</span><span class="turn-tag">${escapeHtml(turnHeaderLabel(turn.index, `Done. ${turn.label}`))}</span>`;
   header.addEventListener('click', () => node.classList.toggle('collapsed'));
   const body = document.createElement('div');
   body.className = 'turn-body md';
