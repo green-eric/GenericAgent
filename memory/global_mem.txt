@@ -6,12 +6,24 @@
 - 功能: 网格搜索 top_n×min_score×rebalance_months 三维参数空间，多目标加权评分(夏普0.4+收益0.3-回撤0.2+胜率0.1)
 - 验证: 8/8组合全部成功，最优参数 top_n=30, min_score=30, rebalance=6m，夏普=6.728
 - 输出: MD报告 + JSON原始数据
-## ScoreSys+BfM 动态权重融合选股工具 (2026-05-15 完成)
-- 代码: D:/Project/ScoreSys/fusion_picker.py (392行, 13.8KB)
-- 提交: 7d5b899 "feat: ScoreSys+BfM动态权重融合选股工具fusion_picker.py"
-- 功能: 根据market_regime自适应权重融合两套系统评分并排序输出 (bull: S30%+B70% | bear: S70%+B30% | range: 各50%)
-- 数据源: ScoreSys stock_data.db (scores表+quotes表)，自动推断regime
-- 验证: 4344只股票融合成功，基于R131回测结论（两套系统负相关-0.3976）
+## ScoreSys+BfM 融合选股工具 v2 (2026-05-16 R152 完成)
+- 代码: D:/Project/ScoreSys/fusion_picker_v2.py (445行, ~11KB)
+- 功能: 5策略回测(ScoreSys/BfM/等权/级联/动态级联) + 每日选股
+- 回测结果(25周期): 等权融合夏普0.87>ScoreSys0.80>BfM0.49, 最佳融合vs单系统+9.7%
+- 数据源: _score_cache(34日期,20492行) + quotes(322万行)
+- 关键函数: fuse_cascade(级联融合), fuse_dynamic(动态权重), compute_bfm_scores
+- quotes表列名: close_price, turnover_5d, pe_ttm, ma_5/10/20, ret_1m, industry_mom_1m
+- ⚠️ file_write会截断长文件 → 改用code_run内联生成避免截断
+- ⚠️ r-string中不能用\'转义单引号 → 字典键名用双引号包裹
+
+## GA 上游代码自动同步工具 (2026-05-16 R153 完成)
+- 代码: D:/GenericAgent/upstream_sync.py (205行)
+- 提交: 9debc2e "feat(upstream_sync): GA上游代码自动同步工具 - 检测新提交+安全/审查/跳过三分类+报告生成"
+- 功能: git fetch upstream → 对比 user-patches..upstream/main → 按文件路径/关键词三分类(✅安全/⚠️需审查/❌跳过) → 生成MD报告+cherry-pick命令
+- 实测: 检测到16个新提交，15安全+1需审查+0跳过
+- 分类规则: docs/config/tests/frontends=安全 | ga.py/llmcore.py/agent.py=需审查 | 已包含hash=跳过
+- 参数: --no-fetch(跳过fetch) --report-only(不存文件) --json(JSON输出)
+- ⚠️ Windows GBK编码: 强制UTF-8+errors=replace, 设LC_ALL=C.UTF-8
 
 ## BfM 前端 - ScoreSys BfM信号叠加 (2026-05-15 完成)
 - 提交: f1c9026 "feat(ui): ScoreSys看板叠加BfM信号高亮标记"
@@ -23,6 +35,7 @@
 - 代码: D:/GenericAgent/frontends/wechatapp.py | v2.0.0 | ~938行
 - Token统计: token_stats.py (项目根目录) | 服务名: wechatbot (sc管理)
 - API: https://ilinkai.weixin.qq.com | 代理: Clash 127.0.0.1:7897
+- ⚠️ Clash代理端口(2026-05-16): 7890未监听，7897(混合端口)监听且可用；系统代理ProxyEnable=0需手动开启；GitHub通过7897代理可通，直连超时
 - 用户ID: o9cq80-1u4kvzb2osLB4FHV0X-Zo@im.wechat | bot_id随重登变化
 - ⚠️ 多实例互踢: 多pythonw.exe互踢token→-14死循环；启动前必须先杀旧实例
 - ⚠️ Lock不可靠: wechatbot.lock不一定被创建；端口38765单实例锁
@@ -134,9 +147,18 @@
 ## subagent 环境状态
 - ⚠️ agentmain.py直接运行缺llmcore模块，subagent不可用；主agent自行评审
 
+## R148-R151 自主行动 (2026-05-16)
+- R148: proxy_health_check.py 代理稳定性探测，7897端口可用但系统代理未开
+- R149: CPU轻量模型推理实测，i5-1135G7上Transformer<2ms，Intel Iris Xe无法GPU推理
+- R150: history.txt去重 131→125条(-4.6%)，删除6条重复/碎片
+- R151: TODO.txt重置，R147批次归档，R151批次仅留2条P0(融合选股+上游同步)
+- TODO当前状态: R151批次2条P0未完成
+
 ## 工具域经验 & 修复教训
 - web_search: baidu最稳定(无需key) | google可能anti-bot
 - web_execute_js: 原生setter(value=...)+dispatchEvent(new Event('input',{bubbles:true}))
 - file_patch: 改前必须先file_read，禁止凭印象写old_content
 - sqlite3探测: PRAGMA table_info查列名，SELECT * LIMIT 3看数据
 - wechatapp.py教训: API返回item.text_item.text(非item.text) | 回调参数签名一致 | 模块级函数名别和类内方法名冲突
+- llmcore教训: _record_usage在fb7b88b refactor中被删除写文件逻辑(只print不写jsonl)；修复后需确认所有调用点兼容新参数签名
+- complete_task教训: report_path参数不能为None，必须先写报告文件再调用；调用后报告会被moved到autonomous_reports/，原路径失效

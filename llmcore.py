@@ -293,19 +293,36 @@ def _parse_openai_sse(resp_lines, api_mode="chat_completions"):
                 blocks.append({"type": "tool_use", "id": bid, "name": tc["name"], "input": inp})
         return blocks
 
-def _record_usage(usage, api_mode):
+def _record_usage(usage, api_mode, model=None):
+    """Record token usage to memory/usage_log.jsonl"""
+    import json, os, datetime
     if not usage: return
+    log_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'memory', 'usage_log.jsonl')
+    entry = {"ts": datetime.datetime.now().isoformat(), "api_mode": api_mode, "model": model or "unknown"}
     if api_mode == 'responses':
-        cached = (usage.get("input_tokens_details") or {}).get("cached_tokens", 0)
-        inp = usage.get("input_tokens", 0)
-        print(f"[Cache] input={inp} cached={cached}")
+        entry["cached"] = (usage.get("input_tokens_details") or {}).get("cached_tokens", 0)
+        entry["input"] = usage.get("input_tokens", 0)
+        entry["output"] = usage.get("output_tokens", 0)
+        print(f"[Cache] input={entry['input']} cached={entry['cached']}")
     elif api_mode == 'chat_completions':
-        cached = (usage.get("prompt_tokens_details") or {}).get("cached_tokens", 0)
-        inp = usage.get("prompt_tokens", 0)
-        print(f"[Cache] input={inp} cached={cached}")
+        entry["cached"] = (usage.get("prompt_tokens_details") or {}).get("cached_tokens", 0)
+        entry["input"] = usage.get("prompt_tokens", 0)
+        entry["output"] = usage.get("completion_tokens", 0)
+        print(f"[Cache] input={entry['input']} cached={entry['cached']}")
     elif api_mode == 'messages':
-        ci, cr, inp = usage.get("cache_creation_input_tokens", 0), usage.get("cache_read_input_tokens", 0), usage.get("input_tokens", 0)
-        print(f"[Cache] input={inp} creation={ci} read={cr}")
+        entry["cache_creation"] = usage.get("cache_creation_input_tokens", 0)
+        entry["cache_read"] = usage.get("cache_read_input_tokens", 0)
+        entry["input"] = usage.get("input_tokens", 0)
+        entry["output"] = usage.get("output_tokens", 0)
+        print(f"[Cache] input={entry['input']} creation={entry['cache_creation']} read={entry['cache_read']}")
+    if not entry.get("input") and not entry.get("output"):
+        return
+    try:
+        os.makedirs(os.path.dirname(log_path), exist_ok=True)
+        with open(log_path, 'a', encoding='utf-8') as lf:
+            lf.write(json.dumps(entry, ensure_ascii=False) + '\n')
+    except Exception as e:
+        print(f"[UsageLog] write failed: {e}")
     
 def _parse_openai_json(data, api_mode="chat_completions"):
     blocks = []
@@ -517,7 +534,7 @@ class BaseSession:
         if 'deepseek' in self.model.lower():
             default_context_win = 70000; self.cut_msg_interval = 25; self.trim_keep_rate = 0.3
         self.context_win = cfg.get('context_win', default_context_win)
-        self.history = []; self.lock = threading.Lock(); self.system = 
+        self.history = []; self.lock = threading.Lock(); self.system = ""
         self.name = cfg.get('name', self.model)
         proxy = cfg.get('proxy'); 
         self.proxies = {"http": proxy, "https": proxy} if proxy else None

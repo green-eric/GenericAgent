@@ -1,6 +1,6 @@
 # [Global Memory Insight]
 需要时read L2 或 ls ../memory/ 查L3
 L0(META-SOP): memory_management_sop
-L2: global_mem.txt(微信Bot/ScoreSys/BfM/GA状态/硬件/依赖包/崩溃恢复)R116
+L2: global_mem.txt(微信Bot/代理端口/ScoreSys/BfM/GA状态/硬件/依赖包/崩溃恢复/自主行动TODO/融合选股v2/upstream_sync/complete_task坑)R153
 L3: memory_cleanup_sop(记忆整理) | memory_management_sop(META-SOP) | plan_sop(复杂任务规划) | autonomous_operation_sop(自主行动) | mini_sop_collection(迷你SOP合集R146) | tmwebdriver_sop(浏览器特殊操作) | ljqCtrl_sop+.py(键鼠控制) | vision_sop(截图视觉) | verify_sop(验证) | cdp_bridge_sop(CDP桥接) | output_format_sop(输出格式) | wechat_bot_perf_sop(微信性能) | github_contribution_sop(开源贡献) | bullish_stream_realtime_sop(实时流) | supervisor_sop(监控) | procmem_scanner_sop(进程内存扫描) | subagent(子代理) | adb_ui.py(手机) | keychain(密钥) | ljqCtrl.py(键鼠) | ocr_utils.py(OCR) | ui_detect.py(界面检测) | vision_api.py(视觉API) | procmem_scanner.py(进程扫描) | factor_redundancy.py(因子冗余分析R142) | param_optimizer.py(参数优化器R142)
 L4: L4_raw_sessions/ 历史会话
