@@ -148,9 +148,14 @@ if __name__ == '__main__':
     else: print('[Launch] Feishu Bot not enabled (use --feishu to start)')
 
     if args.wechat:
-        wxproc = subprocess.Popen([sys.executable, os.path.join(frontends_dir, 'wechatapp.py')], creationflags=subprocess.CREATE_NO_WINDOW if os.name=='nt' else 0)
-        atexit.register(wxproc.kill)
-        print('[Launch] WeChat Bot started')
+        # 用 pythonw.exe 独立启动，脱离父子关系，避免 GA 退出时误杀 Bot
+        _wx_script = os.path.join(frontends_dir, 'wechatapp.py')
+        _wx_flags = subprocess.CREATE_NO_WINDOW | subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.DETACHED_PROCESS if os.name == 'nt' else 0
+        _wx_exe = os.path.join(os.path.dirname(sys.executable), 'pythonw.exe') if sys.executable.endswith('python.exe') else sys.executable
+        subprocess.Popen([_wx_exe, _wx_script], creationflags=_wx_flags, close_fds=True,
+                         stdout=open(os.path.join(script_dir, 'temp', 'wechatbot_stdout.log'), 'a'),
+                         stderr=open(os.path.join(script_dir, 'temp', 'wechatbot_stderr.log'), 'a'))
+        print('[Launch] WeChat Bot started (independent process)')
     else: print('[Launch] WeChat Bot not enabled (use --wechat to start)')
 
     if args.wecom:

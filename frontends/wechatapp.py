@@ -892,33 +892,54 @@ def on_message(bot, msg):
         threading.Thread(target=_run_score, daemon=True).start()
         return
 
-    # ── BfM 信号：从 BfM API 获取实时 picks ──
+    # ── BfM 信号：从 BfM API 获取实时 picks + 八维信号 ──
     if text == '/bfm':
         def _run_bfm():
             import urllib.request, json as _json
-            bfm_url = 'http://127.0.0.1:18800/api/data'
+            bfm_url = 'http://127.0.0.1:9004/data'
             try:
                 req = urllib.request.Request(bfm_url, headers={'Accept': 'application/json'})
                 with urllib.request.urlopen(req, timeout=10) as resp:
                     data = _json.loads(resp.read().decode('utf-8'))
                 picks = data.get('picks', [])
-                if not picks:
+                hot8 = data.get('hot8', [])
+                ts = data.get('time', '')
+                if not picks and not hot8:
                     bot.send_text(uid, '📊 BfM 当前无选中股票', context_token=ctx)
                     return
-                lines = ['📊 **BfM 实时信号**', f'共 {len(picks)} 只\n']
-                for i, p in enumerate(picks[:20], 1):
-                    name = p.get('name', '')
-                    symbol = p.get('symbol', '')
-                    sector = p.get('sector', '')
-                    score = p.get('score', {})
-                    total = score.get('total', 0) if isinstance(score, dict) else 0
-                    lines.append(f'{i}. **{name}** ({symbol}) [{sector}] ⭐{total:.1f}')
-                if len(picks) > 20:
-                    lines.append(f'\n... 还有 {len(picks)-20} 只')
+                lines = ['📊 **BfM 实时信号**', f'🕐 {ts}\n']
+                # 八维权重标签
+                _DIM_LABELS = ['情绪', '板块', '龙头', '资金', '量价', '封板', '稳定', '表现']
+                if picks:
+                    lines.append(f'**🔟 精选 {len(picks)} 只**')
+                    for i, p in enumerate(picks[:10], 1):
+                        name = p.get('name', '').strip()
+                        symbol = p.get('symbol', '')
+                        sector = p.get('sector', '')
+                        score = p.get('score', {})
+                        total = score.get('total', 0) if isinstance(score, dict) else 0
+                        # 八维信号摘要（取top3维度）
+                        if isinstance(score, dict):
+                            dims = [(k, v) for k, v in score.items()
+                                    if k != 'total' and isinstance(v, (int, float))]
+                            dims.sort(key=lambda x: -x[1])
+                            top3 = ' '.join(f'{k[:2]}{v:.0f}' for k, v in dims[:3])
+                        else:
+                            top3 = ''
+                        lines.append(f'{i}. {name}({symbol}) [{sector}] ⭐{total:.0f}  {top3}')
+                if hot8:
+                    lines.append(f'\n**🔥 热门 {len(hot8)} 只**')
+                    for i, h in enumerate(hot8[:5], 1):
+                        name = h.get('name', '').strip()
+                        sym = h.get('symbol', '')
+                        heat = h.get('heat', 0)
+                        pct = h.get('pct_change', 0)
+                        arrow = '📈' if pct >= 0 else '📉'
+                        lines.append(f'  {name}({sym}) 热度{heat} {arrow}{pct:+.1f}%')
                 output = '\n'.join(lines)
                 bot.send_text(uid, output, context_token=ctx)
             except urllib.error.URLError as e:
-                bot.send_text(uid, f'❌ 连接 BfM 失败: {e}\n请确认 BfM 已启动（端口18800）', context_token=ctx)
+                bot.send_text(uid, f'❌ 连接 BfM 失败: {e}\n请确认 BfM 已启动（端口9004）', context_token=ctx)
             except Exception as e:
                 bot.send_text(uid, f'❌ BfM 查询异常: {e}', context_token=ctx)
         threading.Thread(target=_run_bfm, daemon=True).start()

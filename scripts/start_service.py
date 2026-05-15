@@ -39,7 +39,7 @@ for _d in [r'D:\GenericAgent\frontends', r'D:\GenericAgent']:
 
 # ── Step 3: 启动 bot ──
 log("Step 3: 启动 wechatapp...")
-python_exe = r'C:\Python314\pythonw.exe'
+python_exe = r'C:\Python312\pythonw.exe'
 script = r'D:\GenericAgent\frontends\wechatapp.py'
 env = os.environ.copy()
 env['HTTP_PROXY'] = 'http://127.0.0.1:7897'
