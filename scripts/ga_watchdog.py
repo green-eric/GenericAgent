@@ -31,7 +31,7 @@ _GA_RESTART_TIMES = []   # list of epoch timestamps
 # _WX_RESTART_TIMES = []  # DISABLED
 MAX_RESTARTS = 3
 RESTART_WINDOW = 600     # 10 minutes
-COOLDOWN_SEC = 120       # 2 minutes after restart
+COOLDOWN_SEC = 300       # 5 minutes after restart
 
 # 预绑定 Win32 API
 _CreateMutex = ctypes.windll.kernel32.CreateMutexW
@@ -222,7 +222,7 @@ def main():
             else:
                 fail_ga += 1
                 log(f"  GA not running! (consecutive={fail_ga})")
-                if fail_ga >= 2:
+                if fail_ga >= 4:
                     log("  Restarting GA...")
                     restart_ga()
                     fail_ga = 0
@@ -246,7 +246,7 @@ def main():
         except Exception as e:
             log(f"  ⚠️ Check error: {e}")
 
-        time.sleep(60)
+        time.sleep(120)
 
 
 if __name__ == "__main__":

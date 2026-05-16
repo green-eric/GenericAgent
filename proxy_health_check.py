@@ -148,36 +148,40 @@ def run_check():
     return result
 
 def print_result(result):
-    """打印检测结果"""
+    """打印检测结果 — Windows GBK 安全版"""
+    import io, sys
+    # 强制 UTF-8 输出，避免 Windows GBK 控制台 emoji 崩溃
+    if sys.stdout.encoding != 'utf-8':
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
     ts = result['ts'][:19]
     print(f"\n{'='*60}")
-    print(f"🕐 {ts}")
+    print(f"[CLOCK] {ts}")
     print(f"{'='*60}")
     
     # Clash 进程
     procs = result['clash_processes']
     if procs:
         for p in procs:
-            print(f"  ⚙️  Clash: {p.get('ProcessName','?')} (PID:{p.get('Id','?')})")
+            print(f"  [GEAR]  Clash: {p.get('ProcessName','?')} (PID:{p.get('Id','?')})")
     else:
-        print(f"  ❌ Clash: 进程未运行")
+        print(f"  [X] Clash: 进程未运行")
     
     # 端口
-    print(f"\n  📡 端口状态:")
+    print(f"\n  [SAT] 端口状态:")
     for port, ok in result['ports'].items():
-        print(f"    {port}: {'✅' if ok else '❌'}")
+        print(f"    {port}: {'[OK]' if ok else '[FAIL]'}")
     
     # 系统代理
     sp = result['system_proxy']
     enable = sp.get('ProxyEnable', '0')
     server = sp.get('ProxyServer', '(无)')
-    print(f"\n  🔧 系统代理: {'开启' if enable=='1' else '关闭'} → {server}")
+    print(f"\n  [WRENCH] 系统代理: {'开启' if enable=='1' else '关闭'} -> {server}")
     
     # 连通性
-    print(f"\n  🌐 连通性:")
+    print(f"\n  [GLOBE] 连通性:")
     direct_ok = proxy_ok = True
     for c in result['connectivity']:
-        icon = '✅' if c['ok'] else '❌'
+        icon = '[OK]' if c['ok'] else '[FAIL]'
         ms = f"{c['ms']:.0f}ms" if c['ok'] else c.get('error','')[:40]
         print(f"    {icon} {c['name']}: {ms}")
         if c['ok'] and not c.get('needs_proxy', False):
@@ -190,15 +194,15 @@ def print_result(result):
             proxy_ok = False
     
     # 总结
-    print(f"\n  📊 总结: ", end="")
+    print(f"\n  [CHART] 总结: ", end="")
     if proxy_ok and direct_ok:
-        print("🟢 全部正常")
+        print("[GREEN] 全部正常")
     elif direct_ok and not proxy_ok:
-        print("🟡 直连正常，代理不通")
+        print("[YELLOW] 直连正常，代理不通")
     elif not direct_ok:
-        print("🔴 网络异常")
+        print("[RED] 网络异常")
     else:
-        print("🟠 部分异常")
+        print("[ORANGE] 部分异常")
 
 def generate_report():
     """生成稳定性报告"""
