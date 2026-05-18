@@ -4,7 +4,7 @@
 
 ### 产出
 [x] 产出 | GA Token使用量统计分析 | 跑token_stats.py统计最近一周API调用的input/output token量和费用，输出报告 | 验收: 输出token统计报告到autonomous_reports/
-[ ] 产出 | ScoreSys回测结果深度分析 | 解析本轮回测(backtest 2020-2026, top20, workers8)的输出文件，与历史回测对比IC/夏普/最大回撤 | 验收: 回测对比分析报告
+[x] 产出 | ScoreSys回测结果深度分析 | 解析本轮回测(backtest 2020-2026, top20, workers8)的输出文件，与历史回测对比IC/夏普/最大回撤 | 验收: 回测对比分析报告
 
 ### 环境探测
 [x] 环境 | 探测D:/Tools目录下的Firefox隐私工具可用性 | 检查D:/Tools中具体工具版本和功能，实测至少1个工具的隐私保护效果 | 验收: 工具清单+实测结果写入报告
@@ -16,4 +16,4 @@
 [x] 产出 | BfM EventBus压力测试脚本 | 模拟高并发market_data事件(>1000/s)，验证队列不丢失事件的参数调优方案(block=False+多消费者) | 验收: 压力测试脚本+调优参数建议
 
 ### 能力扩展
-[ ] 能力 | file_monitor.py集成到项目工作流 | 将文件监控hook集成到ScoreSys或BfM的数据更新流程中，实现数据文件变更自动触发回测/评分 | 验收: 集成Demo可运行
+[x] 能力 | file_monitor.py集成到项目工作流 | 将文件监控hook集成到ScoreSys或BfM的数据更新流程中，实现数据文件变更自动触发回测/评分 | 验收: 集成Demo可运行
