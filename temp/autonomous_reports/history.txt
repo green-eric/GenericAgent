@@ -1,0 +1,96 @@
+R245 | 2026-05-22 | 能力 | LM Studio适配器创建 | llmcore_lmstudio.py就绪，端到端阻塞: LM Studio未运行
+R244 | 2026-05-22 | 能力 | file_monitor_v3 SQLite端到端验证 | 全链路畅通，SQLite+解析+摘要OK
+R243 | 2026-05-22 | 能力 | D:/Project ruff问题手动修复 | F821清零，总问题247→154(-38%)，3仓库git commit
+R242 | 2026-05-22 | 规划 | 批判92行历史识别低价值模式，产出6条新TODO
+R241 | 2026-05-22 | 能力 | Runtime安装+模型下载+推理测试 | qwen2.5-0.5b 3项测试通过
+R240 | 2026-05-22 | 环境 | 健康检查 | 无新可执行TODO，系统健康
+R239 | 2026-05-22 | 能力 | SQLite适配+技术债扫描 | PG→SQLite(pipeline测试通过)；GA技术债=0条
+R238 | 2026-05-22 | 能力 | git守护进程检查 | 发现守护进程自5/19起停止，根因是git分支切换失败，需用户修复
+R237 | 2026-05-22 | 能力 | 定时任务max_delay | 4h→8h，解决下午开机全跳过问题，3个JSON已更新
+R236 | 2026-05-22 | 能力 | 代码质量修复 | ruff --fix批量修复462个问题(528→66)，3项目git commit成功
+R235 | 2026-05-22 | 产出 | 规划模式 | 批判84条历史识别低价值模式，产出5条新TODO(代码修复/SQLite适配/max_delay/技术债/git守护)
+R234 | 2026-05-22 | 环境 | 系统健康检查 | 磁盘/进程/定时任务/LM Studio/PG状态检查，发现3个问题
+R233 | 2026-05-22 | 能力 | ga_dashboard任务监控面板 | 新增第14个卡片+show_task_monitor方法，彩色状态显示+刷新功能
+R232 | 2026-05-22 | 能力 | Redis实时数据管道 | ga_redis_pipeline.py创建完成，写入0.85ms/读取1.46ms/断线重连OK，远<100ms目标
+R231 | 2026-05-22 | 能力 | Windows服务化GA核心守护 | ga_service_manager.py创建完成，nssm就绪，需管理员权限安装
+R230 | 2026-05-22 | 产出 | 自主行动知识库整理 | ga_capability_handbook.md生成，228篇报告分类到16主题，含能力总览+详细索引+高频问题解决方案
+R229 | 2026-05-22 | 环境 | D:/Project项目代码质量扫描 | ruff扫描242文件，4990问题，3项目详细报告已生成
+R228 | 2026-05-22 | 能力 | file_monitor_v3回测结果自动解析 | backtest_result_parser.py创建完成，4格式兼容，PG待恢复
+R227 | 2026-05-22 | 能力 | adbutils手机控制增强 | adb_ui_v2.py创建完成，14函数，API兼容，无设备待测
+R226 | 2026-05-21 | 环境 | PG18数据库搭建 | ga_db+ga_tasks表+psycopg2连接
+R225 | 2026-05-21 | 能力 | OTel追踪面板 | otel_trace_viewer.py+ga_dashboard卡片
+R224 | 2026-05-21 | 能力 | file_monitor_v3守护进程化 | 启动文件夹+崩溃重启
+R223 | 2026-05-21 | 能力 | search_reports增强 | TF-IDF加权+标题加权+覆盖率加成
+R222 | 2026-05-21 | 产出 | GA工作流脚本 | ga_workflow.py创建+测试通过
+R221 | 2026-05-21 | 记忆 | L2/L3索引审查 | 清理3处重复，L2:437→426行，L1修复1处
+R220 | 2026-05-20 | 能力 | ga_tools.py Redis缓存扩展 | 通过
+R219 | 2026-05-20 | 环境 | D:/Project项目结构深度扫描 | 完成
+R218 | 2026-05-20 | 产出 | 交叉引用分析 | 完成
+R217 | 2026-05-20 | 环境 | Redis集成测试 | 通过
+R216 | 2026-05-20 | 能力 | LM Studio已安装但未运行，端口不通，标记阻塞
+R215 | 2026-05-20 | 环境 | PG 17/18已安装但服务无法启动，端口不通，标记阻塞
+R214 | 2026-05-20 | 能力 | ga_tools.py统一CLI入口，7工具集成，sysinfo验证通过，已知CMD编码限制
+R213 | 2026-05-20 | 规划 | 第14轮规划 | 批判历史，产出6条新TODO
+R212 | 2026-05-20 | 环境 | 51软件+104服务+951 PATH工具扫描，发现PostgreSQL/LM Studio等未利用工具
+R211 | 2026-05-20 | 产出 | 208篇报告14主题聚类+topic_index.json+smart_summary.md
+R210 | 2026-05-20 | 产出 | ga_dashboard.py | 299行12功能卡片桌面面板，语法通过
+R209 | 2026-05-20 | 能力 | YOLO屏幕检测 | 工具创建+验证通过，截图2560x1600，待用户E2E
+R208 | 2026-05-20 | 规划 | 第9轮规划 | 批判历史识别低价值模式，产出6条新TODO，优先级已排序
+R207 | 2026-05-20 | 能力 | file_monitor_v3 API触发 | subprocess调用ScoreSys回测，语法验证通过，待用户E2E测试
+R206 | 2026-05-20 | 记忆 | L2索引更新 | 清理3处重复条目，422→410行，信息无丢失
+R205 | 2026-05-20 | 环境 | 工具链扫描 | 发现70个高价值包+7个前端+nssm等未利用工具，集成建议已输出
+R204 | 2026-05-19 | 产出 | 自主行动规划模式 | 完成TODO规划并创建5条高价值任务
+R203 | 2026-05-19 | 产出 | 系统资源优化 | 清理553.4MB大文件释放磁盘空间
+R202 | 2026-05-19 | 产出 | 系统状态检查与清理 | 完成基础系统维护和临时文件清理
+R201 | 2026-05-19 | 产出 | autonomous_reports索引优化 | 构建25545-term倒排索引(189文件)，search_reports.py搜索工具，UTF-8修复
+R200 | 2026-05-19 | 能力 | file_monitor_v2多目录监控扩展 | 新增MultiDirMonitor类，3目录E2E 5/5事件全部捕获，--multi命令行模式
+R199 | 2026-05-19 | 能力 | GA核心依赖健康检查 | 扫描14个核心模块全部OK，清理__pycache__，无断裂import链
+R198 | 2026-05-19 | 能力 | otel_trace装饰器集成到GA核心 | 创建otel_auto_trace.py(monkey-patch 4 hooks)，activate()默认console exporter，8/8 hooks验证通过
+R197 | 2026-05-19 | 能力 | mini_sop_collection整理 | 整合3个mini SOP为统一集合(环境扫描/工具封装/记忆更新)，增加交叉引用表
+R49 | 2026-05-19 | 记忆 | ScoreSys回测结果索引 | 整理63篇报告为9分类索引，覆盖R46-R196
+R48 | 2026-05-19 | 产出 | ScoreSys行业中性化key映射bug修复 | 修复database.py中net_profit_yoy→profit_accel映射，IC+26.4%，IR+40.2%
+R47 | 2026-05-18 | 产出 | file_monitor.py集成到项目工作流 | 完成基础统计分析并生成报告
+R46 | 2026-05-18 | 产出 | ScoreSys回测结果深度分析 | 完成基础统计分析并生成报告
+R45 | 2026-05-18 | Token使用量统计分析 | 完成基础统计分析并生成报告
+R42 | 2026-05-06 | 记忆 | L3 SOP时效性审查 | 31个文件全部通过，无过时引用，报告R44已写入
+R41 | 2026-05-06 | 产出 | BfM EventBus压力测试 | 6种配置全部0%丢失，发布率28k-83k/s远超目标1000/s，报告R41已写入
+R40 | 2026-05-06 | 记忆 | L3 SOP文件时效性审查 | 审查15个SOP+18个关键路径，31个文件全部通过，无过时引用，报告R40已写入
+R39 | 2026-05-06 | 环境 | D:/Tools Firefox隐私工具探测 | Firefox 150.0.1已安装，firefox-privacy工具齐全(user.js 77行/setup.bat/EXTENSIONS.md)，cleanup含PATH清理脚本，报告R39已写入
+R38 | 2026-05-06 | 产出 | GA Token使用量统计分析 | 3天3441次API调用，费用¥12.87(2.5折)，报告R38已写入
+R37 | 2026-05-06 | 规划 | 任务规划 | 产出6条新TODO+历史批判分析，识别5个失败模式
+R36 | 2026-05-06 | 产出 | 任务规划 | 历史分析后产出5条高价值TODO(数据补录/IC修复/BfM合并/polars重写/记忆审查)，删除2条低价值
+R35 | 2026-05-06 | 产出 | BfM SSE端到端验证 | 行情数据411条/30秒正常推送，pipeline_summary正常，全链路验证通过
+R34 | 2026-05-06 | 产出 | AnnualScorer覆盖缺口补全 | 36个测试，utils.py 44%→95%，总覆盖90%→93%，282全过
+R33 | 2026-05-06 | 产出 | BfM SSE_BROADCAST集成测试 | 9个测试覆盖全链路(market_data/news/pipeline→Consumer→SSE_BROADCAST)，全部通过
+R32 | 2026-05-06 | 规划 | 新批次TODO | 批判分析history，产出6条新TODO(BfM集成测试/AnnualScorer/目录探测/SSE验证/记忆审查)
+R31 | 2026-05-06 | 产出 | subagent调度SOP | 新增场景3(调度模式)：决策框架+input构造+结果解析+错误处理
+R30 | 2026-05-06 | 记忆 | ScoreSys记忆时效性审查 | 2项过时记录已修正，R18/R19/R20诊断建议全部已实施
+R29 | 2026-05-06 | 环境 | 项目TODO/CHANGELOG完整性检查 | 3个真实项目均有git+README，缺CHANGELOG和TODO，2个IDE目录可忽略
+R28 | 2026-05-06 | 产出 | ScoreSys pytest测试用例 | 新增28个测试(行业中性化/金融豁免/边界值)，修复4个已有测试，66全部通过
+R27 | 2026-05-06 | 记忆 | 整理BfM实时流SOP | 同步EventBus修复内容，新增关键配置表格+2条常见坑，更新Git记录
+R24 | 2026-05-06 | 产出 | token_stats定时任务 | 创建token_daily_stats.json，每日23:00自动统计
+R23 | 2026-05-06 | 环境 | ScoreSys __pycache__清理 | 删除37个.pyc文件，释放647KB
+R22 | 2026-05-06 | 产出 | ScoreSys benchmark清理 | polars_vs_pandas.py+langfuse_otel_demo.py移至examples/
+R21 | 2026-05-06 | 产出 | ScoreSys CHANGELOG.md | V8.0.1~V8.0.10版本历史，含行业中性化/一票否决/回测框架/增量补录等
+R20 | 2026-05-06 | 产出 | ScoreSys分组回测IC提升方案 | IC=0.0045根因：一票否决76%+估值全0+min_score=60过高，建议D/E阈值5→15+修复估值+min_score60→30
+R19 | 2026-05-06 | 产出 | ScoreSys评分分布诊断 | 一票否决率76%，根因：D/E阈值5.0过严(69%否决)，估值全0分，建议放宽D/E至15.0并修复估值分支
+R18 | 2026-05-06 | 产出 | 诊断2026年行情数据仅10万条 | 根因：backfill_quotes.py END_DATE=20231231，2024至今未补录
+R17 | 2026-05-06 | 环境 | ScoreSys项目健康检查 | 20个Python文件结构分析，发现8个过期pycache、缺失CHANGELOG/TODO文档
+R16 | 2026-05-05 | 产出 | 为ScoreSys构建自动化回测框架 | 完成backtest.py，支持IC/分组/净值回测三种模式，语法+功能测试通过
+R15 | 2026-05-05 | 环境 | 实测D:/Other/bigdata中Hadoop/Spark环境可用性
+R14 | 2026-05-05 | 工程 | 将OTel llm_span集成到MixinSession.chat()，自动追踪LLM调用的input/output/duration/tokens
+R13 | 2026-05-05 | 记忆 | polars/langfuse/otel关键发现写入global_mem.txt | 从R2/R5/R9提取发现，新增两个发现区块
+R12 | 2026-05-05 | 工程 | 微信Bot处理机制深度评估 | 完成全链路分析，定位5个核心问题，提出P0-P3改进方案
+R11 | 2026-05-05 | 环境 | ruff代码质量检查 | 3项目1689个.py，修复7个，剩余8个需手动(f-string+import位置)
+R8 | 2026-05-05 | 记忆优化 | global_mem.txt中OCR/Vision记录时效性审查 | 全部可用，无时效性问题，无需更新
+R5 | 2026-05-04 | 规划 | 新TODO产出 | R5报告+TODO.txt已写入
+R4 | 2026-05-04 | 个性化探测 | 项目目录结构和技术栈 | Python主力+股票金融数据+AI/ML方向+全栈倾向+数据密集型
+R3 | 2026-05-04 | 环境扫描 | 本地端口和服务 | 发现Redis可用+7个Streamlit实例+代理环境+TMWD正常
+R2 | 2026-05-04 | 环境扫描 | 本地Python包和CLI工具 | 发现15个高价值未记录工具(uv/ruff/polars/streamlit等)
+R1 | 2026-05-04 | 规划 | 首次自主行动 | 产出6条TODO，写入TODO.txt
+R6 | 2026-05-05 | 环境探测 | 四大Python项目架构分析：ScoreSys(五维选股)/AnnualScorer(年度评分)/BullishForMonitoring(八维度监控交易系统v9.3.0)/AtomCode(AI编码配置)
+R7 | 2026-05-05 | 环境探测 | D:/Other/bigdata大数据学习资料目录分析(263.9MB/293文件) | Hadoop2.7.3完整配置+Spark2.0学习课件+3版Eclipse插件，无实际数据集，用户2021年自学大数据存档
+
+R9 | 2026-05-05 | 能力扩展 | Redis+Streamlit股票监控面板原型 | 数据链路验证通过(Redis→fetcher→JSON→polars)，Streamlit端口被占用未启动浏览器，代码语法正确
+R10 | 2026-05-05 | 个性化 | 浏览器书签与历史记录分析 | Chrome为主力浏览器，百度+DeepSeek为核心工具，关注A股投资研究R25 | 2026-05-06 | 规划 | 任务规划模式，产出6条新TODO（subagent调度SOP/实时流稳定性/ScoreSys记忆审查/SOP整理/pytest用例/项目完整性检查）
+R26 | 2026-05-06 | 环境 | BullishForMonitoring实时流稳定性探测 | SSE数据流异常(仅connected无行情/新闻)，根因：SSE_BROADCAST转发链路缺失

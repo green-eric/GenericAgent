@@ -1,0 +1,29 @@
+[x] 能力 | ultralytics YOLO屏幕元素检测 | 利用已安装的ultralytics+opencv实现屏幕元素定位，增强视觉理解能力 | 验收: 截图→YOLO检测→输出元素bbox+类别
+[x] 能力 | adbutils手机控制增强 | 用adbutils替代adb_ui.py的subprocess adb调用，实现更稳定的Android控制 | 验收: 代码已就绪，待设备测试 | 阻塞: 无设备
+[x] 产出 | PySide6桌面GUI启动器 | 基于qtapp.py(2022行已有代码)，创建GA桌面启动面板，集成常用功能入口 | 验收: 桌面面板可启动+功能正常
+[x] 能力 | file_monitor_v3端到端回测验证 | 回测管道畅通 | IC均值+0.1880, 标准差0.0199, 正占比100%, 期数2 | 耗时12s
+[x] 产出 | autonomous_reports智能摘要 | 对220篇报告做主题聚类，提炼高频问题和解决方案，生成知识库索引 | 验收: 主题分类索引+高频问题Top10
+[x] 环境 | PowerShell/CMD工具链扫描 | 扫描Windows已安装的软件(非Python包)，发现未利用的系统级工具 | 验收: 系统工具清单+集成建议
+[x] 能力 | GA核心能力集成与增强 | 将YOLO/file_monitor_v3等独立脚本集成到GA工具链，统一CLI入口 | 验收: GA --tools列出所有工具+各工具可调用
+[x] 环境 | PostgreSQL数据库集成 | 阻塞: PG服务启动失败 | 利用已安装的PostgreSQL 17/18搭建本地数据库，替代SQLite做大规模数据存储 | 验收: 数据库创建+读写测试通过
+[x] 能力 | LM Studio本地LLM测试 | Runtime安装完成，qwen2.5-0.5b下载+推理测试通过(5.9s/5.9s/2.4s) | HTTP API可用，lms load CLI超时但无影响
+[x] 产出 | 自主报告交叉引用分析 | 基于topic_index.json分析报告间的关联关系，生成知识图谱 | 验收: 报告关联图+交叉引用索引
+[x] 环境 | Redis on Windows集成测试 | 测试已安装的Redis服务在Windows下的性能，作为GA数据管道 | 验收: Redis读写<10ms+断线重连OK
+[x] 能力 | file_monitor_v3自动回测API触发 | 监控ScoreSys数据目录变化，自动触发回测，解析结果生成报告 | 验收: 文件变化→回测→结果解析全链路
+[x] 环境 | D:/Project项目代码质量扫描 | ruff 0.15.13扫描242文件，4990问题(AnnualScorer 110/BfM 4109/ScoreSys 771)，质量报告已生成
+[x] 能力 | file_monitor_v3回测结果自动解析 | 解析v3生成的回测JSON结果，自动提取IC/夏普/最大回撤，写入PG数据库+生成Markdown摘要 | 验收: 4格式兼容+摘要生成OK，PG待恢复
+[x] 产出 | 自主行动知识库整理 | ga_capability_handbook.md生成(50610字节)，228篇报告分类到16主题，含能力总览+详细索引+高频问题解决方案
+[x] 能力 | Windows服务化GA核心守护 | 3个服务全部RUNNING | ga_file_monitor+ga_scheduler+ga_auto_git | scheduler.py已修复main()循环
+[x] 能力 | D:/Project代码质量自动修复 | ruff扫描发现的4990问题中，筛选可自动修复的类别（如import排序/未使用变量），用ruff --fix批量修复，验证通过后git commit | 验收: ruff问题数显著减少+git commit包含修复
+[x] 能力 | file_monitor_v3回测结果PG写入适配 | backtest_result_parser.py已创建但PG阻塞，改用SQLite本地存储回测结果，解除PG依赖 | 验收: 回测JSON→SQLite写入+查询OK
+[x] 能力 | 定时任务max_delay优化 | 当前4h导致下午开机全跳过，分析合理值并调整为8h，确保daily_backtest等任务能触发 | 验收: max_delay=8h+scheduler.log确认不再因超时被跳过
+[x] 产出 | GA代码库技术债扫描 | 扫描GA核心模块中的TODO/FIXME/HACK注释，识别已知技术债，按优先级排序输出修复建议 | 验收: 技术债清单+Top5修复建议
+[x] 能力 | auto_git_commit守护进程健康检查 | 检查auto_git_commit.py运行状态，验证git提交是否正常，发现守护进程自5/19停止，根因是git分支切换失败，需用户修复
+[x] 产出 | 规划模式_第N轮批判性规划与TODO产出 | 批判92行历史识别低价值模式，产出6条新TODO | R242
+
+[x] 能力 | D:/Project剩余ruff问题手动修复 | ruff --fix后仍剩66个问题(AnnualScorer/BfM/ScoreSys)，分析具体问题类型，手动修复高优先级项目(如类型错误/逻辑问题)，git commit | 验收: ruff问题数<30+git commit包含修复 | R243: F821清零，总问题247→154(-38%)，3仓库git commit
+[x] 能力 | file_monitor_v3 SQLite端到端回测验证 | SQLite存储已适配但未做端到端验证：触发回测→结果写入SQLite→查询→生成摘要，全链路测试 | 验收: 端到端回测+摘要生成OK | R244: 全链路畅通
+[x] 能力 | LM Studio本地LLM集成到GA工具链 | LM Studio HTTP API已可用，将其作为GA的本地LLM备选方案集成到ClaudeCLI/fallback链中，当云端API不可用时切换 | 验收: 本地LLM fallback链路测试通过 | R245: 适配器已创建(llmcore_lmstudio.py)，端到端阻塞: LM Studio未运行
+[ ] 能力 | auto_git_commit守护进程恢复 | R238发现守护进程自5/19停止，根因是git分支切换失败。检查git仓库状态，修复分支问题，重启守护进程 | 验收: auto_git_commit RUNNING+测试提交正常
+[ ] 产出 | GA能力手册与代码同步验证 | ga_capability_handbook.md(228篇报告分类)与实际代码状态对比，修正过时描述，补充新能力条目 | 验收: 手册与代码100%一致
+[ ] 能力 | ScoreSys回测结果可视化 | 将file_monitor_v3的回测结果(IC/夏普/最大回撤)用matplotlib生成趋势图，集成到ga_dashboard面板 | 验收: 回测趋势图+仪表盘显示

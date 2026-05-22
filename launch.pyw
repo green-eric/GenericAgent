@@ -53,6 +53,23 @@ def start_streamlit(port):
     proc = subprocess.Popen(cmd)
     atexit.register(proc.kill)
 
+def start_auto_git_commit():
+    """启动auto_git_commit守护进程，监控GA源码变更自动提交"""
+    global auto_git_proc
+    script_path = os.path.join(script_dir, "auto_git_commit.py")
+    if not os.path.exists(script_path):
+        print(f"[launch] auto_git_commit.py not found at {script_path}, skipping")
+        return
+    auto_git_proc = subprocess.Popen(
+        [sys.executable.replace('python.exe', 'pythonw.exe'), script_path],
+        cwd=script_dir,
+        creationflags=subprocess.CREATE_NO_WINDOW | subprocess.DETACHED_PROCESS,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    atexit.register(auto_git_proc.kill)
+    print(f"[launch] auto_git_commit started (PID {auto_git_proc.pid})")
+
 def inject(text):
     window.evaluate_js(f"""
         const textarea = document.querySelector('textarea[data-testid="stChatInputTextArea"]');
@@ -175,6 +192,9 @@ if __name__ == '__main__':
         atexit.register(scheduler_proc.kill)
         print('[Launch] Task Scheduler started (duplicate prevented by scheduler port lock)')
     else: print('[Launch] Task Scheduler not enabled (--sched)')
+
+    # Auto git commit daemon
+    start_auto_git_commit()
 
     monitor_thread = threading.Thread(target=idle_monitor, daemon=True)
     monitor_thread.start()

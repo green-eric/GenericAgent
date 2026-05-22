@@ -129,3 +129,20 @@ def check():
                 f'完成后将执行报告写入 {rpt}。')
 
     return None
+
+def main():
+    """主循环：每隔INTERVAL秒执行一次check()，作为Windows服务常驻运行"""
+    _logger.info(f'Scheduler started (interval={INTERVAL}s)')
+    while True:
+        try:
+            result = check()
+            if result:
+                _logger.info(f'Check returned: {result[:80]}...')
+            else:
+                _logger.debug('Check: no task triggered')
+        except Exception as e:
+            _logger.error(f'Check error: {e}')
+        _time.sleep(INTERVAL)
+
+if __name__ == '__main__':
+    main()
