@@ -10,6 +10,13 @@ from llmcore import reload_mykeys, LLMSession, ToolClient, ClaudeSession, MixinS
 from agent_loop import agent_runner_loop
 from ga import GenericAgentHandler, smart_format, get_global_memory, format_error, consume_file
 
+# OTel auto-trace: self-activates if otel_config exists in mykey (monkey-patch, core files untouched)
+try:
+    from plugins.otel_auto_trace import activate as _otel_activate
+    _otel_activate()
+except Exception:
+    pass
+
 script_dir = os.path.dirname(os.path.abspath(__file__))
 def load_tool_schema(suffix=''):
     global TOOLS_SCHEMA
