@@ -18,13 +18,30 @@ WATCH_EXTS = {".py", ".md", ".txt", ".json", ".yaml", ".yml", ".toml", ".cfg", "
 # 关键修复：所有 subprocess 强制不弹 CMD 窗口
 NO_WINDOW = 0x08000000  # CREATE_NO_WINDOW
 
+class SafeStreamHandler(logging.StreamHandler):
+    """GBK终端安全的StreamHandler，emoji替换为ASCII标记"""
+    _emoji_map = {
+        '✅': '[OK]', '❌': '[FAIL]', '🚀': '[GO]', '📝': '[FILE]',
+        '🛑': '[STOP]', '📊': '[DATA]', '🔔': '[ALERT]',
+    }
+    def emit(self, record):
+        try:
+            msg = self.format(record)
+            for em, asc in self._emoji_map.items():
+                msg = msg.replace(em, asc)
+            stream = self.stream
+            stream.write(msg + self.terminator)
+            self.flush()
+        except Exception:
+            self.handleError(record)
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [auto-git] %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
     handlers=[
         logging.FileHandler(LOG_FILE, encoding="utf-8", mode="a"),
-        logging.StreamHandler(sys.__stdout__),
+        SafeStreamHandler(sys.__stdout__),
     ],
 )
 log = logging.getLogger("auto-git")

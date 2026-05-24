@@ -625,7 +625,7 @@ def _dl_media(items):
             try:
                 aes_key = (bytes.fromhex(base64.b64decode(ak).decode())
                            if sub.get('media', {}).get('aes_key') else bytes.fromhex(ak))
-                ct = requests.get(f'{CDN_BASE}/download?encrypted_query_param={quote(eq)}', headers={'User-Agent': UA}, timeout=60).content
+                ct = requests.get(f'{CDN_BASE}/download?encrypted_query_param={quote(eq)}', headers={'User-Agent': UA}, timeout=60, proxies=_get_proxies()).content
                 pt = AES.new(aes_key, AES.MODE_ECB).decrypt(ct); pt = pt[:-pt[-1]]
                 fname = sub.get('file_name') or f'{uuid.uuid4().hex[:8]}{ext or ".bin"}'
                 p = os.path.join(_TEMP_DIR, fname); open(p, 'wb').write(pt)
