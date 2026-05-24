@@ -1,11 +1,4 @@
-<<<<<<< HEAD
-# 微信 Bot — wechatapp.py
-# 版本: 1.0.0
-# 功能: 微信消息收发 + Agent 入口，与评分系统无直接耦合
-import os, sys, re, threading, queue, time, socket, json, struct, base64, uuid, hashlib, math, shutil, subprocess, msvcrt
-=======
 import os, sys, re, threading, queue, time, socket, json, struct, base64, uuid, webbrowser, hashlib, math, urllib.request
->>>>>>> origin/main
 from pathlib import Path
 from urllib.parse import quote
 
@@ -41,12 +34,7 @@ _trace.write(f'[{time.strftime("%H:%M:%S")}] TRACE: after cache cleanup\n')
 _trace.flush()
 
 import requests, qrcode
-<<<<<<< HEAD
-_trace.write(f'[{time.strftime("%H:%M:%S")}] TRACE: after import requests,qrcode\n')
-_trace.flush()
-=======
 from requests.adapters import HTTPAdapter
->>>>>>> origin/main
 import socket as _socket
 _trace.write(f'[{time.strftime("%H:%M:%S")}] TRACE: after import socket\n')
 _trace.flush()
@@ -128,16 +116,12 @@ class WxBotClient:
         self.token = token
         self.bot_id = None
         self._buf = ''
-<<<<<<< HEAD
-        self._token_expired = False  # ★ 初始化token过期标记
-=======
         # 复用 Session：连接池 + 自动重试，避免每次新建 TCP 连接被代理关闭
         self._session = requests.Session()
         adapter = HTTPAdapter(pool_connections=5, pool_maxsize=10,
                               max_retries=3, pool_block=False)
         self._session.mount('https://', adapter)
         self._session.mount('http://', adapter)
->>>>>>> origin/main
         if not self.token: self._load()
 
     def _load(self):
@@ -196,39 +180,6 @@ class WxBotClient:
              'iLink-App-Id': ILINK_APP_ID,
              'iLink-App-ClientVersion': str(ILINK_APP_CLIENT_VERSION),
              'User-Agent': UA,
-<<<<<<< HEAD
-             'Authorization': f'Bearer {tok}'}
-        try:
-            r = requests.post(f'{API}/{ep}', data=data, headers=h, timeout=timeout, proxies=_get_proxies())
-            r.raise_for_status()
-            resp = r.json()
-            # 检查业务层错误码
-            ec = resp.get('errcode')
-            if ec and ec != 0:
-                em = resp.get('errmsg', '')
-                print(f'[POST] {ep} 业务错误: errcode={ec} errmsg={em}', file=sys.__stderr__)
-                if ec == -14:
-                    # ★ 刚重登完成30s内忽略-14，避免QR死循环
-                    if time.time() - getattr(self, '_relogin_time', 0) < 120:
-                        print(f'[POST] {ep} -14 在grace period内，忽略', file=sys.__stdout__)
-                    else:
-                        self._token_expired = True
-                    # ★ 不清空buf：保留已拉取的缓冲区，避免消息丢失
-                    self._save()
-            return resp
-        except requests.exceptions.Timeout:
-            print(f'[POST] {ep} 超时 (> {timeout}s)', file=sys.__stderr__)
-            return {'errcode': -2, 'errmsg': 'timeout', 'endpoint': ep}
-        except requests.exceptions.ConnectionError as e:
-            print(f'[POST] {ep} 连接错误: {e}', file=sys.__stderr__)
-            return {'errcode': -3, 'errmsg': 'connection_error', 'endpoint': ep}
-        except Exception as e:
-            print(f'[POST] {ep} 未知错误: {type(e).__name__}: {e}', file=sys.__stderr__)
-            return {'errcode': -99, 'errmsg': str(e), 'endpoint': ep}
-
-    def login_qr(self, poll_interval=2):
-        r = requests.get(f'{API}/ilink/bot/get_bot_qrcode', params={'bot_type': 3}, headers={'User-Agent': UA}, timeout=10, proxies=_get_proxies())
-=======
              'Connection': 'keep-alive'}
         tok = (self.token or '').strip()
         if tok: h['Authorization'] = f'Bearer {tok}'
@@ -242,7 +193,6 @@ class WxBotClient:
         # 获取二维码（用 Session 保持连接复用）
         r = self._session.get(f'{API}/ilink/bot/get_bot_qrcode',
                                params={'bot_type': 3}, headers={'User-Agent': UA}, timeout=10)
->>>>>>> origin/main
         r.raise_for_status()
         d = r.json()
         qr_id, url = d['qrcode'], d.get('qrcode_img_content', '')
@@ -251,14 +201,6 @@ class WxBotClient:
             # 保存二维码图片到 temp 目录
             img = self._tf.parent / 'wx_qr.png'
             qrcode.make(url).save(str(img))
-<<<<<<< HEAD
-            qr = qrcode.QRCode(border=1); qr.add_data(url); qr.make(fit=True); qr.print_ascii(invert=True)
-        last = ''
-        while True:
-            time.sleep(poll_interval)
-            try: s = requests.get(f'{API}/ilink/bot/get_qrcode_status', params={'qrcode': qr_id}, headers={'User-Agent': UA}, timeout=60, proxies=_get_proxies()).json()
-            except requests.exceptions.ReadTimeout: continue
-=======
             # 打印 ASCII 二维码到终端（不依赖 GUI）
             qr = qrcode.QRCode(border=1); qr.add_data(url); qr.make(fit=True)
             try:
@@ -279,7 +221,6 @@ class WxBotClient:
             except Exception as e:
                 print(f'[QR登录] 轮询异常: {e}', file=sys.__stdout__)
                 continue
->>>>>>> origin/main
             st = s.get('status', '')
             if st != last: print(f'[QR登录] 状态: {st}'); last = st
             if st == 'confirmed':
@@ -415,14 +356,6 @@ class WxBotClient:
             print(f'[getUpdates] 未知异常: {type(e).__name__}: {e}', file=sys.__stdout__)
             return []
         if resp.get('errcode'):
-<<<<<<< HEAD
-            print(f'[getUpdates] err: {resp.get("errcode")} {resp.get("errmsg","")}', file=sys.__stdout__)
-            if resp['errcode'] == -14:
-                # Token 过期，设置标记，由 run_loop 处理重新登录
-                # ★ 不清空buf：保留已拉取的缓冲区，重登成功后继续消费
-                print('[getUpdates] Token 过期，需要重新登录（保留buf）', file=sys.__stdout__)
-                self._token_expired = True
-=======
             print(f'[getUpdates] err: {resp.get("errcode")} {resp.get("errmsg","")}')
             if resp['errcode'] == -14:
                 # session 过期 → 自动重新登录
@@ -434,7 +367,6 @@ class WxBotClient:
                     return self.get_updates(timeout=timeout)
                 except Exception as e:
                     print(f'[getUpdates] 重新登录失败: {e}', file=sys.__stdout__)
->>>>>>> origin/main
             return []
         nb = resp.get('get_updates_buf', '')
         if nb: self._buf = nb; self._save()
@@ -563,14 +495,9 @@ class WxBotClient:
         _out = sys.__stdout__ if sys.__stdout__ else sys.stdout
         print(f'[Bot] 监听中... (bot_id={self.bot_id})', file=_out)
         seen = set()
-<<<<<<< HEAD
-        # ★ 不再每次循环重置_token_expired，保持_on_login_success设的False
-        _relogin_attempts = 0
-=======
         retry_delay = 1          # 初始退避 1s
         max_retry_delay = 60     # 最大退避 60s
         consec_fail = 0          # 连续失败计数
->>>>>>> origin/main
         while True:
             try:
                 # Token 快过期时提前刷新（23.5h阈值，留30min缓冲）
@@ -654,11 +581,6 @@ class WxBotClient:
                             print(f'[Bot] 已自动保存admin_notify_uid: {from_uid}', file=sys.__stdout__)
                         except Exception: pass
                     try: on_message(self, msg)
-<<<<<<< HEAD
-                    except Exception as e: print(f'[Bot] 回调异常: {e}', file=sys.__stdout__)
-            except KeyboardInterrupt: print('[Bot] 退出', file=sys.__stdout__); break
-            except Exception as e: print(f'[Bot] 异常: {e}，5s重试', file=sys.__stdout__); time.sleep(5)
-=======
                     except Exception as e: print(f'[Bot] 回调异常: {e}')
                 # 成功拉取一轮后退避重置
                 if consec_fail > 0:
@@ -683,7 +605,6 @@ class WxBotClient:
                     self._session.mount('http://', adapter)
                 time.sleep(retry_delay)
                 retry_delay = min(retry_delay * 2, max_retry_delay)
->>>>>>> origin/main
 
 # ── Unified media download (IMAGE/VIDEO/FILE/VOICE) ──
 _MEDIA_KEYS = {'image_item': '.jpg', 'video_item': '.mp4', 'file_item': '', 'voice_item': '.silk'}
@@ -724,58 +645,6 @@ _TAG_PATS = [r'<' + t + r'>.*?</' + t + r'>' for t in ('thinking', 'tool_use', '
 _TAG_PATS.append(r'<file_content>.*?</file_content>')
 _TAG_PATS.append(r'<summary>.*?</summary>')  # 双重保障：TAG_PATS也清洗summary
 
-<<<<<<< HEAD
-# ═══ 预编译正则（避免每次_clean/_strip_md调用重复编译） ═══
-_RE_COMPILE = lambda p, f=0: re.compile(p, f)
-_CLEAN_RES = [
-    _RE_COMPILE(r'<summary>.*?</summary>', re.DOTALL),
-    _RE_COMPILE(r'^\s*LLM Running \(Turn \d+\) \.{3}\s*$', re.M),
-    _RE_COMPILE(r'^\s*(调用工具\w+|读取文件\s+\S+|写入文件\s+\S+|执行脚本\s+\S+).*$', re.M),
-    _RE_COMPILE(r'^\s*🔧\s*\w+\(.*$', re.M),
-    _RE_COMPILE(r'^\s*(\[Driver\].*|\[CDP\].*|\[Timeout.*\].*|Executing:.*|Timeout Error.*|Error:.*|Traceback.*)$', re.M),
-    _RE_COMPILE(r'^\s*args:\s*\{.*$', re.M),
-    _RE_COMPILE(r'^\s*🛠️\s*\w+\(.*$', re.M),
-    _RE_COMPILE(r'^\s*\{["\']status["\'].*$', re.M),
-    _RE_COMPILE(r'^\s*={3,}\s*(Response|Prompt)\s*={3,}\s*$', re.M),
-    _RE_COMPILE(r'^\s*["\'](exit_code|stdout|stderr)["\'].*$', re.M),
-    _RE_COMPILE(r'^\s*⏳.*$', re.M),
-    _RE_COMPILE(r"^\s*(I'll|I'm|Let me|I need to|I will|I can|I should|I've|We need to)\s+.*$", re.M),
-    _RE_COMPILE(r'^\s*(抱歉[，！!]?.*|让我先.*|重新来|重新执行|重新搜索).*$', re.M),
-    _RE_COMPILE(r'^\s*(好的[，,]?.*|不需要走|直接搜索|直接执行|这个任务).*$', re.M),
-    _RE_COMPILE(r'^\s*(让我帮你|我来搜索|我来查|让我查|搜索结果显示|根据搜索结果|现在来回答|现在回复|我来回答).*$', re.M),
-    _RE_COMPILE(r'^\s*(首先|其次|最后|然后|接着)\s+(调用|读取|写入|搜索|查看|执行).*$', re.M),
-    _RE_COMPILE(r'^\s*工具调用结果.*$', re.M),
-    # V13.5 新增：清洗 agent 内部思考泄漏模式
-    _RE_COMPILE(r'^\s*(\[USER\]|\[Agent\]|USER:|Agent:)\s+.*$', re.M),          # agent对话角色前缀行
-    _RE_COMPILE(r'^\s*(\*\*summary\*\*|##\s*Summary|#\s*思考|#\s*分析步骤)\s*$', re.M),  # 思考标题行
-    _RE_COMPILE(r'^\s*(好的，|明白了，|收到，|了解了，|我来|我需要|我应该|我打算)\s+.*$', re.M),  # 思考开头口语
-    _RE_COMPILE(r'\n{3,}', 0),
-]
-# 段落级思考过滤（单独处理，含动态参数）
-_THINK_KWS = r'用户问的是|但回复规则|规则模板错配|我应该|不过规则说|搜索失败|用已有知识|直接回答|思考过程|分析步骤|规则引用|数据获取成功|让我解析一下|让我换个方式|搜索中|正在搜索|正在获取|稍等一下'
-
-def _strip_md(t, device='mobile'):
-    """Enhance & filter markdown for WeChat rich-text rendering.
-    WeChat natively renders: code fences, inline code, bold, italic,
-    H1-H4 headings, horizontal rules, tables. We add emoji markers and visual separators."""
-    def _trunc_code(m):
-        full = m.group()
-        fence = re.match(r'`{3,}', full).group()
-        rest = full[len(fence):-len(fence)]
-        if '\n' not in rest: return full  # single-line, keep as-is
-        lang_line, _, body = rest.partition('\n')
-        lines = body.split('\n')
-        code_max_lines = 15 if device == 'pc' else 8
-        code_keep_lines = 11 if device == 'pc' else 6
-        if len(lines) > code_max_lines:
-            kept = lines[:code_keep_lines]
-            return f'{fence}{lang_line}\n' + '\n'.join(kept) + f'\n⋯ ({len(lines)-code_keep_lines} 行省略)\n' + fence
-        return full  # keep intact
-    t = re.sub(r'(`{3,})[\s\S]*?\1', _trunc_code, t)
-    # inline code: keep (WeChat renders it)
-    # bold/italic (*/**/***): keep (WeChat renders it)
-    # images: replace with emoji marker
-=======
 def _fmt_wx(t, already_has_unicode_nl=False):
     """统一微信消息格式化：把任意文本转成微信友好的纯文本格式。
     参数：
@@ -798,7 +667,6 @@ def _fmt_wx(t, already_has_unicode_nl=False):
     # 删除线
     t = re.sub(r'~~([^~]+)~~', r'\1', t)
     # 图片 → emoji
->>>>>>> origin/main
     t = re.sub(r'!\[([^\]]*)\]\([^\)]+\)', r'🖼️ [\1]', t)
     # 链接 → 文字+🔗
     t = re.sub(r'\[([^\]]+)\]\(([^\)]+)\)', r'\1 🔗', t)
@@ -806,96 +674,13 @@ def _fmt_wx(t, already_has_unicode_nl=False):
     t = re.sub(r'^#{1}\s+(.+)', r'📌 \1', t, flags=re.M)
     t = re.sub(r'^#{2}\s+(.+)', r'🔹 \1', t, flags=re.M)
     t = re.sub(r'^#{3}\s+(.+)', r'▪️ \1', t, flags=re.M)
-<<<<<<< HEAD
-    t = re.sub(r'^#{4}\s+(.+)', r'• \1', t, flags=re.M)
-    if device == 'pc':
-        t = re.sub(r'^#{5}\s+(.+)', r'  ▸ \1', t, flags=re.M)
-        t = re.sub(r'^#{6}\s+(.+)', r'    ◦ \1', t, flags=re.M)
-    else:
-        t = re.sub(r'^#{5,6}\s+', '', t, flags=re.M)                 # H5-H6: strip (too small on mobile)
-    # unordered list: bullet with slight indent
-=======
     t = re.sub(r'^#{4,6}\s+(.+)', r'• \1', t, flags=re.M)
     # 无序列表
->>>>>>> origin/main
     t = re.sub(r'^\s*[-*+]\s+', '  • ', t, flags=re.M)
     # 有序列表保持
     t = re.sub(r'^(\s*)(\d+)\.\s+', r'\1\2. ', t, flags=re.M)
     # 引用
     t = re.sub(r'^\s*>\s?(.+)', r'│ \1', t, flags=re.M)
-<<<<<<< HEAD
-    # horizontal rules: enhance with double line
-    t = re.sub(r'^\s*[-*_]{3,}\s*$', '─' * 12, t, flags=re.M)
-    # Add emoji to common keywords (case-insensitive, only if not already prefixed)
-    # NOTE: Excluding '异常','错误','失败' to avoid GBK encoding crashes when these appear in exception messages
-    t = re.sub(r'(?<!📌 )(?<!🔹 )(?<!▪️ )\b(注意|警告)\b', r'⚠️ \1', t)
-    t = re.sub(r'(?<!\w)(成功|完成|通过|OK|done)\b', r'✅ \1', t, flags=re.I)
-    t = re.sub(r'(?<!\w)(提示|说明|备注|Note)\b', r'💡 \1', t, flags=re.I)
-    return re.sub(r'\n{3,}', '\n\n', t).strip()
-
-def _clean(t, device='mobile'):
-    # 使用预编译正则批量过滤（避免每次重复编译）
-    for _re in _CLEAN_RES:
-        t = _re.sub('', t)
-    # TAG patterns (含file_content等，需DOTALL)
-    for p in _TAG_PATS:
-        t = re.sub(p, '', t, flags=re.DOTALL)
-    # 段落级思考过滤
-    _para_pats = _THINK_KWS
-    t = re.sub(r'(?:^[^\n]*(?:' + _para_pats + r')[^\n]*\n?){1,6}', '', t, flags=re.M)
-    # strip_md + 去多余空行
-    t = _strip_md(t, device).strip()
-    # ═══ 去重：全局去重（保留首次出现的行，后续非相邻重复也移除） ═══
-    lines = t.split('\n')
-    seen = set()
-    deduped = []
-    for line in lines:
-        s = line.strip()
-        # 空行始终保留
-        if not s:
-            deduped.append(line)
-            continue
-        # 非空行：全局去重（首次保留，后续重复跳过）
-        if s in seen:
-            continue
-        seen.add(s)
-        deduped.append(line)
-    t = '\n'.join(deduped)
-    # 行内子串去重：检测行内重复的短句（如"xxx\nxxx\nxxx内容"中xxx重复）
-    # 策略：如果一行包含2+次出现的短句（8~60字），只保留最后一次出现及其后续内容
-    _lines_final = []
-    for _line in t.split('\n'):
-        _s = _line.strip()
-        if not _s:
-            _lines_final.append(_line)
-            continue
-        # 检测行内重复子串：尝试不同长度的子串
-        _deduped_line = _line
-        for _sub_len in range(8, min(61, len(_s) // 2 + 1)):
-            for _start in range(len(_s) - _sub_len * 2 + 1):
-                _sub = _s[_start:_start + _sub_len]
-                if _s.count(_sub) >= 2:
-                    # 找到最后一次出现的位置，截取从该位置开始
-                    _last_pos = _s.rfind(_sub)
-                    _candidate = _s[_last_pos:]
-                    if len(_candidate) < len(_deduped_line):
-                        _deduped_line = _candidate
-        _lines_final.append(_deduped_line)
-    t = '\n'.join(_lines_final)
-    # 段落级去重：按空行分段落，全局去重（保留首次出现）
-    paras = re.split(r'\n\n+', t)
-    seen_paras = set()
-    dedup_paras = []
-    for para in paras:
-        p = para.strip()
-        if not p:
-            continue
-        if p in seen_paras:
-            continue
-        seen_paras.add(p)
-        dedup_paras.append(p)
-    return '\n\n'.join(dedup_paras)
-=======
     # 水平线
     t = re.sub(r'^\s*[-*_]{3,}\s*$', '━' * 15, t, flags=re.M)
     # 表格处理：把 | col1 | col2 | 行转成 "col1: col2" 格式
@@ -1029,7 +814,6 @@ def _fmt_wx(t):
     # === Phase 5: 清理空行 ===
     t = re.sub(r'\n{3,}', '\n\n', t).strip()
     return t
->>>>>>> origin/main
 
 def _extract_answer(t):
     """从 agent 回复中提取最终答案，丢弃所有思考过程。
@@ -1330,26 +1114,6 @@ def on_message(bot, msg):
 
     def _handle():
         try:
-<<<<<<< HEAD
-            # 设备感知 sys_hint
-            device = _guess_device(text, uid)
-            if device == 'pc':
-                sys_hint = (
-                    "你是直接回复用户的助手。禁止输出思考过程、分析步骤、规则引用、工具调用描述。"
-                    "只输出最终答案。格式：可用markdown表格、代码块（≤15行）、分隔线，详尽回复。"
-                    "如果搜索失败，直接用知识回答。"
-                )
-            else:
-                sys_hint = (
-                    "你是直接回复用户的助手。禁止输出思考过程、分析步骤、规则引用、工具调用描述。"
-                    "只输出最终答案。格式：emoji分段，每段2-3行，不超过500字。"
-                    "如果搜索失败，直接用知识回答。"
-                )
-            prompt = text if text.startswith('/') else f"{sys_hint}\n\n用户问题：{text}"
-            # ★ 修复：传入图片路径给agent
-            images = media_paths if media_paths else None
-            dq = agent.put_task(prompt, source="wechat", images=images)
-=======
             _wx_fmt_hint = (
                 "【微信格式要求】\n"
                 "- 输出纯文本+emoji，禁止 Markdown（无表格、无|分隔线、无**加粗**、无##标题）\n"
@@ -1360,7 +1124,6 @@ def on_message(bot, msg):
             )
             prompt = text if text.startswith('/') else f"{_wx_fmt_hint}\nIf you need to show files to user, use [FILE:filepath] in your response.\n\n{text}"
             dq = agent.put_task(prompt, source="wechat")
->>>>>>> origin/main
             try: bot.send_typing(uid)
             except: pass
 
@@ -1379,77 +1142,6 @@ def on_message(bot, msg):
                 except Exception as e:
                     print(f'[WX] send err {type(e).__name__}: {e}', file=sys.__stdout__)
                     return False
-<<<<<<< HEAD
-
-            # ═══ 接收 agent 输出（只发最终done消息，不发中间chunk） ═══
-            max_turns = 25
-            turn_count = 0
-            hit_limit = False
-
-            try:
-                while True:
-                    item = dq.get(timeout=120)
-                    if 'done' in item:
-                        result = item['done']
-                        break
-                    raw = item.get('next', '')
-                    raw_accum += raw
-                    turn_count += 1
-
-                    # 上下文过大时提前结束
-                    if len(raw_accum) > 12000:
-                        print(f'[WX] 上下文已达{len(raw_accum)}字符，提前结束', file=sys.__stdout__)
-                        result = raw_accum
-                        hit_limit = True
-                        break
-                    if turn_count >= max_turns:
-                        print(f'[WX] 达到最大轮次{max_turns}，等待最终结果...', file=sys.__stdout__)
-                        hit_limit = True
-                        # 继续等done，不再累积中间结果
-                        try:
-                            item2 = dq.get(timeout=60)
-                            if 'done' in item2:
-                                result = item2['done']
-                            else:
-                                result = raw_accum
-                        except queue.Empty:
-                            result = raw_accum
-                        break
-            except queue.Empty:
-                result = raw_accum if raw_accum else '⏰ 响应超时，请稍后重试'
-                print('[WX] agent 120s 超时', file=sys.__stdout__)
-
-            # ═══ 只发送最终完整回复 ═══
-            final = _clean(result, device)
-            if not final.strip():
-                final = _clean(_extract_answer(result), device)
-            if final.strip():
-                max_len = 2800 if device == 'pc' else 1400
-                if len(final) > max_len:
-                    # 智能分段：按段落分割，每段不超过max_len
-                    chunks = []
-                    current = ''
-                    for para in final.split('\n\n'):
-                        if len(current) + len(para) + 2 > max_len:
-                            if current:
-                                chunks.append(current)
-                            # 单段超长时强制截断
-                            while len(para) > max_len:
-                                chunks.append(para[:max_len])
-                                para = para[max_len:]
-                            current = para
-                        else:
-                            current = (current + '\n\n' + para) if current else para
-                    if current:
-                        chunks.append(current)
-                    for i, chunk in enumerate(chunks):
-                        if not _wx_send(chunk):
-                            break
-                        if i < len(chunks) - 1:
-                            time.sleep(0.3)
-                else:
-                    _wx_send(final)
-=======
             def _send(show):
                 nonlocal mi, last_send
                 now = time.time()
@@ -1484,7 +1176,6 @@ def on_message(bot, msg):
                 # Ensure we don't exceed 2000 chars; if so, trim smartly
                 final = rest_clean[-1900:] if len(rest_clean) > 1900 else rest_clean
                 if final.strip(): _wx_send(final)
->>>>>>> origin/main
             files = re.findall(r'\[FILE:([^\]]+)\]', result)
             bad = {'filepath', '<filepath>', 'path', '<path>', 'file_path', '<file_path>', '...'}
             files = [f for f in files if f.strip().lower() not in bad and (f if os.path.isabs(f) else os.path.join(_TEMP_DIR, f)) not in media_paths]
