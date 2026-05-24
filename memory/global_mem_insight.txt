@@ -1,33 +1,22 @@
-# [Global Memory Insight]
+# [GlobalMem Insight]
 需要时read L2 或 ls ../memory/ 查L3
-L0(META-SOP): memory_management_sop
-<<<<<<< HEAD
 L2: global_mem.txt(微信Bot/代理端口/ScoreSys/BfM/GA状态/硬件/依赖包/崩溃恢复/自主行动TODO/融合选股v2+实盘信号/upstream_sync/complete_task坑/RPS20xScoreSys融合回测/proxy_health/wx_push_bridge/定时任务联动验证/BfM代码深度扫描与优化/三仓库端到端回测联动/ScoreSys因子冗余分析/DirectML推理边界/LM Studio探测/实盘信号推送器/定时任务体系架构整合/实盘信号微信推送链路打通/L2记忆时效性审查第三轮/scheduler冷却机制修复)R262
 L3: memory_cleanup_sop(记忆整理) | memory_management_sop(META-SOP) | plan_sop(复杂任务规划) | autonomous_operation_sop(自主行动) | mini_sop_collection(迷你SOP合集R146) | tmwebdriver_sop(浏览器特殊操作) | ljqCtrl_sop+.py(键鼠控制) | vision_sop(截图视觉) | verify_sop(验证) | cdp_bridge_sop(CDP桥接) | output_format_sop(输出格式) | wechat_bot_perf_sop(微信性能) | github_contribution_sop(开源贡献) | bullish_stream_realtime_sop(实时流) | supervisor_sop(监控) | procmem_scanner_sop(进程内存扫描) | subagent(子代理) | adb_ui.py(手机) | keychain(密钥) | ljqCtrl.py(键鼠) | ocr_utils.py(OCR) | ui_detect.py(界面检测) | vision_api.py(视觉API) | procmem_scanner.py(进程扫描) | factor_redundancy.py(因子冗余分析R142) | param_optimizer.py(参数优化器R142)
 L4: L4_raw_sessions/ 历史会话
-=======
-L2: global_mem.txt(OCR/Vision/ScoreSys-v8.0.10-行业中性化+回测+Polars计算器+IC待修复/langfuse-otel/ClaudeCLI/EventBus/BfM-实时流已合并-master)
-L3: memory_cleanup_sop(记忆整理) | ui_detect.py | ocr_utils.py | subagent | web_setup_sop | plan_sop 
 | procmem_scanner | keychain | ljqCtrl_sop+.py | tmwebdriver_sop | cdp_bridge_sop | autonomous_operation_sop | scheduled_task_sop | vision_sop | adb_ui.py
 | github_contribution_sop | supervisor_sop | verify_sop | vision_api.py | ga_token_usage | wechat_fix(微信修复+_fmt_wx统一格式化)
 | search_tool.py(统一搜索:es+DDGS+dir) | file_monitor.py(文件监控回调hook) | output_format_sop(输出格式优化)
 | token_stats.py(Token统计脚本:jsonl(input/cached)+model_responses(output)合并计费,deepseek-v4-pro人民币计费)
 | mini_sop_env_scan(环境扫描) | mini_sop_tool_wrapping(工具封装) | mini_sop_memory_update(记忆更新)
-| bullish_stream_realtime_sop(BfM实时流)
 || otel_trace.py(@trace_llm_call装饰器:LLM调用OTel追踪)
 | auto_git_commit.py(自动git提交守护进程) | restore_patches.py(GA更新后恢复补丁)
-| wechat_bot_perf_sop(微信Bot性能优化)
-L4: L4_raw_sessions/ 历史会话
-
 浏览器特殊操作: tmwebdriver_sop(文件上传/图搜/PDF blob/物理坐标/HttpOnly Cookie/autofill突破/跨域iframe/CDP/跨tab/隐身离屏) | cdp_bridge_sop(CDP直连/WebSocket/return提取/离屏隐身)
 键鼠: ljqCtrl_sop(禁pyautogui/先activate) 截图/视觉: ocr/vision_sop | 禁全屏截图，优先窗口
 定时:scheduled_task_sop | 自主:autonomous_operation_sop | watchdog/反射:agentmain --reflect
 手机:adb_ui.py
-
 [USER RULES]
 0. 源码修改: 不轻易改 → 确需改 → git commit 后再改动（无需 .bak 备份）
 0. 记忆更新: 任务完成后务必更新记忆，特别是 L1 层索引
-
 [RULES]
 1. 搜索先行: 搜文件名严禁不用es(禁PS递归/禁dir遍历), 搜索一定优先使用web工具的firefox引擎DuckDuckGo(严禁google等), 优先看cwd，禁猜路径
 2. 交叉验证: 禁信摘要, 数值进详情页核实
@@ -45,4 +34,4 @@ L4: L4_raw_sessions/ 历史会话
 14. 代码过滤: 过滤LLM输出中的代码片段，禁用"关键词黑名单"逐行匹配思路（必然遗漏），必须用"大块删除(```/JSON/===)+宽泛模式(20+种语法模式)+多轮迭代(循环3-5次)"策略
 15. EventBus队列: 消费循环禁 get(timeout) 轮询多队列（N×延迟累加），必须用 get_nowait() 批量消费；stop() 先排空队列再发毒丸；丢弃事件需累计计数(_dropped)
 16. 严谨查问题: 禁信文档描述，必须实际验证（查DB/读源码/跑命令）；多比较找原因，多问为什么，从根本上解决问题
->>>>>>> origin/main
+L4: L4_raw_sessions/ 历史会话
