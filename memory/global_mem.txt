@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # [Global Memory - L2] (R262 @ 2026-05-24)
 
 ## L2记忆时效性审查(第三轮) (R260 完成)
@@ -320,3 +321,322 @@
 - 旧调度器可归档: reflect/scheduler.py, temp/task_scheduler.py
 - 验证: py_compile通过 + 成功加载2个JSON配置 + 3个APScheduler任务注册成功
 - 报告: temp/autonomous_reports/R258_定时任务体系架构整合.md
+=======
+# [Global Memory - L2]
+
+## [用户规则] (2026-05-05)
+0. 源码修改: 不轻易改 → 确需改 → git commit 后再改动（无需 .bak 备份）
+1. 任务完成后务必更新记忆，特别是 L1 层索引（global_mem_insight.txt）
+
+## [VBS提权教训] (2026-05-05)
+- VBS ShellExecute 提权（runas）在 code_run 里会超时（UAC弹窗无法自动确认）
+- 不要用 VBS 提权来重启服务，改用 sc 命令或直接让用户手动确认
+- auto_git_commit 守护进程会自动检测文件变更并重启 bot
+2. 任务完成后务必更新记忆，特别是 L1 层索引（global_mem_insight.txt）
+
+## [Vision API] (2026-05-04 配置完成)
+- 脚本: memory/vision_api.py (从 template 复制)
+- 默认后端: modelscope (Qwen/Qwen3-VL-235B-A22B-Instruct)
+- API Base: https://api-inference.modelscope.cn
+- MODELSCOPE_API_KEY: 已配置
+- 用法: from vision_api import ask_vision; ask_vision(image_path, prompt, backend='modelscope')
+- 支持: 本地图片路径 / PIL Image 对象
+- 备后端: claude/openai (需 mykey 中有对应配置且模型支持多模态)
+
+## [API 多模态探测] (2026-05-04)
+- 主 API: LongCat-2.0-Preview (https://api.longcat.chat/anthropic)
+  - 认证: Authorization: Bearer (非 x-api-key)
+  - 端点: /anthropic/v1/messages (非 /anthropic/messages → 404)
+  - 多模态 image: ❌ 不支持（回复"无法查看图片"）
+- 备 API: DeepSeek V4 Flash (https://api.deepseek.com/anthropic)
+  - 认证: x-api-key + anthropic-version: 2023-06-01
+  - 端点: /anthropic/messages
+  - 多模态 image: ❌ 不支持（thinking 显示 [Unsupported Image]）
+  - OpenAI 格式 /chat/completions: ❌ image_url 不被识别
+- 结论: 当前两个 API 均不支持多模态，图片识别用本地 OCR (rapidocr)
+
+## [OCR]
+- 引擎: rapidocr-onnxruntime (已安装，RapidOCR() 实例化即用)
+- 工具脚本: memory/ocr_utils.py
+- 函数: ocr_screen(bbox, enhance=False) / ocr_window(hwnd) / ocr_image(img)
+- 返回: {'text': str, 'lines': [str], 'details': [{'bbox':..., 'text':..., 'conf': float}]}
+- 注意: conf 原为 str 需 float() 转换；无文字时 result 为 None
+- 注意: enhance(放大+高对比度) 对清晰文字有害，默认关闭
+- 注意: RDP 断开后 ImageGrab 全黑，用 ocr_window(hwnd) 代替 ocr_screen
+
+## [微信Bot] (2026-05-04 已修复 + 服务化)
+- 源码: frontends/wechatapp.py
+- token 文件: ~/.wxbot/token.json
+- API: https://ilinkai.weixin.qq.com
+- 当前 bot_id: a33716bee2d6@im.bot
+- 根因: getupdates 请求 body 中 base_info.channel_version=537147478 导致服务端返回 ret=-1
+- 修复: wechatapp.py line85, 将 {'channel_version': VER} 改为空 {}，已验证 API 返回有效数据
+- 已排除: token 格式、token 过期、Authorization 头格式、X-WECHAT-UIN 值
+- 注意: code_run 里用 threading.Thread 会导致 GA 进程退出，记忆丢失
+- 修复日期: 2026-05-04
+## [微信Bot Windows服务] (2026-05-04 已配置)
+- 服务名: wechatbot
+- 状态: RUNNING (开机自启 AUTO_START)
+- 崩溃恢复: 5s/10s/30s 自动重启，60s 重置失败计数
+- NSSM: ../tools/nssm.exe
+- 日志: ../temp/wechatapp.log
+- 管理命令: sc start/stop/query wechatbot
+- 桌面快捷方式: C:\Users\green\Desktop\微信bot启动.lnk
+  - 指向: temp/run_wxbot.vbs (Shell.Application ShellExecute runas 提权)
+  - 启动脚本: temp/start_service.py (encoding=gbk 修复中文乱码)
+  - 安装脚本: temp/install_service.py (服务被卸载后重新安装用)
+  - 注意: sc命令输出为GBK编码，Python捕获必须用encoding='gbk'
+
+## [ScoreSys Polars Calculator] (2026-05-06 确认)
+- 项目路径: D:/Project/ScoreSys/
+- calculator.py 已是 Polars 版（490行，完全向量化，零逐行循环）
+- calculator_polars.py 旧文件已于 2026-05-06 删除（dead code cleanup, commit 0e2d43d）
+- DB: D:/Project/ScoreSys/stock_data.db (SQLite, 4344 symbols, 937万条行情)
+
+## [ScoreSys V8.0.10 行业中性化] (2026-05-06 验证完成)
+- 版本: V8.0.9 → V8.0.10
+- 核心改进: 行业中性化打分（与同行业p25~p75百分位比较，非绝对阈值）
+- 适用维度: 成长性/盈利能力/现金流质量/偿债风险（估值仍用绝对阈值）
+- 回测结果（2020-01-01 ~ 2026-04-30，25期）:
+  - 总收益: +69.43% | 年化: +11.11% | 夏普: 5.196
+  - 最大回撤: 16.55% | 胜率: 64.0% | 期末净值: 1.6943
+- 回测结果（2024-01-01 ~ 2026-04-30，9期）:
+  - 总收益: +18.67% | 年化: +8.30% | 夏普: 9.306
+  - 最大回撤: 1.16% | 胜率: 66.7% | 期末净值: 1.1867
+- 对比V8.0.9（25期）: 收益+83.66%，回撤-27.67%，夏普+5.454
+- 关键经验:
+  - README数据源表行情范围描述过时（写的2024起，实际2015起已补录），导致误判"数据不全"
+  - backfill_quotes.py补录行情后quotes表761万行/2015-01-05~2026-05-05
+  - 查问题要严谨: 不能只看文档描述，要实际查DB验证数据范围
+- 文档: README.md（384行）, CLAUDE.md（134行，精简版）
+- 项目路径: D:/Project/ScoreSys/
+- DB: stock_data.db (1295MB, 6表, quotes 761万行, financials 19万行, stocks 4344只)
+- 测试: tests/ 66个测试全部通过（含行业中性化/金融豁免/边界值）
+
+## [ScoreSys V8.0.9 回测修复] (2026-05-06 验证完成)
+- 版本: V8.0.8 → V8.0.9
+- 6项修复全部已验证：
+  1) 否决收紧: 现金流30/D.E5/负债率80
+  2) PEG估值: PE/增速分段评分
+  3) 权重: 成长20%/现金流25%
+  4) 止损+加权: 个股止损+评分加权
+  5) 回撤止损: 峰值回撤空仓1期
+  6) 粗筛+DB缓存: SQL粗筛4259→500+双层缓存
+- 回测效果（已验证17/25期）：
+  - 17期: +40.76%，最大回撤19.3%，胜率64.7%
+  - 旧版V8.0.8全25期: -14.23%，夏普-0.258，最大回撤44.22%
+  - 改善: 收益+55%，回撤-25%，胜率+13%
+- 第二轮参数对比(2022-2024,11期):
+  - min_score=60+dd_stop=20%: 更优
+  - min_score=65+dd_stop=15%: 太紧，选股14只反而更差(-20.82%)
+- 推荐最终参数: min_score=60, stop_loss=12%, drawdown_stop=18%
+- 待优化: 行业中性化打分（预计再改善10-15%）
+- 注意: code_run 600s超时，完整回测需`python backtest.py`直接运行
+- 修改文件: scorer.py, backtest.py, config.py
+
+## 微信修复 (2026-05-04)
+- 问题: DNS解析 ilinkai.weixin.qq.com 失败导致微信断连
+- 修复: hosts绑定 36.155.182.76 + 清除代理干扰
+- 状态: 已恢复，PID 19448 运行中
+- 详情: memory/wechat_fix.md
+
+## [输出格式优化] (2026-05-05)
+- sys_prompt.txt 新增「输出格式规范」（最高优先级）：emoji、图表、简洁、不输出过程
+- wechatapp.py _clean 增强：过滤 summary/调用工具/Driver/CDP/Timeout/Error/Traceback/args/🛠️/JSON结果/===Response===
+- wechatapp.py _strip_md 增强：新增👍🔥📈📉💡 emoji 映射
+- 备份：*.bak_fmt_20260505_102330
+- 详情：memory/output_format_sop.md
+
+## [自动 Git 提交] (2026-05-05 更新)
+- auto_git_commit.py：监控源码变更 → 自动 commit + push 到 user-patches 分支
+- 新增 restore_patches.py：GA 更新后恢复用户补丁（cherry-pick user-patches 提交）
+- GitHub fork: green-eric/GenericAgent (origin=SSH), upstream=lsdefine/GenericAgent
+- 分支: main（同步上游）+ user-patches（用户自定义调整）
+- SSH key: ~/.ssh/id_ed25519 已配置到 GitHub
+- 监控 .py/.md/.txt/.json/.yaml/.yml/.toml/.cfg/.ini/.bat/.ps1/.vbs 文件
+- 排除 .git/__pycache__/node_modules/L4_raw_sessions/temp 及 .pyc/.pyo/.bak/.tmp/.log
+- 变更后30秒自动 commit，格式: "[auto] file1, file2 (2026-05-05 HH:MM)"
+- 后台 pythonw 守护进程 + 开机自启 VBS（Startup 文件夹）
+- 日志: temp/auto_git_commit.log
+
+## [微信输出优化] (2026-05-05)
+- _clean() 新增过滤: 🔧 web工具调用行、🛠️ code_run 工具调用行
+- 进度条去重: 只在首条消息前加 _progress_hint，后续消息不加
+- 备份: frontends/wechatapp.py.bak
+
+## [微信代码泄露修复] (2026-05-05)
+- 问题: LLM生成的Python代码片段通过微信回复泄露给用户
+- 根因: _clean() 逐行正则只匹配特定关键词开头(import/url/req/print)，
+  遗漏变量赋值类代码行(如 html = urllib.request.urlopen(req).read())
+- 修复: _clean() 完全重写为5阶段过滤
+  Phase1: 删除大块结构(code blocks ```...```、inline code、JSON tool results、=== markers)
+  Phase2: 删除工具调用行(🛠️/🔧/调用工具/args)
+  Phase3: 删除内部标记(LLM Running/⏳/✅/━)
+  Phase4: 宽泛代码模式匹配20+种(import/from/def/class/if/for/while/try/except/
+        var=func()/obj.method()/print()/赋值语句等)，循环5次确保嵌套清除
+  Phase5: 格式清理(空行压缩+markdown strip)
+- 验证: 3种泄露场景(直接嵌入代码/JSON块/多轮对话)全部通过
+- git: c4554b0
+- 关键教训: 过滤代码不能用"关键词黑名单"思路，必须用"大块删除+宽泛模式+多轮迭代"
+
+## [自主行动 R11] (2026-05-05)
+- ruff 代码质量检查：3项目(ScoreSys/AnnualScorer/BullishForMonitoring)共1689个.py文件
+- 自动修复7个问题(6个F401 unused import + 1个F401 json)
+- 剩余8个需手动：ScoreSys 3个f-string引号嵌套语法错误 + BfM 5个import位置问题(E402)
+- ruff 0.15.8, D:/Project 下 AtomCode 无 .py 文件
+
+## [CDP 修复] (2026-05-05)
+- 问题：WebSocket 连接返回 403 Forbidden
+- 原因：Chrome 缺少 --remote-allow-origins=* 参数
+- 修复：启动命令需包含 --remote-debugging-port=9222 --remote-allow-origins=* --window-position=-32000,-32000
+- 验证：端口9222 HTTP/WS 均正常，JS执行和页面导航均OK
+- 注意：旧Chrome进程拒绝访问无法kill，新Chrome在离屏位置运行
+
+## [CDP Bridge] (2026-05-05 创建)
+- 文件: cdp_bridge.py (CDPDriver + CDPSession, WebSocket 直连 Chrome DevTools Protocol)
+- 用途: web_scan/web_execute_js 的备用 driver（TMWebDriver 不可用时回退）
+- 隐身模式: --window-position=-32000,-32000 离屏窗口（非 --incognito）
+- 默认端口: 9222
+- 返回值: execute_js 返回 {"data": result}，web_scan 返回 {"content": html}，web_execute_js 返回 {"js_return": result}
+- 关键修复: execute_js 支持顶层 return 提取（function+return 模式自动拆分为定义+表达式求值）
+- 依赖: websocket-client (pip install websocket-client)
+- 验证: 百度/GitHub 页面扫描、JS执行、导航均正常
+
+## [微信Bot 统一格式化 _fmt_wx] (2026-05-05)
+|- 核心问题：微信纯文本不渲染 \n 换行和 Markdown（**粗体**、## 标题等）
+|- 错误做法：每个功能单独调格式 → 永远改不完
+|- 正确做法：在 send_text() 出口统一处理
+|- 改动1: 新增 _fmt_wx() 函数（frontends/wechatapp.py ~line 268）
+  - 去 Markdown 符号（**粗体**→纯文本、`代码`→纯文本、~~删除线~~→纯文本）
+  - 表格 → 列表形式
+  - \n → \u2028（微信唯一有效换行符）
+|- 改动2: send_text() 内部加 text = _fmt_wx(text)，所有调用点自动生效
+|- 改动3: _strip_md() 改为 _fmt_wx() 的 wrapper（向后兼容）
+|- 快速通道天气查询仍用 \u2028 手动拼，经 _fmt_wx 后无破坏性影响
+|- 未实测：需要在微信端实际发送消息验证换行效果
+|- 教训：不要在 send_text 之前预处理，要在 send_text 内部统一处理
+
+## [polars 关键发现] (2026-05-05)
+- 已安装版本：polars 1.40.1（R2环境扫描确认）
+- 核心优势：Rust编写，比pandas快5-50倍，惰性求值(lazy API)，内存效率高
+- 用法：import polars as pl; df = pl.read_csv("file.csv")
+- 验证状态：R9已验证 Redis→polars DataFrame 处理逻辑全部正常
+- 建议：ScoreSys calculator.py 可用 polars 替代 pandas（TODO待执行）
+- 关联TODO：用polars替代pandas重写脚本并对比性能
+
+## [langfuse + opentelemetry 关键发现] (2026-05-05)
+- 已安装版本：langfuse 4.5.1, opentelemetry-api 1.41.1（R2环境扫描确认）
+- langfuse：LLM应用监控框架，原生支持opentelemetry协议
+- opentelemetry：分布式追踪标准，可追踪LLM调用链（输入/输出/延迟/token）
+- 集成方案：langfuse本地部署 + otel Collector → 自动追踪所有LLM调用
+- 当前状态：已安装但未配置使用
+- 关联TODO：为GA Agent编写LLM调用链追踪装饰器(@trace_llm_call)
+- 参考：R5规划中"研究langfuse+opentelemetry在Agent框架中的集成方案"
+
+## [es.exe 修复] (2026-05-05)
+- 问题: es.exe 不在 PATH 中，搜索工具不可用
+- 位置: D:\GenericAgent\temp\es_extract\es.exe (138KB, ES 1.1.0.27)
+- 修复: setx 添加 D:\GenericAgent\temp\es_extract 到用户 PATH
+- 注意: setx 只影响新进程，已打开终端需重新打开
+- 验证: where es.exe 返回正确路径，搜索功能正常
+
+## [微信Bot性能优化] (2026-05-05)
+- 根因：context_win=28000太小(阈值84K)，compress_history_tags每5次才执行一次(max_len=800)，tool_result网页结果5K-10K字符直接存入history导致膨胀
+- 修复1：context_win 28K→60K（阈值180K），compress改每次执行+max_len 800→2000
+- 修复2：tool_result截断3000字符（agent_loop.py:91 + llmcore.py:994两处）
+- 修复3：wechatapp.py timeout 30→120s，fmt_wx格式化（禁Markdown标记），微信格式约束prompt
+- 关键参数：context_win=60000, max_len=2000, tool_result截断=3000, timeout=120s
+- 诊断：Get-Content temp/wechatapp.log -Tail 50 | Select-String "Current context"
+- SOP：memory/wechat_bot_perf_sop.md
+- Git：4a162f1, 1974fbe, 36f132e
+
+## [Claude CLI 路径] (2026-05-05 修复)
+- 原生二进制: C:\Users\green\AppData\Local\Claude-3p\claude-code\2.1.121\claude.exe (242MB, v2.1.121)
+- 安装方式: native (原生安装器，非 npm)
+- PATH 修复: 复制 claude.exe 到 C:\Users\green\AppData\Local\Microsoft\WindowsApps\ (已在系统 PATH)
+- 备用命令: omc / oh-my-claudecode (npm 全局，v4.13.5，OMC 插件包装器)
+- 注意: 用户 PATH 引用 %PATH% 不会展开系统 PATH，加系统 PATH 或复制到 WindowsApps 才可靠
+- 验证: where claude → WindowsApps\claude.exe; claude --version → 2.1.121
+
+## [BullishForMonitoring EventBus] (2026-05-05 修复)
+- 项目: D:\Project\BullishForMonitoring
+- 文件: modules/streaming/event_bus.py
+- 问题: 消费循环 get(timeout=0.1) 轮询慢 → 队列积压 → signal 事件被丢弃
+- 修复1: 消费改用 get_nowait() 批量消费(每批100条)，无事件才 sleep(0.01)
+- 修复2: stop() 先排空队列再发毒丸，确保消费者线程正常退出
+- 修复3: publish() 丢弃事件累计计数(_dropped)，日志显示累计数
+- Git: 69d9fd8
+
+## [BullishForMonitoring 实时流改造阻塞修复] (2026-05-06)
+- 分支: feature/stream-realtime
+- 问题: start_streamer()在serve_forever()之前调用，100个SSE线程同时建连耗尽线程池→HTTP请求全部超时
+- 排查过程: 最小化测试(ThreadingHTTPServer+SimpleHTTPRequestHandler)→OK; 隔离测试(跳过start_streamer)→OK; 定位start_streamer为根因
+- 修复: start_streamer()改为daemon线程启动，在serve_forever()之前创建但不阻塞HTTP服务
+- 其他修复: reload_caches() SyntaxError、DQM/cache_monitor阻塞注释、debug print清理
+- 验证: /health→200, /→200, /api/stream→200(SSE connected), /data→超时(重量级pipeline预期)
+- Git: b788c8c
+
+## [BullishForMonitoring 实时流改造 — 已完成] (2026-05-06)
+- ✅ feature/stream-realtime (21次提交) 已 merge 到 master (commit f33efd9)
+- ✅ R33: tests/test_sse_broadcast.py — 9个测试覆盖SSE_BROADCAST全链路，全部通过
+- ✅ R34: AnnualScorer 覆盖缺口补全 — 36个测试，utils.py 44%→95%，总覆盖93%，282全过
+- ✅ R37: SSE端到端验证 — 行情411条/30秒正常推送，全链路通过
+- ✅ test_redis_large_value_skip 修复 (3MB→6MB, commit ab2d5ef)
+- 实现: quote_streamer.py + news_streamer.py + EventBus + SSE /api/stream + 前端sse.ts
+- 数据源: 东方财富SSE (push2.eastmoney.com) — 免费, 1-3秒延迟
+
+## [ScoreSys v8.0.9 回测+历史行情] (2026-05-05)
+- 项目: D:\Project\ScoreSys
+- 回测框架: backtest.py (IC/分组/净值三种模式)
+  - 并发化: score_batch 改 ThreadPoolExecutor，支持 --workers 参数(默认4)
+  - IC验证: 2024-03-31 IC=+0.1301(有效), 2024-06-30 IC=-0.1499(需更多数据)
+- 历史行情补全: quotes 表 666K→873K 行 (2015-01-01 ~ 2026-05-04)
+  - 后台进程 PID=11504, backfill_quotes.py, 并发6线程
+  - 踩坑: akshare列名(开盘/收盘)与DB列名(open_price/close_price)不匹配→INSERT OR IGNORE静默跳过
+- calculator.py: logger.warning("可用季度数据不足") → logger.debug (消除回测噪音)
+- Python路径: C:\Users\green\AppData\Local\Programs\Python\Python312\python.exe (已追加用户PATH)
+- 文档: README.md/CLAUDE.md/MEMORY.md 均已同步更新
+- Git: 待提交
+
+## [ScoreSys v8.0.9 回测分析] (2026-05-06)
+- calculator.py 修复: eval_date(pd.Timestamp)与polars字符串比较→InvalidOperationError，加str()转换
+- 历史行情: quotes表 666K→761万条(2015-01~2026-04)，backfill_quotes.py后台补全
+- 净值回测(2025-01~2026-04): +6.12%, 夏普10.49, 回撤0.61%, 胜率80%
+- IC均值+0.0045偏弱(5期)，需长区间验证
+- 评分结果: 均值24.4, 中位数25.7, 最高85.8, >60分仅6.6%
+- D/E阈值已修复: 5.0→15.0 (config.py line 71)，估值评分有保护(亏损股20分，负增速分段)
+- min_score=65仍过高，从65→30需跑回测验证IC，需用户在场确认
+- V8.0.10 行业中性化已完成，calculator.py已是Polars版(4344只股票，937万条行情)
+
+## [token_stats.py 修复] (2026-05-06)
+- 脚本: temp/token_stats.py (GA Token Usage & Cost Stats)
+- 问题1: split("=== Response ===") 匹配不到带时间戳格式(=== Response === 2026-05-06 00:38:11)
+  → 整个文件被当做一个block，Output=文件总字符/2≈300万(严重虚高)
+  → 修复: 改用正则 r'=== Response === \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\n(.*?)(?=== Prompt ===|\Z)'
+- 问题2: Response内容是Python列表格式([{'type':'text',...},{'type':'tool_use',...}])
+  → tool_use参数很大但不属于LLM输出
+  → 修复: ast.literal_eval解析，只提取type=text的内容估算Output
+- 修复后Output从301万→5.6万(05-06)，旧数据是bug
+- 有jsonl时优先用jsonl精确值(input/cached)，无jsonl时用model_responses估算
+- model_responses估算Input偏高(Prompt含工具返回内容)，仅为fallback参考
+- 定价: deepseek-v4-pro, 2.5折至2026-05-31, 缓存命中¥0.025/1M, 未命中¥3/1M, 输出¥6/1M
+
+## [BullishForMonitoring 实时流改造] (2026-05-06 已完成)
+- ✅ 已合并到 master (commit f33efd9, 21次提交)
+- 种子池: 19板块535只股票 (data/seed_pools.txt)
+- ⚠️ master有未提交数据文件变更(crawl_log/forecast)，stash在merge前已保存
+- 行情流: 东方财富批量行情API(3s轮询,分批50只) → EastMoneyStreamer → EventBus(MARKET_DATA)
+  - 原SSE方案放弃: 东方财富SSE endpoint不通，改用/api/qt/ulist.np/get批量API
+  - 类名: EastMoneySSEStreamer → EastMoneyStreamer
+- 新闻流: NewsStreamer → EventBus(NEWS)
+- 消费端: MarketDataConsumer → Redis Stream持久化 + 评分/信号
+  - 修复: consumer处理完后转发到SSE_BROADCAST（之前缺少这步导致SSE无数据）
+- SSE推送: /api/stream → EventBus(SSE_BROADCAST) → 前端EventSource
+  - 队列扩容: 200→2000（535行情+888新闻洪峰时防丢弃）
+  - EventBus已有_dropped累计计数器(RULES #15)
+- Event构造修复: news_streamer.py type= → event_type=
+- 启动顺序: start_streamer()在serve_forever()后由后台线程调用
+- 端口: 9004 (config/trading.yaml)
+- Git: 4个commit (17fb9c2/02d93aa/2520850 + 前序)
+- 用法: python token_stats.py [--date YYYY-MM-DD | --all | --week | --yesterday]
+>>>>>>> origin/main

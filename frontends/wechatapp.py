@@ -1,7 +1,11 @@
+<<<<<<< HEAD
 # 微信 Bot — wechatapp.py
 # 版本: 1.0.0
 # 功能: 微信消息收发 + Agent 入口，与评分系统无直接耦合
 import os, sys, re, threading, queue, time, socket, json, struct, base64, uuid, hashlib, math, shutil, subprocess, msvcrt
+=======
+import os, sys, re, threading, queue, time, socket, json, struct, base64, uuid, webbrowser, hashlib, math, urllib.request
+>>>>>>> origin/main
 from pathlib import Path
 from urllib.parse import quote
 
@@ -37,8 +41,12 @@ _trace.write(f'[{time.strftime("%H:%M:%S")}] TRACE: after cache cleanup\n')
 _trace.flush()
 
 import requests, qrcode
+<<<<<<< HEAD
 _trace.write(f'[{time.strftime("%H:%M:%S")}] TRACE: after import requests,qrcode\n')
 _trace.flush()
+=======
+from requests.adapters import HTTPAdapter
+>>>>>>> origin/main
 import socket as _socket
 _trace.write(f'[{time.strftime("%H:%M:%S")}] TRACE: after import socket\n')
 _trace.flush()
@@ -120,7 +128,16 @@ class WxBotClient:
         self.token = token
         self.bot_id = None
         self._buf = ''
+<<<<<<< HEAD
         self._token_expired = False  # ★ 初始化token过期标记
+=======
+        # 复用 Session：连接池 + 自动重试，避免每次新建 TCP 连接被代理关闭
+        self._session = requests.Session()
+        adapter = HTTPAdapter(pool_connections=5, pool_maxsize=10,
+                              max_retries=3, pool_block=False)
+        self._session.mount('https://', adapter)
+        self._session.mount('http://', adapter)
+>>>>>>> origin/main
         if not self.token: self._load()
 
     def _load(self):
@@ -179,6 +196,7 @@ class WxBotClient:
              'iLink-App-Id': ILINK_APP_ID,
              'iLink-App-ClientVersion': str(ILINK_APP_CLIENT_VERSION),
              'User-Agent': UA,
+<<<<<<< HEAD
              'Authorization': f'Bearer {tok}'}
         try:
             r = requests.post(f'{API}/{ep}', data=data, headers=h, timeout=timeout, proxies=_get_proxies())
@@ -210,27 +228,67 @@ class WxBotClient:
 
     def login_qr(self, poll_interval=2):
         r = requests.get(f'{API}/ilink/bot/get_bot_qrcode', params={'bot_type': 3}, headers={'User-Agent': UA}, timeout=10, proxies=_get_proxies())
+=======
+             'Connection': 'keep-alive'}
+        tok = (self.token or '').strip()
+        if tok: h['Authorization'] = f'Bearer {tok}'
+        # 分离 connect timeout 和 read timeout，避免代理长连接被远端关闭
+        t = (min(timeout, 10), timeout) if isinstance(timeout, (int, float)) else timeout
+        r = self._session.post(f'{API}/{ep}', data=data, headers=h, timeout=t)
+        r.raise_for_status()
+        return r.json()
+
+    def login_qr(self, poll_interval=2):
+        # 获取二维码（用 Session 保持连接复用）
+        r = self._session.get(f'{API}/ilink/bot/get_bot_qrcode',
+                               params={'bot_type': 3}, headers={'User-Agent': UA}, timeout=10)
+>>>>>>> origin/main
         r.raise_for_status()
         d = r.json()
         qr_id, url = d['qrcode'], d.get('qrcode_img_content', '')
         print(f'[QR登录] ID: {qr_id}')
         if url:
+            # 保存二维码图片到 temp 目录
             img = self._tf.parent / 'wx_qr.png'
             qrcode.make(url).save(str(img))
+<<<<<<< HEAD
             qr = qrcode.QRCode(border=1); qr.add_data(url); qr.make(fit=True); qr.print_ascii(invert=True)
         last = ''
         while True:
             time.sleep(poll_interval)
             try: s = requests.get(f'{API}/ilink/bot/get_qrcode_status', params={'qrcode': qr_id}, headers={'User-Agent': UA}, timeout=60, proxies=_get_proxies()).json()
             except requests.exceptions.ReadTimeout: continue
+=======
+            # 打印 ASCII 二维码到终端（不依赖 GUI）
+            qr = qrcode.QRCode(border=1); qr.add_data(url); qr.make(fit=True)
+            try:
+                qr.print_ascii(invert=True)
+            except Exception:
+                pass
+            print(f'[QR登录] 二维码已保存: {img}')
+            print(f'[QR登录] 扫码链接: {url}')
+        last = ''
+        while True:
+            time.sleep(poll_interval)
+            try:
+                s = self._session.get(f'{API}/ilink/bot/get_qrcode_status',
+                                       params={'qrcode': qr_id},
+                                       headers={'User-Agent': UA}, timeout=60).json()
+            except requests.exceptions.ReadTimeout:
+                continue
+            except Exception as e:
+                print(f'[QR登录] 轮询异常: {e}', file=sys.__stdout__)
+                continue
+>>>>>>> origin/main
             st = s.get('status', '')
-            if st != last: print(f'  状态: {st}'); last = st
+            if st != last: print(f'[QR登录] 状态: {st}'); last = st
             if st == 'confirmed':
                 self.token, self.bot_id = s.get('bot_token', ''), s.get('ilink_bot_id', '')
                 self._save(login_time=time.strftime('%Y-%m-%d %H:%M:%S'))
                 print(f'[QR登录] 成功! bot_id={self.bot_id}')
                 return s
-            if st == 'expired': raise RuntimeError('二维码过期')
+            if st == 'expired':
+                raise RuntimeError('二维码过期')
 
     def login_qr_nonblocking(self):
         """获取二维码并保存到文件，返回 qr_id。不阻塞主循环。10分钟冷却期避免重复生成。"""
@@ -339,25 +397,52 @@ class WxBotClient:
 
     def get_updates(self, timeout=60):
         try:
+            # 固定 read timeout=35，避免代理长连接被远端关闭（之前 timeout+5=35 但 connect timeout 也=35）
             resp = self._post('ilink/bot/getupdates',
                               {'get_updates_buf': self._buf or '',
                                'base_info': {}},
-                              timeout=timeout + 5)
+                              timeout=35)
         except requests.exceptions.ReadTimeout:
             return []
+        except (requests.exceptions.ConnectionError,
+                requests.exceptions.ChunkedEncodingError,
+                ConnectionResetError,
+                OSError) as e:
+            # 网络层异常：DNS失败/连接断开/远端关闭 → 返回空，由上层退避重连
+            print(f'[getUpdates] 网络异常: {type(e).__name__}: {e}', file=sys.__stdout__)
+            return []
+        except Exception as e:
+            print(f'[getUpdates] 未知异常: {type(e).__name__}: {e}', file=sys.__stdout__)
+            return []
         if resp.get('errcode'):
+<<<<<<< HEAD
             print(f'[getUpdates] err: {resp.get("errcode")} {resp.get("errmsg","")}', file=sys.__stdout__)
             if resp['errcode'] == -14:
                 # Token 过期，设置标记，由 run_loop 处理重新登录
                 # ★ 不清空buf：保留已拉取的缓冲区，重登成功后继续消费
                 print('[getUpdates] Token 过期，需要重新登录（保留buf）', file=sys.__stdout__)
                 self._token_expired = True
+=======
+            print(f'[getUpdates] err: {resp.get("errcode")} {resp.get("errmsg","")}')
+            if resp['errcode'] == -14:
+                # session 过期 → 自动重新登录
+                print('[getUpdates] session 过期，触发重新登录...')
+                try:
+                    self.login_qr()
+                    print(f'[getUpdates] 重新登录成功! bot_id={self.bot_id}')
+                    # 用新 token 重试一次
+                    return self.get_updates(timeout=timeout)
+                except Exception as e:
+                    print(f'[getUpdates] 重新登录失败: {e}', file=sys.__stdout__)
+>>>>>>> origin/main
             return []
         nb = resp.get('get_updates_buf', '')
         if nb: self._buf = nb; self._save()
         return resp.get('msgs') or []
 
     def send_text(self, to_user_id, text, context_token=''):
+        # 统一微信格式化：去 Markdown 符号 + \n → \u2028 换行
+        text = _fmt_wx(text) if text else text
         msg = {'from_user_id': '', 'to_user_id': to_user_id,
                'client_id': f'pyclient-{uuid.uuid4().hex[:16]}',
                'message_type': MSG_BOT, 'message_state': STATE_FINISH,
@@ -478,8 +563,14 @@ class WxBotClient:
         _out = sys.__stdout__ if sys.__stdout__ else sys.stdout
         print(f'[Bot] 监听中... (bot_id={self.bot_id})', file=_out)
         seen = set()
+<<<<<<< HEAD
         # ★ 不再每次循环重置_token_expired，保持_on_login_success设的False
         _relogin_attempts = 0
+=======
+        retry_delay = 1          # 初始退避 1s
+        max_retry_delay = 60     # 最大退避 60s
+        consec_fail = 0          # 连续失败计数
+>>>>>>> origin/main
         while True:
             try:
                 # Token 快过期时提前刷新（23.5h阈值，留30min缓冲）
@@ -563,9 +654,36 @@ class WxBotClient:
                             print(f'[Bot] 已自动保存admin_notify_uid: {from_uid}', file=sys.__stdout__)
                         except Exception: pass
                     try: on_message(self, msg)
+<<<<<<< HEAD
                     except Exception as e: print(f'[Bot] 回调异常: {e}', file=sys.__stdout__)
             except KeyboardInterrupt: print('[Bot] 退出', file=sys.__stdout__); break
             except Exception as e: print(f'[Bot] 异常: {e}，5s重试', file=sys.__stdout__); time.sleep(5)
+=======
+                    except Exception as e: print(f'[Bot] 回调异常: {e}')
+                # 成功拉取一轮后退避重置
+                if consec_fail > 0:
+                    print(f'[Bot] 连接恢复，连续失败 {consec_fail} 次后成功')
+                consec_fail = 0
+                retry_delay = 1
+            except KeyboardInterrupt: print('[Bot] 退出'); break
+            except Exception as e:
+                consec_fail += 1
+                print(f'[Bot] 异常(连续第{consec_fail}次): {type(e).__name__}: {e}，{retry_delay}s后重试', file=sys.__stdout__)
+                # 连续失败 5 次以上，重建 Session 清除脏连接
+                if consec_fail >= 5 and consec_fail % 5 == 0:
+                    print(f'[Bot] 连续失败{consec_fail}次，重建 Session...')
+                    try:
+                        self._session.close()
+                    except Exception:
+                        pass
+                    self._session = requests.Session()
+                    from requests.adapters import HTTPAdapter
+                    adapter = HTTPAdapter(pool_connections=5, pool_maxsize=10, max_retries=3, pool_block=False)
+                    self._session.mount('https://', adapter)
+                    self._session.mount('http://', adapter)
+                time.sleep(retry_delay)
+                retry_delay = min(retry_delay * 2, max_retry_delay)
+>>>>>>> origin/main
 
 # ── Unified media download (IMAGE/VIDEO/FILE/VOICE) ──
 _MEDIA_KEYS = {'image_item': '.jpg', 'video_item': '.mp4', 'file_item': '', 'voice_item': '.silk'}
@@ -606,6 +724,7 @@ _TAG_PATS = [r'<' + t + r'>.*?</' + t + r'>' for t in ('thinking', 'tool_use', '
 _TAG_PATS.append(r'<file_content>.*?</file_content>')
 _TAG_PATS.append(r'<summary>.*?</summary>')  # 双重保障：TAG_PATS也清洗summary
 
+<<<<<<< HEAD
 # ═══ 预编译正则（避免每次_clean/_strip_md调用重复编译） ═══
 _RE_COMPILE = lambda p, f=0: re.compile(p, f)
 _CLEAN_RES = [
@@ -656,13 +775,38 @@ def _strip_md(t, device='mobile'):
     # inline code: keep (WeChat renders it)
     # bold/italic (*/**/***): keep (WeChat renders it)
     # images: replace with emoji marker
+=======
+def _fmt_wx(t, already_has_unicode_nl=False):
+    """统一微信消息格式化：把任意文本转成微信友好的纯文本格式。
+    参数：
+        already_has_unicode_nl: 如果文本已包含 \u2028 换行，就不再转换 \n
+    处理：
+    1. 去掉 Markdown 符号（**粗体**、`代码`、~~删除线~~）
+    2. 表格 → 列表形式
+    3. 标题加 emoji 前缀
+    4. \n → \u2028（微信唯一有效的换行符）
+    """
+    if not t:
+        return ''
+    # 去掉代码块（微信不渲染）
+    t = re.sub(r'```[\s\S]*?```', '[代码已省略]', t)
+    # 去掉行内代码反引号，保留内容
+    t = re.sub(r'`([^`\n]+)`', r'\1', t)
+    # 去掉粗体/斜体符号
+    t = re.sub(r'\*{1,3}([^*]+)\*{1,3}', r'\1', t)
+    t = re.sub(r'_{1,3}([^_]+)_{1,3}', r'\1', t)
+    # 删除线
+    t = re.sub(r'~~([^~]+)~~', r'\1', t)
+    # 图片 → emoji
+>>>>>>> origin/main
     t = re.sub(r'!\[([^\]]*)\]\([^\)]+\)', r'🖼️ [\1]', t)
-    # links: text + 🔗
+    # 链接 → 文字+🔗
     t = re.sub(r'\[([^\]]+)\]\(([^\)]+)\)', r'\1 🔗', t)
-    # H1-H4: add emoji prefix for visual hierarchy
+    # 标题加 emoji
     t = re.sub(r'^#{1}\s+(.+)', r'📌 \1', t, flags=re.M)
     t = re.sub(r'^#{2}\s+(.+)', r'🔹 \1', t, flags=re.M)
     t = re.sub(r'^#{3}\s+(.+)', r'▪️ \1', t, flags=re.M)
+<<<<<<< HEAD
     t = re.sub(r'^#{4}\s+(.+)', r'• \1', t, flags=re.M)
     if device == 'pc':
         t = re.sub(r'^#{5}\s+(.+)', r'  ▸ \1', t, flags=re.M)
@@ -670,11 +814,16 @@ def _strip_md(t, device='mobile'):
     else:
         t = re.sub(r'^#{5,6}\s+', '', t, flags=re.M)                 # H5-H6: strip (too small on mobile)
     # unordered list: bullet with slight indent
+=======
+    t = re.sub(r'^#{4,6}\s+(.+)', r'• \1', t, flags=re.M)
+    # 无序列表
+>>>>>>> origin/main
     t = re.sub(r'^\s*[-*+]\s+', '  • ', t, flags=re.M)
-    # ordered list: keep number but add spacing
+    # 有序列表保持
     t = re.sub(r'^(\s*)(\d+)\.\s+', r'\1\2. ', t, flags=re.M)
-    # blockquote: replace with indented style + vertical bar
+    # 引用
     t = re.sub(r'^\s*>\s?(.+)', r'│ \1', t, flags=re.M)
+<<<<<<< HEAD
     # horizontal rules: enhance with double line
     t = re.sub(r'^\s*[-*_]{3,}\s*$', '─' * 12, t, flags=re.M)
     # Add emoji to common keywords (case-insensitive, only if not already prefixed)
@@ -746,6 +895,141 @@ def _clean(t, device='mobile'):
         seen_paras.add(p)
         dedup_paras.append(p)
     return '\n\n'.join(dedup_paras)
+=======
+    # 水平线
+    t = re.sub(r'^\s*[-*_]{3,}\s*$', '━' * 15, t, flags=re.M)
+    # 表格处理：把 | col1 | col2 | 行转成 "col1: col2" 格式
+    lines = t.split('\n')
+    result = []
+    for line in lines:
+        stripped = line.strip()
+        # 跳过分隔行 |---|---|
+        if re.match(r'^\|?[\s\-:|]+\|?$', stripped):
+            result.append('─' * 10)
+            continue
+        # 表格行 | a | b | c |
+        if stripped.startswith('|') and stripped.endswith('|'):
+            cells = [c.strip() for c in stripped.strip('|').split('|')]
+            cells = [c for c in cells if c]
+            if cells:
+                if len(cells) == 2:
+                    result.append(f'{cells[0]}: {cells[1]}')
+                else:
+                    result.append(' │ '.join(cells))
+            continue
+        result.append(line)
+    t = '\n'.join(result)
+    # 清理多余空行
+    t = re.sub(r'\n{3,}', '\n\n', t).strip()
+    # ★ 关键：\n → \u2028（微信唯一有效换行）
+    # 如果文本已经包含 \u2028（如快速通道天气），只转换剩余的 \n
+    if already_has_unicode_nl:
+        # 已经有 \u2028 的文本，把剩余的普通 \n 也转掉
+        t = t.replace('\n', '\u2028')
+    else:
+        t = t.replace('\n', '\u2028')
+    return t
+
+
+def _strip_md(t):
+    """兼容旧调用，转调 _fmt_wx。"""
+    return _fmt_wx(t)
+
+def _fmt_wx(t):
+    """格式化 LLM 输出为微信友好的纯文本：去掉 Markdown、保留 emoji、结构清晰。"""
+    # === Phase 1: 删除内部/代码大块结构 ===
+    t = re.sub(r'<summary>.*?</summary>', '', t, flags=re.DOTALL)
+    t = re.sub(r'```[\w]*\n.*?```', '', t, flags=re.DOTALL)
+    t = re.sub(r'`[^`\n]{3,}`', '', t)
+    t = re.sub(r'\{\s*["\']status["\'].*?\}', '', t, flags=re.DOTALL)
+    t = re.sub(r'^\s*={3,}\s*(Response|Prompt)\s*={3,}\s*$', '', t, flags=re.M)
+    t = re.sub(r'^\s*🛠️\s*\w+\(.*', '', t, flags=re.M | re.DOTALL)
+    t = re.sub(r'^\s*🔧\s*\w+\(.*', '', t, flags=re.M | re.DOTALL)
+    t = re.sub(r'^\s*(调用工具\w+|读取文件\s+\S+|写入文件\s+\S+|执行脚本\s+\S+).*$', '', t, flags=re.M)
+    t = re.sub(r'^\s*args:\s*\{.*$', '', t, flags=re.M)
+    t = re.sub(r'^\s*LLM Running \(Turn \d+\) \.{3}\s*$', '', t, flags=re.M)
+    t = re.sub(r'^\s*(\[Driver\].*|\[CDP\].*|\[Timeout.*\].*|Executing:.*|Timeout Error.*|Error:.*|Traceback.*)$', '', t, flags=re.M)
+    for p in _TAG_PATS:
+        t = re.sub(p, '', t, flags=re.DOTALL)
+    t = re.sub(r'^\s*["\'](exit_code|stdout|stderr)["\'].*$', '', t, flags=re.M)
+    t = re.sub(r'^\s*⏳\s*思考中\s*[█░]+\s*\d+/\d+\s*$', '', t, flags=re.M)
+    t = re.sub(r'⏳.*', '', t)
+    t = re.sub(r'^✅\s*回复完成\s*$', '', t, flags=re.M)
+
+    # === Phase 2: 去掉 Markdown 格式标记，保留文字内容 ===
+    # 去掉标题标记 # ## ###
+    t = re.sub(r'^#{1,6}\s+', '', t, flags=re.M)
+    # 去掉表格行 | xxx | yyy | → 保留内容用空格分隔
+    def _table_row(m):
+        cells = [c.strip() for c in m.group(0).split('|') if c.strip()]
+        if not cells: return ''
+        # 如果全是分隔符 (---)，跳过
+        if all(re.match(r'^[-:]+$', c) for c in cells): return ''
+        return ' '.join(cells)
+    t = re.sub(r'^\|.*\|$', _table_row, t, flags=re.M)
+    # 去掉分隔线 ━━━━ ━━━━━ ---- ====
+    t = re.sub(r'^[━─=\-]{4,}\s*$', '', t, flags=re.M)
+    # 去掉列表标记 - * ▪ • ● → 保留内容
+    t = re.sub(r'^(\s*)[-*▪•●]\s+', r'\1', t, flags=re.M)
+    # 去掉有序列表 1. 2. → 保留内容
+    t = re.sub(r'^(\s*)\d+\.\s+', r'\1', t, flags=re.M)
+    # 去掉加粗 **xxx** __xxx__
+    t = re.sub(r'\*\*(.+?)\*\*', r'\1', t)
+    t = re.sub(r'__(.+?)__', r'\1', t)
+    # 去掉斜体 *xxx* _xxx_
+    t = re.sub(r'\*(.+?)\*', r'\1', t)
+    t = re.sub(r'(?<!\w)_(.+?)_(?!\w)', r'\1', t)
+    # 去掉行内代码 `xxx`
+    t = re.sub(r'`([^`]+)`', r'\1', t)
+
+    # === Phase 3: 删除 LLM 内部推理/元评论 ===
+    _reasoning_prefixes = (
+        '让我先', '让我看看', '先读', '继续读', '全部完成', '所有工作',
+        '好的，', '我来', '我将', '我需要', '我直接', '我看看',
+        '上次', '用户再次', '用户指出', '用户查询',
+        '搜索工具', '浏览器', 'web工具', 'DDGS',
+        '抱歉', '对不起',
+        '还是需要', '还是需要优化', '还是需要调整', '还是需要修复',
+        '还是优化', '还是需要', '应该优化', '应该调整', '应该修复', '应该改用',
+        '那备份', '那我', '那就',
+    )
+    _reasoning_contains = (
+        ('搜索', '返回'), ('搜索', '结果'), ('搜索', '为空'),
+        ('浏览器', '没开'), ('浏览器', '不可用'),
+        ('工具', '返回'), ('工具', '结果'), ('工具', '不可用'),
+        ('DDGS', '更名'), ('DDGS', '包名'),
+        ('返回', '为空'), ('返回', '结果'),
+    )
+    lines = t.split('\n')
+    filtered = []
+    for line in lines:
+        s = line.strip()
+        if any(s.startswith(p) for p in _reasoning_prefixes):
+            continue
+        if any(kw1 in s and kw2 in s for kw1, kw2 in _reasoning_contains):
+            continue
+        filtered.append(line)
+    t = '\n'.join(filtered)
+
+    # === Phase 4: 删除代码行 ===
+    code_patterns = [
+        r'import\s+[\w,. ]+', r'from\s+[\w.]+', r'def\s+\w+', r'class\s+\w+',
+        r'if\s+\w+.*:', r'for\s+\w+.*:', r'while\s+.*:', r'try:', r'except\b',
+        r'else:', r'elif\s+.*:', r'with\s+.*:', r'return\s+', r'^\s*#\s+',
+        r'console\.\w+\(', r'window\.\w+',
+        r'^\s*\w+\s*=\s*(urllib|requests|http|json|re|os|sys|subprocess)\b',
+        r'^\s*\w+\s*=\s*\w+\.(get|post|put|delete|findall|search|sub|match)\(',
+        r'^\s*\w+\s*=\s*[\w.]+\(.*\)\s*$', r'^\s*\w+\.\w+\(.*\)\s*$',
+        r'^\s*print\(.*\)\s*$',
+    ]
+    combined = '|'.join(code_patterns)
+    for _ in range(5):
+        t = re.sub(r'^(' + combined + r').*$', '', t, flags=re.M)
+
+    # === Phase 5: 清理空行 ===
+    t = re.sub(r'\n{3,}', '\n\n', t).strip()
+    return t
+>>>>>>> origin/main
 
 def _extract_answer(t):
     """从 agent 回复中提取最终答案，丢弃所有思考过程。
@@ -789,6 +1073,91 @@ def on_message(bot, msg):
     if media_paths:
         text = (text + '\n' if text else '') + '\n'.join(f'[用户发送文件: {p}]' for p in media_paths)
     print(f'[WX] 收到: {text[:80]} media={media_paths}', file=sys.__stdout__)
+
+    # === 快速天气通道（免费 API，跳过 LLM） ===
+    _weather_match = re.match(r'^(.+?)(?:的)?天气$', text.strip())
+    if _weather_match:
+        _city = _weather_match.group(1).strip()
+        # 常见中文城市名映射（wttr.in 对中文支持不好，用英文名或拼音更准）
+        _city_alias = {
+            '北京': 'Beijing', '上海': 'Shanghai', '广州': 'Guangzhou', '深圳': 'Shenzhen',
+            '杭州': 'Hangzhou', '南京': 'Nanjing', '武汉': 'Wuhan', '成都': 'Chengdu',
+            '西安': 'Xian', '重庆': 'Chongqing', '天津': 'Tianjin', '苏州': 'Suzhou',
+            '郑州': 'Zhengzhou', '长沙': 'Changsha', '青岛': 'Qingdao', '沈阳': 'Shenyang',
+            '哈尔滨': 'Harbin', '昆明': 'Kunming', '厦门': 'Xiamen', '济南': 'Jinan',
+            '合肥': 'Hefei', '福州': 'Fuzhou', '南昌': 'Nanchang', '贵阳': 'Guiyang',
+            '太原': 'Taiyuan', '石家庄': 'Shijiazhuang', '长春': 'Changchun', '兰州': 'Lanzhou',
+            '海口': 'Haikou', '南宁': 'Nanning', '呼和浩特': 'Hohhot', '乌鲁木齐': 'Urumqi',
+            '西宁': 'Xining', '银川': 'Yinchuan', '拉萨': 'Lasa',
+            # 省份映射到省会
+            '甘肃': 'Lanzhou', '安徽': 'Hefei', '广东': 'Guangzhou', '福建': 'Fuzhou',
+            '贵州': 'Guiyang', '海南': 'Haikou', '河北': 'Shijiazhuang', '河南': 'Zhengzhou',
+            '黑龙江': 'Harbin', '湖北': 'Wuhan', '湖南': 'Changsha', '江苏': 'Nanjing',
+            '江西': 'Nanchang', '吉林': 'Changchun', '辽宁': 'Shenyang', '内蒙古': 'Hohhot',
+            '宁夏': 'Yinchuan', '青海': 'Xining', '山东': 'Jinan', '山西': 'Taiyuan',
+            '陕西': 'Xian', '四川': 'Chengdu', '云南': 'Kunming', '浙江': 'Hangzhou',
+            '西藏': 'Lasa', '新疆': 'Urumqi', '广西': 'Nanning',
+        }
+        _query_city = _city_alias.get(_city, _city)
+        try:
+            _url = f"https://wttr.in/{quote(_query_city)}?format=j1&lang=zh"
+            _req = urllib.request.Request(_url, headers={'User-Agent': 'curl/7.68.0'})
+            with urllib.request.urlopen(_req, timeout=8) as _resp:
+                _j = json.loads(_resp.read().decode('utf-8'))
+            _cur = _j['current_condition'][0]
+            _area = _j['nearest_area'][0]
+            _city_name = _city
+            _desc = _cur['lang_zh'][0]['value'] if _cur.get('lang_zh') else _cur.get('weatherDesc', [{}])[0].get('value', '')
+            _temp = _cur['temp_C']
+            _feels = _cur['FeelsLikeC']
+            _humidity = _cur['humidity']
+            _wind = _cur['windspeedKmph']
+            _wind_dir_en = _cur.get('winddir16Point', '')
+            _wind_dir_cn = {'N':'北风','NNE':'北东北风','NE':'东北风','ENE':'东东北风',
+                'E':'东风','ESE':'东南东风','SE':'东南风','SSE':'南东南风',
+                'S':'南风','SSW':'南西南风','SW':'西南风','WSW':'西西南风',
+                'W':'西风','WNW':'西西北风','NW':'西北风','NNW':'北西北风'}.get(_wind_dir_en, _wind_dir_en)
+            _today = _j['weather'][0]
+            _date = _today['date']
+            _max_t = _today['maxtempC']
+            _min_t = _today['mintempC']
+            _hourly = _today.get('hourly', [])
+            
+            # 风向 emoji
+            _dir_emoji = {'N':'⬆️','NNE':'⬆️','NE':'↗️','ENE':'↗️',
+                'E':'➡️','ESE':'↘️','SE':'↘️','SSE':'↘️',
+                'S':'⬇️','SSW':'⬇️','SW':'↙️','WSW':'↙️',
+                'W':'⬅️','WNW':'⬅️','NW':'↖️','NNW':'↖️'}.get(_wind_dir_en, '🌀')
+            
+            # 只取白天关键时段 (6:00, 9:00, 12:00, 15:00, 18:00, 21:00)
+            _slots = []
+            for _h in _hourly:
+                _hour = int(_h['time']) // 100
+                if _hour not in (6, 9, 12, 15, 18, 21):
+                    continue
+                _h_desc = _h['lang_zh'][0]['value'] if _h.get('lang_zh') else _h.get('weatherDesc', [{}])[0].get('value', '')
+                _rain = _h.get('chanceofrain', '0')
+                _rain_str = f" 🌧{_rain}%" if int(_rain) > 20 else ""
+                _slots.append(f"  {_hour:02d}:00  {_h_desc}  {_h['tempC']}°C{_rain_str}")
+            
+            # 用 \u2028 (Unicode 行分隔符) 替代 \n 实现换行
+            # 微信 JSON 协议中 \n 被转义为字面量，\u2028 不被转义
+            _NL = '\u2028'
+            _slots_text = " ┃ ".join(_slots)
+            _msg = (
+                f"📍 {_city_name} │ {_desc} {_temp}°C 体感{_feels}°{_NL}"
+                f"━━━━━━{_NL}"
+                f"🔺{_max_t}° 🔻{_min_t}° │ 💧{_humidity}% │ {_dir_emoji}{_wind_dir_cn} {_wind}km/h{_NL}"
+                f"━━━━━━{_NL}"
+                f"{_slots_text}"
+            )
+            bot.send_text(uid, _msg, context_token=ctx)
+            print(f'[WX] 天气快速通道: {_city_name} send ok', file=sys.__stdout__)
+        except Exception as _we:
+            print(f'[WX] 天气快速通道失败: {_we}', file=sys.__stdout__)
+            # 失败时降级走 LLM
+        else:
+            return  # 成功则直接返回，不走 LLM
 
     # Commands
     if text in ('/stop', '/abort'):
@@ -961,6 +1330,7 @@ def on_message(bot, msg):
 
     def _handle():
         try:
+<<<<<<< HEAD
             # 设备感知 sys_hint
             device = _guess_device(text, uid)
             if device == 'pc':
@@ -979,6 +1349,18 @@ def on_message(bot, msg):
             # ★ 修复：传入图片路径给agent
             images = media_paths if media_paths else None
             dq = agent.put_task(prompt, source="wechat", images=images)
+=======
+            _wx_fmt_hint = (
+                "【微信格式要求】\n"
+                "- 输出纯文本+emoji，禁止 Markdown（无表格、无|分隔线、无**加粗**、无##标题）\n"
+                "- 用 emoji 作为分区标记（如 📊🔥📰），用换行分隔段落\n"
+                "- 列表用 emoji 序号（①②③）或简单换行，不用 - * ▪ •\n"
+                "- 分隔线用短横线（────────────）或空行，不用 ━━━━ ====\n"
+                "- 简洁明了，避免冗余的「今日焦点」「财经快讯」等小标题重复\n"
+            )
+            prompt = text if text.startswith('/') else f"{_wx_fmt_hint}\nIf you need to show files to user, use [FILE:filepath] in your response.\n\n{text}"
+            dq = agent.put_task(prompt, source="wechat")
+>>>>>>> origin/main
             try: bot.send_typing(uid)
             except: pass
 
@@ -997,6 +1379,7 @@ def on_message(bot, msg):
                 except Exception as e:
                     print(f'[WX] send err {type(e).__name__}: {e}', file=sys.__stdout__)
                     return False
+<<<<<<< HEAD
 
             # ═══ 接收 agent 输出（只发最终done消息，不发中间chunk） ═══
             max_turns = 25
@@ -1066,6 +1449,42 @@ def on_message(bot, msg):
                             time.sleep(0.3)
                 else:
                     _wx_send(final)
+=======
+            def _send(show):
+                nonlocal mi, last_send
+                now = time.time()
+                if mi >= 9 or not show.strip(): return False
+                if mi and now - last_send < 2: return None
+                if _wx_send(show[:2000]): mi += 1; last_send = time.time(); return True
+                return False
+            try:
+                while True:
+                    item = dq.get(timeout=120)
+                    if 'done' in item: result = item['done']; break
+                    raw = item.get('next', '')
+                    done, partial = _turn_parts(raw)
+                    if len(done) > sent:
+                        merged = _fmt_wx('\n\n'.join(done[sent:]))
+                        print(f'[WX] turns={len(done)}/{len(done)+1} sent={sent} sending={len(done)-sent}', file=sys.__stdout__)
+                        if _send(merged):
+                            sent = len(done)
+                    # Note: No streaming fallback here — wait for final result to avoid sending incomplete chunks
+            except queue.Empty: result = '⏰ 响应超时，请稍后重试'
+            done, partial = _turn_parts(result)
+            # If fallback already sent during streaming, skip final send to avoid duplicate
+            if sent > 0:
+                print(f'[WX] final skip (already sent {sent})', file=sys.__stdout__)
+            else:
+                # Build final response (clean output, no internal artifacts)
+                rest = '\n\n'.join(done[sent:] + [partial])
+                rest_clean = _fmt_wx(rest)
+                # If _turn_parts returned empty turns, send result directly
+                if not done and not partial and result.strip():
+                    rest_clean = _fmt_wx(result)
+                # Ensure we don't exceed 2000 chars; if so, trim smartly
+                final = rest_clean[-1900:] if len(rest_clean) > 1900 else rest_clean
+                if final.strip(): _wx_send(final)
+>>>>>>> origin/main
             files = re.findall(r'\[FILE:([^\]]+)\]', result)
             bad = {'filepath', '<filepath>', 'path', '<path>', 'file_path', '<file_path>', '...'}
             files = [f for f in files if f.strip().lower() not in bad and (f if os.path.isabs(f) else os.path.join(_TEMP_DIR, f)) not in media_paths]

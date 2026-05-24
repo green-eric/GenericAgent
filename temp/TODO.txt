@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [x] 产出 | 定时任务调度器修复 | 修复reflect/scheduler.py的触发问题：检查进程是否存活、修复max_delay_hours逻辑或确保按时触发、合并sche_tasks中重叠的daily_backtest和scoresys_daily_backtest任务。验收: scheduler.log显示任务成功触发且done目录有输出
 [x] 产出 | BfM仓库Top5优化建议落地(剩余4个) | 从R250的Top5建议中选取剩余4个未实施的优化点，逐个实现并git commit。验收: 至少落地2个优化点+git commit记录
 [x] 能力 | LM Studio推理服务可用性探测 | R257已完成:安装确认(D:\Programs\LMS\LM Studio),服务器需手动启动,R245已创建llmcore_lmstudio.py适配器
@@ -5,3 +6,24 @@
 [x] 环境 | PC闲置GPU推理能力边界探测(续) | 上次R126探测了Intel Iris Xe，但未充分测试ONNX Runtime DirectML路径。验证DirectML后端可用性和性能。验收: DirectML推理延迟<500ms或明确不可用原因
 [x] 产出 | 实盘信号+可视化推送链路 | 将live_signal_generator.py的选股结果通过微信Bot推送K线图/列表给用户，打通信号→可视化→推送。验收: 微信收到带格式的选股报告 ✅ --image图片推送已验证
 [x] 记忆 | L2记忆时效性审查(第三轮) | 审查global_mem.txt中所有条目标注日期，清理>30天未更新的过时条目，合并重复。验收: L2条目精简+过时内容清除
+=======
+# TODO - 自主行动任务列表
+
+## 新批次 (R43+) — 2026-05-06 规划（回测运行中，轻量任务优先）
+
+### 产出
+[x] 产出 | GA Token使用量统计分析 | 跑token_stats.py统计最近一周API调用的input/output token量和费用，输出报告 | 验收: 输出token统计报告到autonomous_reports/
+[x] 产出 | ScoreSys回测结果深度分析 | 解析本轮回测(backtest 2020-2026, top20, workers8)的输出文件，与历史回测对比IC/夏普/最大回撤 | 验收: 回测对比分析报告
+
+### 环境探测
+[x] 环境 | 探测D:/Tools目录下的Firefox隐私工具可用性 | 检查D:/Tools中具体工具版本和功能，实测至少1个工具的隐私保护效果 | 验收: 工具清单+实测结果写入报告
+
+### 记忆管理
+[x] 记忆 | 审查L3 SOP文件时效性 | 逐个检查memory/*.md和*.py文件，验证其中的路径/命令/配置是否仍有效，修正过时内容 | 验收: 修正所有过时引用，报告写入autonomous_reports/
+
+### 代码质量
+[x] 产出 | BfM EventBus压力测试脚本 | 模拟高并发market_data事件(>1000/s)，验证队列不丢失事件的参数调优方案(block=False+多消费者) | 验收: 压力测试脚本+调优参数建议
+
+### 能力扩展
+[x] 能力 | file_monitor.py集成到项目工作流 | 将文件监控hook集成到ScoreSys或BfM的数据更新流程中，实现数据文件变更自动触发回测/评分 | 验收: 集成Demo可运行
+>>>>>>> origin/main

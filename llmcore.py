@@ -30,11 +30,18 @@ def __getattr__(name):  # once guard in PEP 562
     if name == 'mykeys': return reload_mykeys()[0]
     raise AttributeError(f"module 'llmcore' has no attribute {name}")
 
+<<<<<<< HEAD
 def compress_history_tags(messages, keep_recent=10, max_len=800, force=False, interval=5):
     """Compress <thinking>/<tool_use>/<tool_result> tags in older messages to save tokens."""
     compress_history_tags._cd = getattr(compress_history_tags, '_cd', 0) + 1
     if force: compress_history_tags._cd = 0
     if compress_history_tags._cd % interval != 0: return messages
+=======
+def compress_history_tags(messages, keep_recent=10, max_len=2000, force=False):
+    """Compress <thinking>/<tool_use>/<tool_result> tags in older messages to save tokens."""
+    # 每次调用都执行，不再每5次才做一次
+    if force: pass  # force=True 时直接执行，无需重置计数器
+>>>>>>> origin/main
     _before = sum(len(json.dumps(m, ensure_ascii=False)) for m in messages)
     _pats = {tag: re.compile(rf'(<{tag}>)([\s\S]*?)(</{tag}>)') for tag in ('thinking', 'think', 'tool_use', 'tool_result')}
     _hist_pat = re.compile(r'<(history|key_info|earlier_context)>[\s\S]*?</\1>')
@@ -530,11 +537,18 @@ class BaseSession:
         self.api_key = cfg['apikey']
         self.api_base = cfg['apibase'].rstrip('/')
         self.model = cfg.get('model', '')
+<<<<<<< HEAD
         default_context_win = 30000
         if 'deepseek' in self.model.lower():
             default_context_win = 70000; self.cut_msg_interval = 25; self.trim_keep_rate = 0.3
         self.context_win = cfg.get('context_win', default_context_win)
         self.history = []; self.lock = threading.Lock(); self.system = ""
+=======
+        self.context_win = cfg.get('context_win', 60000)
+        self.history = []
+        self.lock = threading.Lock()
+        self.system = ""
+>>>>>>> origin/main
         self.name = cfg.get('name', self.model)
         proxy = cfg.get('proxy'); 
         self.proxies = {"http": proxy, "https": proxy} if proxy else None
@@ -998,6 +1012,7 @@ class NativeToolClient:
         if combined != self.backend.system: print(f"[Debug] Updated system prompt, length {len(combined)} chars.")
         self.backend.system = combined
     def chat(self, messages, tools=None):
+        from plugins.otel_trace import llm_span
         if tools: self.backend.tools = tools
         if not self.backend.history: self._pending_tool_ids = []
         combined_content = []; resp = None; tool_results = []
@@ -1012,23 +1027,46 @@ class NativeToolClient:
         for tr in tool_results:
             tool_use_id, content = tr.get("tool_use_id", ""), tr.get("content", "")
             tr_id_set.add(tool_use_id)
-            if tool_use_id: tool_result_blocks.append({"type": "tool_result", "tool_use_id": tool_use_id, "content": tr.get("content", "")})
+            if len(content) > 3000: content = content[:3000] + '\n...[截断]'
+            if tool_use_id: tool_result_blocks.append({"type": "tool_result", "tool_use_id": tool_use_id, "content": content})
             else: combined_content = [{"type": "text", "text": f'<tool_result>{content}</tool_result>'}] + combined_content
         for tid in self._pending_tool_ids:
             if tid not in tr_id_set: tool_result_blocks.append({"type": "tool_result", "tool_use_id": tid, "content": ""})
         self._pending_tool_ids = []
+<<<<<<< HEAD
         # Filter whitespace-only text blocks that cause 400 on strict API proxies
         filtered_content = [c for c in combined_content if c.get("text", "").strip()]
         final_content = tool_result_blocks + filtered_content
         if not final_content: final_content = [{"type": "text", "text": "."}]
         merged = {"role": "user", "content": final_content}
         _write_llm_log('Prompt', json.dumps(merged, ensure_ascii=False, indent=2), self.log_path)
+=======
+        merged = {"role": "user", "content": tool_result_blocks + combined_content}
+        _write_llm_log('Prompt', json.dumps(merged, ensure_ascii=False, indent=2))
+        # OTel trace: record input before yielding, record output after completion
+        span = llm_span(model=self.backend.model, operation="chat",
+                        llm_input_messages=json.dumps(merged, ensure_ascii=False))
+        span.__enter__()
+>>>>>>> origin/main
         gen = self.backend.ask(merged)
         try:
-            while True: 
+            while True:
                 chunk = next(gen); yield chunk
         except StopIteration as e: resp = e.value
+<<<<<<< HEAD
         if resp: _write_llm_log('Response', resp.raw, self.log_path)
+=======
+        if resp:
+            output_text = getattr(resp, 'content', '') or str(resp.raw or '')
+            span._span.set_attribute("llm.output.content", output_text[:2000])
+            usage = getattr(resp, 'usage', None)
+            if usage:
+                span._span.set_attribute("llm.usage.input_tokens", getattr(usage, 'input_tokens', 0) or 0)
+                span._span.set_attribute("llm.usage.output_tokens", getattr(usage, 'output_tokens', 0) or 0)
+                span._span.set_attribute("llm.usage.total_tokens", getattr(usage, 'total_tokens', 0) or 0)
+            _write_llm_log('Response', resp.raw)
+        span.__exit__(None, None, None)
+>>>>>>> origin/main
         if resp and hasattr(resp, 'tool_calls') and resp.tool_calls: self._pending_tool_ids = [tc.id for tc in resp.tool_calls]
         return resp
 
