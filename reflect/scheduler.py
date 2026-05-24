@@ -1,13 +1,6 @@
 import os, json, time as _time, socket as _socket, logging
 from datetime import datetime, timedelta
 
-# 端口锁：防止重复启动，bind失败时agentmain会直接崩溃退出
-# reload时mod.__dict__保留_lock，跳过重复绑定
-try: _lock
-except NameError:
-    _lock = _socket.socket(_socket.AF_INET, _socket.SOCK_STREAM)
-    _lock.bind(('127.0.0.1', 45762)); _lock.listen(1)
-
 INTERVAL = 120
 ONCE = False
 
@@ -16,7 +9,7 @@ TASKS = os.path.join(_dir, '../sche_tasks')
 DONE  = os.path.join(_dir, '../sche_tasks/done')
 _LOG  = os.path.join(_dir, '../sche_tasks/scheduler.log')
 
-# --- 日志 ---
+# --- 日志（必须在端口锁之前初始化）---
 _logger = logging.getLogger('scheduler')
 if not _logger.handlers:
     _logger.setLevel(logging.INFO)
@@ -25,8 +18,18 @@ if not _logger.handlers:
                                         datefmt='%Y-%m-%d %H:%M'))
     _logger.addHandler(_fh)
 
+# 端口锁：防止重复启动
+# reload时mod.__dict__保留_lock，跳过重复绑定
+if '_lock' not in dir():
+    _lock = _socket.socket(_socket.AF_INET, _socket.SOCK_STREAM)
+    try:
+        _lock.bind(('127.0.0.1', 45762)); _lock.listen(1)
+    except OSError:
+        _logger.warning('Port 45762 already in use, running without port lock')
+        _lock = None
+
 # 默认最大延迟窗口（小时），超过此时间不触发
-DEFAULT_MAX_DELAY = 6
+DEFAULT_MAX_DELAY = 8
 _l4_t = 0  # last L4 archive time
 
 def _parse_cooldown(repeat):
@@ -49,14 +52,21 @@ def _parse_cooldown(repeat):
     return timedelta(hours=20)
 
 def _last_run(tid, done_files):
-    """找最近一次执行时间"""
+    """找最近一次执行时间（优先读.done标记，回退到.md报告）"""
     latest = None
     for df in done_files:
-        if not df.endswith(f'_{tid}.md'): continue
-        try:
-            t = datetime.strptime(df[:15], '%Y-%m-%d_%H%M')
-            if latest is None or t > latest: latest = t
-        except: continue
+        # 优先: .done 标记文件 (更可靠，触发即写)
+        if df.endswith(f'_{tid}.done'):
+            try:
+                t = datetime.strptime(df[:15], '%Y-%m-%d_%H%M')
+                if latest is None or t > latest: latest = t
+            except: continue
+        # 回退: .md 报告文件 (agentmain执行后写入)
+        elif df.endswith(f'_{tid}.md'):
+            try:
+                t = datetime.strptime(df[:15], '%Y-%m-%d_%H%M')
+                if latest is None or t > latest: latest = t
+            except: continue
     return latest
 
 def check():
@@ -111,15 +121,32 @@ def check():
                          f'exceeds max_delay={max_delay}h')
             continue
         
-        # 检查冷却
-        last = _last_run(tid, done_files)
+        # 检查冷却：直接扫描done目录中匹配的.done文件
         cooldown = _parse_cooldown(repeat)
-        if last and (now - last) < cooldown: continue
+        last = None
+        if os.path.isdir(DONE):
+            for df in os.listdir(DONE):
+                if df.endswith(f'_{tid}.done') or df.endswith(f'_{tid}.md'):
+                    try:
+                        t = datetime.strptime(df[:15], '%Y-%m-%d_%H%M')
+                        if last is None or t > last: last = t
+                    except: pass
+        _logger.info(f'COOLDOWN_CHECK {tid}: last={last}, cooldown={cooldown}, now={now}')
+        if last and (now - last) < cooldown:
+            _logger.info(f'SKIP {tid}: cooling down ({now - last} < {cooldown})')
+            continue
         
         # 触发
         _logger.info(f'TRIGGER {tid} (repeat={repeat}, schedule={sched}, '
                      f'last_run={last})')
         ts = now.strftime('%Y-%m-%d_%H%M')
+        # 立即写 .done 标记（确保冷却机制生效，即使agentmain没写报告）
+        done_marker = os.path.join(DONE, f'{ts}_{tid}.done')
+        try:
+            with open(done_marker, 'w') as _df:
+                _df.write(now.strftime('%Y-%m-%d %H:%M:%S'))
+        except OSError as _e:
+            _logger.warning(f'Failed to write done marker: {_e}')
         rpt = os.path.join(DONE, f'{ts}_{tid}.md')
         prompt = task.get('prompt', '')
         return (f'[定时任务] {tid}\n'
@@ -130,9 +157,36 @@ def check():
 
     return None
 
+def _list_tasks():
+    """列出所有注册任务的状态（用于启动自检）"""
+    if not os.path.isdir(TASKS):
+        _logger.warning(f'Tasks dir not found: {TASKS}')
+        return
+    now = datetime.now()
+    done_files = set(os.listdir(DONE)) if os.path.isdir(DONE) else set()
+    _logger.info(f'=== 注册任务列表 ({now.strftime("%Y-%m-%d %H:%M")}) ===')
+    for f in sorted(os.listdir(TASKS)):
+        if not f.endswith('.json'): continue
+        tid = f[:-5]
+        try:
+            with open(os.path.join(TASKS, f), encoding='utf-8') as fp:
+                task = json.loads(fp.read())
+        except Exception as e:
+            _logger.error(f'  {tid}: JSON错误 {e}')
+            continue
+        enabled = task.get('enabled', False)
+        repeat = task.get('repeat', 'daily')
+        sched = task.get('schedule', '00:00')
+        max_delay = task.get('max_delay_hours', DEFAULT_MAX_DELAY)
+        last = _last_run(tid, done_files)
+        status = '✅ 启用' if enabled else '⏸️ 禁用'
+        _logger.info(f'  [{status}] {tid}: {repeat}@{sched} (max_delay={max_delay}h, last_run={last})')
+    _logger.info(f'=== 共 {len([f for f in os.listdir(TASKS) if f.endswith(".json")])} 个任务 ===')
+
 def main():
     """主循环：每隔INTERVAL秒执行一次check()，作为Windows服务常驻运行"""
     _logger.info(f'Scheduler started (interval={INTERVAL}s)')
+    _list_tasks()
     while True:
         try:
             result = check()

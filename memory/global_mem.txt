@@ -1,11 +1,63 @@
-# [Global Memory - L2] (R142 @ 2026-05-15)
+# [Global Memory - L2] (R262 @ 2026-05-24)
 
-## ScoreSys 回测参数自动优化器 (R142 完成)
-- 代码: D:/Project/ScoreSys/param_optimizer.py (348行)
-- 提交: 8bb391d "feat(param_optimizer): 回测参数自动优化器 - 网格搜索+多目标评分"
-- 功能: 网格搜索 top_n×min_score×rebalance_months 三维参数空间，多目标加权评分(夏普0.4+收益0.3-回撤0.2+胜率0.1)
-- 验证: 8/8组合全部成功，最优参数 top_n=30, min_score=30, rebalance=6m，夏普=6.728
-- 输出: MD报告 + JSON原始数据
+## L2记忆时效性审查(第三轮) (R260 完成)
+- 时间: 2026-05-23 自主行动
+- 审查结果: 37个section全部在30天内，无过时条目
+- 删除重复: ① L42-47 ScoreSys回测参数自动优化器(R142完成,无日期) — 被L180有日期版覆盖 ② L187-195 ScoreSys因子冗余分析(2026-05-15 R142) — 被R255更详细版本覆盖
+- 保留: ScoreSys回测参数自动优化器(2026-05-15 R142,有日期版) + ScoreSys因子冗余分析(R255) + BfM简短概览
+- 行数: 308→293行, 删除15行
+
+## 实盘信号微信推送链路打通 (R259 完成, R262 补充)
+- 时间: 2026-05-23 自主行动
+- 链路: live_signal_generator.py → live_signals_latest.json → live_signal_pusher.py → WxBotClient.send_text() → 微信
+- 推送验证: 手动运行live_signal_pusher.py → [PUSH]✅ 已推送(597 chars) → admin_uid
+- 定时注册: task_live_signal_push 已添加到 unified_scheduler.py (工作日 15:30, misfire_grace=1800s)
+- 参数: --top 10 (推送TOP10重点推荐)
+- 语法检查: ✅ py_compile通过
+- ⚠️ wechatapp.py会重定向stdout到日志文件，subprocess调用时stdout为空需读日志确认
+- ✅ _post()返回`{}`=errcode=0=成功（非失败），send_text/send_image均验证通过
+- ✅ --image图片推送: signal_chart_gen.generate_table_image()生成PNG(115KB) → bot.send_image()推送成功
+- 图片路径: D:\GenericAgent\temp\signal_chart_latest.png
+- live_signal_pusher.py支持: --image(推送图片) --text-only(仅文本) --dry-run(预览) --top N(数量)
+
+## ScoreSys 因子冗余分析 (R255 完成)
+- 工具: ScoreSys/archive/factor_redundancy.py (修复DB_PATH + GROUP BY alias bug)
+- 数据: stock_data.db 4344只股票, 26032条评分, 最新2026-05-22
+- 三组分析: 单日(0冗余) + 历史均值0.9阈值(0冗余) + 历史均值0.8阈值(0冗余)
+- 结论: 9因子库无冗余，设计合理，无需降维
+- 最高相关: profitability↔valuation(r=0.58历史), momentum↔industry_momentum(r=0.53)
+- 最强负相关: industry_momentum↔reversal(r=-0.34)
+- 最独立因子: growth(与其他因子相关性最低)
+- 产出: factor_correlation_matrix.csv + factor_redundancy_report.md
+- 报告: ./autonomous_reports/R255_ScoreSys因子冗余分析.md
+
+## BfM仓库代码深度扫描与优化 (R252 完成)
+- 扫描时间: 2026-05-23 自主行动
+- 仓库规模: 160 Python文件, 71,141行, modules/ 102文件/46,001行
+- 大文件TOP8: pipeline_manager(1889), quote_fetcher(1884), pipeline(1721), news_fetcher(2673), backtester_core(1432), trading/api(1362), validators(1078), utils(1014)
+- 已完成PR: data_quality_monitor.py → modules/data_quality/ 子包(7文件,3254→67行兼容层)
+  - 修复3个import: List/Union缺失, DEFAULT_INDICATORS别名
+  - 旧路径保留兼容层re-export, controllers.py/pipeline.py无需修改
+- TOP5建议: ①news_fetcher类封装(2673行) ②utils.py拆分(1014行) ③pipeline状态机提取 ④is_market_hours去重 ⑤quote_fetcher/backtester_core抽象基类
+- 报告: ./autonomous_reports/R252_BfM仓库代码深度扫描与优化建议.md
+
+## 定时任务-微信推送联动验证 (R251 完成)
+- 验证时间: 2026-05-23 01:03
+- 链路: scheduler.py(每120s检查sche_tasks/*.json) → GA执行任务 → 报告写入sche_tasks/done/ → wx_push_bridge.py(每300s轮询) → WxBotClient.send_text(admin_uid) → 微信
+- 端到端测试: 创建测试任务 → 写报告到done/ → 桥接器3秒内扫描到 → PUSH成功(504 chars)
+- 已有3个定时任务: daily_backtest(07:30 daily), scoresys_check_score(09:00 every_30m), scoresys_daily_backtest(15:30 weekday)
+- wx_push_bridge.py: D:\GenericAgent\temp\wx_push_bridge.py (221行), 需pythonw手动启动(非systemd管理)
+- scheduler.py: D:\GenericAgent\reflect\scheduler.py, 端口锁45762
+
+## scheduler.py 冷却机制修复 (2026-05-24)
+- ❌ 冷却完全失效: 单次任务触发106+次（应每30m一次）
+- 根因1: pythonw.exe路径是 C:\Python312\pythonw.exe（非 D:\Programs\Python312\）
+- 根因2: pythonw进程运行旧字节码，删除.pyc不够，必须重启进程才加载新代码
+- 根因3: _last_run()中done_files集合有.done文件但tid匹配失败→返回None→冷却跳过
+- 修复: 内联冷却检查逻辑（直接os.listdir扫描.done文件），不依赖_last_run函数
+- 验证: SKIP日志 "cooling down (0:02:44 < 0:30:00)" 冷却生效
+- done目录: D:\GenericAgent\sche_tasks\done\
+
 ## ScoreSys+BfM 融合选股工具 v2 (2026-05-16 R152 完成)
 - 代码: D:/Project/ScoreSys/fusion_picker_v2.py (445行, ~11KB)
 - 功能: 5策略回测(ScoreSys/BfM/等权/级联/动态级联) + 每日选股
@@ -15,6 +67,16 @@
 - quotes表列名: close_price, turnover_5d, pe_ttm, ma_5/10/20, ret_1m, industry_mom_1m
 - ⚠️ file_write会截断长文件 → 改用code_run内联生成避免截断
 - ⚠️ r-string中不能用\'转义单引号 → 字典键名用双引号包裹
+
+## 融合选股实盘信号生成器 (2026-05-22 R248 完成)
+- 代码: D:/Project/ScoreSys/live_signal_generator.py (271行)
+- 提交: 84d40dc "feat(live_signal): 融合选股实盘信号生成器"
+- 功能: 读ScoreSys评分+行情→融合多因子(评分/动量/行业热度/估值)→过滤涨停/ST/科创板→输出JSON+MD报告
+- 实测: 508条信号(25只⭐重点推荐+483只👀观察)，覆盖31个行业
+- 重点推荐: 康辰药业(73.5), 天秦装备(71.5), 东兴证券(70.4)
+- 参数: --min-score(最低评分), --json-only(仅JSON), --top(N), --output-dir
+- ⚠️ Windows GBK: 脚本print避免emoji，设PYTHONIOENCODING=utf-8
+- 演进: R152回测→R156 RPS20融合回测→R248实盘信号生成
 
 ## GA 上游代码自动同步工具 (2026-05-16 R153 完成)
 - 代码: D:/GenericAgent/upstream_sync.py (205行)
@@ -135,15 +197,6 @@
 - 验证: 8/8成功，最优 top_n=30/min_score=30/rebalance=6m，夏普=6.728
 - 输出: MD报告 + JSON数据
 
-## ScoreSys 因子冗余分析 (2026-05-15 R142)
-- 工具: D:/Project/ScoreSys/factor_redundancy.py (245行) + factor_redundancy_report.md
-- 提交: 7b27cf9 "feat: add factor_redundancy.py - correlation analysis & dimensionality reduction tool"
-- 数据: 4344只股票 × 9因子，最新日期2026-05-15
-- 结论: |r|>=0.9阈值下无冗余因子对 → 9因子设计合理独立
-- 最高相关: profitability↔valuation r=+0.66, momentum↔reversal r=+0.47
-- ⚠️ R134报告的momentum-reversal r=-0.989在截面数据中不成立（实际+0.47），可能是时间序列vs截面差异
-- turnover因子数据缺失严重(仅40.8%非零)，后续需排查
-
 ## subagent 环境状态
 - ⚠️ agentmain.py直接运行缺llmcore模块，subagent不可用；主agent自行评审
 
@@ -179,10 +232,34 @@
 - 结论: RPS20动量预筛选 + ScoreSys基本面过滤(仅选A+/A级) = 融合选股v2核心逻辑
 - 建议: 256只未覆盖股票需补充评分数据
 
-## TODO当前状态 (2026-05-16)
-- ✅ P0-1 融合选股: RPS20xScoreSys交叉分析完成，融合逻辑已明确
-- ⬜ P0-2 上游同步: 待执行
-- 💡 新发现: RPS20中256只(60%)未被ScoreSys覆盖，需排查原因
+## GA微信Bot+定时任务联动 (2026-05-23 R250 完成)
+- 代码: D:/GenericAgent/temp/wx_push_bridge.py (221行)
+- 方案: 零侵入桥接，轮询 sche_tasks/done/ → WxBotClient.send_text(admin_uid)
+- 验证: 脚本9项检查全部通过 + 端到端send_text SUCCESS
+- Bot进程: PID 9388 python wechatapp.py (用户重启后正常)
+- 桥接进程: PID 10324 pythonw wx_push_bridge.py (持续轮询中)
+- ⚠️ 注意: token login_time显示旧时间(5/15)但实际可用，send_text不依赖run_loop
+- admin_uid: o9cq80-1u4kvzb2osLB4FHV0X-Zo@im.wechat
+
+## 三仓库端到端回测联动 (R253 完成)
+- 创建时间: 2026-05-23 02:48
+- 文件: D:\Project\BfM\unified_backtest.py (~500行)
+- 功能: 统一入口依次调用 AnnualScorer → ScoreSys → BfM，生成汇总报告
+- 支持5种模式: all, annual-only, scoresys-only, bfm-only, summary-only
+- 验证结果:
+  - scoresys-only(30天): RC=0, 1.0s, 26032评分/25328有效
+  - bfm-only(30天): RC=0, 12.9s, annual_return=244.3%, max_drawdown=2.1%, win_rate=92.3%
+  - all(30天): RC=0, 113.6s (AnnualScorer 99.6s + ScoreSys 1.0s + BfM 13.0s)
+- 修复: ScoreSys --mode backtest(非score), 3个subprocess加encoding='utf-8', trades字段int兼容
+- 报告路径: D:\Project\BfM\data\unified_backtest_report_*.md
+- 数据流验证: AnnualScorer DB ✅ | ScoreSys DB ✅ | BfM缓存 ✅
+
+## TODO当前状态 (2026-05-23 R253更新)
+- ✅ P0-1 融合选股实盘信号: live_signal_generator.py创建(R248), 508条信号(25重点+483观察), git 84d40dc
+- ✅ P0-2 GA微信Bot+定时任务联动: 桥接脚本完成+端到端验证通过(R251)
+- ✅ 三仓库端到端回测联动: unified_backtest.py创建+全量验证通过(R253)
+- ✅ BfM仓库代码深度扫描: data_quality_monitor拆分子包(R252)
+- ⬜ ScoreSys因子冗余分析与瘦身 (评分7)
 
 ## 工具域经验 & 修复教训
 - web_search: baidu最稳定(无需key) | google可能anti-bot
@@ -192,3 +269,54 @@
 - wechatapp.py教训: API返回item.text_item.text(非item.text) | 回调参数签名一致 | 模块级函数名别和类内方法名冲突
 - llmcore教训: _record_usage在fb7b88b refactor中被删除写文件逻辑(只print不写jsonl)；修复后需确认所有调用点兼容新参数签名
 - complete_task教训: report_path参数不能为None，必须先写报告文件再调用；调用后报告会被moved到autonomous_reports/，原路径失效
+- set_todo用法: 无done参数，需手动读→改→写回；complete_task会自动prepend history.txt
+
+## 实盘信号微信推送器 (2026-05-23 R256 完成)
+- 代码: D:\GenericAgent\temp\live_signal_pusher.py (182行)
+- 功能: 读live_signals_latest.json → 格式化Top15推荐 → WxBotClient.send_text(admin_uid)
+- 验证: dry-run通过, 消息长度1546 chars, 格式正确
+- 依赖: wx_push_bridge.py(每300s轮询done/目录), scheduler.py(每120s检查任务)
+- 链路: live_signal_generator.py → JSON → live_signal_pusher.py → 微信
+
+## Intel Iris Xe DirectML 推理探测 (2026-05-23 R256)
+- 安装: onnxruntime-directml 安装成功
+- Provider: DmlExecutionProvider + CPUExecutionProvider
+- 推理延迟: DirectML 0.22ms / CPU 0.01ms (小模型CPU更快)
+- 结论: DirectML可用, 小模型CPU更优, 大模型(DNN)才有GPU加速意义
+- 旧记录(R149)说"Intel Iris Xe无法GPU推理"已过时 → DirectML解决了这个问题
+
+## LM Studio 探测 (2026-05-23 R256)
+- 安装: C:\Users\green\AppData\Local\Programs\LM Studio\LM Studio.exe (200.6MB)
+- 状态: 已安装但服务未运行(端口1234未开放)
+- 自动启动失败: GUI应用需用户手动启动并加载模型
+- 建议: 用户需手动启动LM Studio → 加载模型 → 开启API服务(端口1234)
+
+## L2记忆去重清理 (2026-05-23 R256)
+- 删除重复: "定时任务-微信推送联动验证"(2行)
+- 清理后: 261→259行, R255→R256
+
+## 定时任务体系架构整合 (2026-05-23 R258)
+
+## Intel Iris Xe DirectML 推理能力边界 (R261 完成)
+- 测试: 4模型×3batch, onnxruntime-directml 1.24.4
+- 结论: DirectML对本机推理无实用价值
+  - CPU在所有场景快于DirectML (7x~67x)
+  - DirectML固定开销~2ms, 小模型CPU推理<0.1ms
+  - Transformer batch>=4时DirectML后端崩溃(Add节点错误)
+  - R256旧结论"大模型才有GPU加速意义"已过时
+- 建议: 保持PyTorch CPU推理, 云端API处理大模型
+
+- 合并 reflect/scheduler.py(轮询120s) + temp/task_scheduler.py(APScheduler) → 统一入口
+- 新代码: D:\GenericAgent\temp\unified_scheduler.py (234行)
+  - 单一APScheduler CronTrigger入口
+  - 从 sche_tasks/*.json 加载任务配置（保留兼容）
+  - 3个注册任务:
+    ① daily_backtest (工作日15:00) → 回测+评分完整流程
+    ② scoresys_check_score (每30分钟) → 检查评分完成+推送报告
+    ③ rps20_daily_backtest (工作日16:00) → RPS20回测
+  - 辅助脚本: check_and_push_score.py (评分检查+推送)
+  - misfire_grace_time: 3600s(回测) / 600s(检查)
+  - 日志: temp/scheduler_logs/scheduler_YYYYMMDD.log
+- 旧调度器可归档: reflect/scheduler.py, temp/task_scheduler.py
+- 验证: py_compile通过 + 成功加载2个JSON配置 + 3个APScheduler任务注册成功
+- 报告: temp/autonomous_reports/R258_定时任务体系架构整合.md

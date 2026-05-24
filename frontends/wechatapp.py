@@ -127,9 +127,10 @@ class WxBotClient:
         if self._tf.exists():
             d = json.loads(self._tf.read_text('utf-8'))
             self.token, self.bot_id, self._buf = d.get('bot_token',''), d.get('ilink_bot_id',''), d.get('updates_buf','')
-            self._login_time = d.get('login_time', '')  # 记录登录时间用于过期检测
-            self._admin_notify_uid = d.get('admin_notify_uid', '')  # 恢复通知用户
+            self._login_time = d.get('login_time', '')
+            self._admin_notify_uid = d.get('admin_notify_uid', '')
             self._admin_uid_saved = bool(self._admin_notify_uid)
+            self._token_expired = d.get('_token_expired', False)  # ★ 恢复token过期状态
 
     def _save(self, **kw):
         # ★ 保留已持久化的关键字段，防止被无参 _save() 覆盖丢失
@@ -162,8 +163,8 @@ class WxBotClient:
         except Exception:
             return -1
 
-    def _token_near_expiry(self, threshold_hours=20):
-        """token是否接近过期（默认20小时，微信token通常24小时过期）"""
+    def _token_near_expiry(self, threshold_hours=23.5):
+        """token是否接近过期（默认23.5小时，微信token 24h过期，留30min缓冲）"""
         age = self._token_age_hours()
         return age >= 0 and age >= threshold_hours
 
@@ -233,8 +234,8 @@ class WxBotClient:
 
     def login_qr_nonblocking(self):
         """获取二维码并保存到文件，返回 qr_id。不阻塞主循环。10分钟冷却期避免重复生成。"""
-        # ★ 冷却期检查：10分钟内不重复请求API生成二维码（覆盖退避周期60+120+240+480s）
-        QR_COOLDOWN = 120
+        # ★ 冷却期60s，与退避周期对齐（60→120→240→480→960s）
+        QR_COOLDOWN = 60
         now = time.time()
         last = getattr(self, '_last_qr_gen_time', 0)
         # ★ 如果上次二维码已过期，允许提前解除冷却（二维码过期后旧id已无用）
@@ -301,9 +302,9 @@ class WxBotClient:
     def _on_login_success(self):
         """登录成功后统一记录时间戳"""
         self._login_time = time.strftime('%Y-%m-%d %H:%M:%S')
-        self._save(login_time=self._login_time)
-        self._token_expired = False
-        self._relogin_time = time.time()  # 30s grace period after relogin
+        self._token_expired = False  # ★ 必须在_save前设置，_save会触发__setattr__写文件
+        self._relogin_time = time.time()
+        self._save(login_time=self._login_time, _token_expired=False)
         print(f'[Bot] token刷新成功，登录时间: {self._login_time}', file=sys.__stdout__)
 
     def poll_qr_status(self, qr_id, max_wait=180):
@@ -477,28 +478,30 @@ class WxBotClient:
         _out = sys.__stdout__ if sys.__stdout__ else sys.stdout
         print(f'[Bot] 监听中... (bot_id={self.bot_id})', file=_out)
         seen = set()
-        self._token_expired = getattr(self, '_token_expired', False)
-        _relogin_attempts = 0  # 连续重登失败次数（指数退避）
+        # ★ 不再每次循环重置_token_expired，保持_on_login_success设的False
+        _relogin_attempts = 0
         while True:
             try:
-                # Token 快过期时提前刷新（非阻塞）
-                if not getattr(self, '_token_expired', False) and self._token_near_expiry(threshold_hours=22):
+                # Token 快过期时提前刷新（23.5h阈值，留30min缓冲）
+                if not self._token_expired and self._token_near_expiry(threshold_hours=23.5):
                     age = self._token_age_hours()
                     print(f'[Bot] Token 已 {age:.1f}h，接近过期，提前刷新...', file=_out)
                     self._token_expired = True
 
-                # Token 过期时自动重登录（非阻塞）
-                if getattr(self, '_token_expired', False):
+                # Token 过期时自动重登录
+                if self._token_expired:
                     print('[Bot] 检测到 token 过期，获取二维码...', file=_out)
                     qr_id, qr_url = self.login_qr_nonblocking()
                     if not qr_id:
-                        print('[Bot] 获取二维码失败，30s后重试', file=_out)
-                        time.sleep(30)
+                        # ★ 冷却期内无法生成新码，等待冷却结束（最多等120s）
+                        _relogin_attempts += 1
+                        wait = 60  # ★ 改为60s，确保超过冷却期
+                        print(f'[Bot] 获取二维码冷却中，{wait}s后重试（第{_relogin_attempts}次）', file=_out)
+                        time.sleep(wait)
                         continue
                     # 发二维码给指定通知用户（优先）+ seen列表兜底
                     qr_img = str(self._tf.parent / 'wx_qr_relogin.png')
                     notify_uids = []
-                    # 从token文件读指定通知用户
                     try:
                         tf_data = json.loads(self._tf.read_text('utf-8'))
                         admin_uid = tf_data.get('admin_notify_uid', '')
@@ -506,39 +509,45 @@ class WxBotClient:
                             notify_uids.append(admin_uid)
                     except Exception:
                         pass
-                    # 兜底：发给最近的用户
                     notify_uids += list(seen)[-3:]
                     sent = False
                     for uid in notify_uids:
                         try:
-                            # ★ 只发文字链接（避免getuploadurl失败）
-                            self.send_text(uid, f'🔔 Token 已过期，需要重新扫码登录\n\n📱 直接点开链接扫码：\n{qr_url}\n\n扫码后请回复任意消息确认')
-                            print(f'[Bot] 二维码链接已发给: {uid}', file=_out)
+                            # ★ 优先发图片二维码（更直观，微信内直接扫码）
+                            if os.path.exists(qr_img):
+                                try:
+                                    self.send_image(uid, qr_img)
+                                    print(f'[Bot] 二维码图片已发给: {uid}', file=_out)
+                                except Exception as img_err:
+                                    # 图片发送失败降级为文字链接
+                                    print(f'[Bot] 图片发送失败({img_err})，降级为文字链接', file=_out)
+                                    self.send_text(uid, f'🔔 Token 已过期，需要重新扫码登录\n\n📱 直接点开链接扫码：\n{qr_url}\n\n扫码后请回复任意消息确认')
+                            else:
+                                self.send_text(uid, f'🔔 Token 已过期，需要重新扫码登录\n\n📱 直接点开链接扫码：\n{qr_url}\n\n扫码后请回复任意消息确认')
+                            # 额外发一条文字提醒（图片+文字双保险）
+                            self.send_text(uid, f'⬆️ 请用微信扫码上图二维码，扫码后回复任意消息确认\n\n🔗 备用链接：{qr_url}')
+                            print(f'[Bot] 二维码已发给: {uid}', file=_out)
                         except Exception as e:
-                            print(f'[Bot] 发给 {uid} 文字失败: {e}', file=_out)
+                            print(f'[Bot] 发给 {uid} 失败: {e}', file=_out)
                         sent = True
                     if not sent:
                         print(f'[Bot] 未能发送二维码，请打开: {qr_img}', file=_out)
                         print(f'[Bot] 二维码链接: {qr_url}', file=_out)
-                    # 等待扫码（180s）
-                    ok = self.poll_qr_status(qr_id, max_wait=180)
+                    # ★ 等待扫码（300s=5min，给用户更充裕的时间）
+                    ok = self.poll_qr_status(qr_id, max_wait=300)
                     if ok:
                         print('[Bot] 重登录成功，恢复监听', file=_out)
-                        self._token_expired = False
-                        self._last_qr_expired = False  # ★ 登录成功，重置过期标记
+                        # ★ _on_login_success已经设了_token_expired=False并save到文件
                         _relogin_attempts = 0
                     else:
-                        # ★ 修复：固定间隔重试，不再指数退避到30分钟
-                    # 改为 30s 固定间隔 + 每5次尝试重新生成二维码
                         _relogin_attempts += 1
-                        # 每5次重试强制重新生成二维码（避免旧码一直过期）
-                        if _relogin_attempts % 5 == 0:
-                            self._last_qr_expired = True  # 触发冷却解除，下次循环重新生成
+                        # 每3次重试强制刷新二维码冷却
+                        if _relogin_attempts % 3 == 0:
+                            self._last_qr_expired = True
                             print(f'[Bot] 已重试{_relogin_attempts}次，强制刷新二维码...', file=sys.__stdout__)
-                        wait = 30  # 固定30秒，不再指数增长
+                        wait = 60  # ★ 固定60s，确保超过冷却期
                         print(f'[Bot] 扫码超时，{wait}s后重试（第{_relogin_attempts}次）', file=sys.__stdout__)
                         time.sleep(wait)
-                        # _token_expired 保持 True，下次循环继续重登
                         continue
                 for msg in self.get_updates(poll_timeout):
                     mid = msg.get('message_id', 0)
@@ -585,8 +594,13 @@ def _dl_media(items):
             break  # one media per item
     return paths
 
-agent = GeneraticAgent()
-agent.verbose = False
+try:
+    agent = GeneraticAgent()
+    agent.verbose = False
+except Exception as e:
+    print(f'[WX] GeneraticAgent init failed: {e}', file=sys.__stdout__)
+    import traceback; traceback.print_exc(file=sys.__stdout__)
+    agent = None
 
 _TAG_PATS = [r'<' + t + r'>.*?</' + t + r'>' for t in ('thinking', 'tool_use', 'details', 'think', 'reasoning', 'analysis', 'internal')]
 _TAG_PATS.append(r'<file_content>.*?</file_content>')

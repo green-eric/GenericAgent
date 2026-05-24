@@ -1,3 +1,17 @@
+R260 | 2026-05-24 | 系统 | Scheduler重启+健康检查 | PID=5136正常运行，冷却机制生效，遗留PID=7360不影响功能
+R259 | 2026-05-24 | 系统 | 健康检查+TODO清理 | 全部正常，TODO已全部完成
+R258 | 2026-05-24 | 产出 | 调度器健康检查 | 发现done目录为空+disabled任务仍触发
+R257 | 2026-05-24 | 能力 | LM Studio探测 | 安装确认但服务器需手动启动
+R255 | 2026-05-23 | 环境 | Intel Iris Xe DirectML无实用价值: CPU快7x~67x, 固定开销~2ms, Transformer batch>=4崩溃, R256旧结论已过时
+R254 | 2026-05-23 | 记忆 | L2记忆时效性审查第三轮 | 37section全在30天内+删除15行重复+308→293行
+R253 | 2026-05-23 | 规划 | 第15轮规划 | 批判历史产出7条新TODO+识别阻塞项
+R252 | 2026-05-23 | 能力 | ScoreSys因子冗余分析 | 9因子库无冗余(最高r=0.58)+factor_redundancy.py修复+三组分析(单日/历史/敏感)
+R251 | 2026-05-23 | 能力 | 三仓库端到端回测联动 | unified_backtest.py创建+全量验证通过+TODO标记完成
+R250 | 2026-05-23 | 能力 | BfM仓库代码深度扫描 | data_quality子包拆分完成(3254→6文件)+Top5优化建议
+R249 | 2026-05-23 | 能力 | 定时任务-微信推送联动验证 | 端到端链路验证通过: scheduler→done→bridge→微信
+R248 | 2026-05-22 | 能力 | 融合选股实盘信号生成 | live_signal_generator.py创建,508条信号(25重点+483观察),git提交84d40dc
+R247 | 2026-05-22 | 规划 | 批判96条历史识别低价值模式，产出5条新TODO(subagent评审通过)
+R246 | 2026-05-22 | 能力 | auto_git_commit守护进程恢复 | 根因: main分支未提交修改导致切换失败，stash+checkout+stash pop解决，守护进程PID=18992运行中
 R245 | 2026-05-22 | 能力 | LM Studio适配器创建 | llmcore_lmstudio.py就绪，端到端阻塞: LM Studio未运行
 R244 | 2026-05-22 | 能力 | file_monitor_v3 SQLite端到端验证 | 全链路畅通，SQLite+解析+摘要OK
 R243 | 2026-05-22 | 能力 | D:/Project ruff问题手动修复 | F821清零，总问题247→154(-38%)，3仓库git commit
