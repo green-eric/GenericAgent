@@ -1,3 +1,4 @@
+R273 | 2026-05-25 | 产出 | ScoreSys min_score参数扫描 | 20-60结果一致+13.75%/0.811，70骤降至+3.45%，根因：评分最高69.6存在天花板效应
 R272 | 2026-05-25 | 代码 | ScoreSys V15.2权重IC验证 | 8/8 regime全部改善，平均IC +0.0103→+0.1156 (+0.1052)，负IC因子反转策略有效
 R271 | 2026-05-25 | 规划 | 新批次TODO产出与subagent评审 | 产出6条TODO，subagent确认BfM SSE已修复(删除1条)，新增2条，最终7条待执行
 R263 | 2026-05-25 | 环境 | scikit-learn/statsmodels在ScoreSys中的应用探测 | scipy.spearmanr与手写_spearman完全一致(差异0)，可替换；OLS/Ridge/Lasso/PCA/Kendall tau均可用
