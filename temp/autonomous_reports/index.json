@@ -1,0 +1,3445 @@
+{
+  "generated": "2026-05-25 09:57",
+  "total": 260,
+  "categories": {
+    "其他": 113,
+    "维护": 42,
+    "回测": 28,
+    "策略": 34,
+    "因子": 21,
+    "分析": 29,
+    "记忆": 15,
+    "工具": 15,
+    "数据": 27,
+    "系统": 18
+  },
+  "reports": [
+    {
+      "file": "GPU_Intel_Iris_Xe_推理性能报告.md",
+      "title": "GPU推理性能报告 | Intel Iris Xe Graphics",
+      "date": "2026-05-18",
+      "type": "其他",
+      "r_num": "unknown",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "Intel_Extension_安装失败报告.md",
+      "title": "Intel Extension安装失败报告",
+      "date": "unknown",
+      "type": "其他",
+      "r_num": "unknown",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "NumPy_MKL_优化利用报告.md",
+      "title": "NumPy/MKL优化利用报告",
+      "date": "2026-05-18",
+      "type": "维护",
+      "r_num": "unknown",
+      "categories": [
+        "维护"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "Python_3.11_降级方案报告.md",
+      "title": "Python 3.11降级方案执行报告",
+      "date": "2026-05-18",
+      "type": "其他",
+      "r_num": "unknown",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R100_AlphaTrading波动率因子IC回测.md",
+      "title": "R100 | 2026-05-13 | 实测 | AlphaTrading波动率因子移植IC验证",
+      "date": "2026-05-13",
+      "type": "回测",
+      "r_num": "R100",
+      "categories": [
+        "回测",
+        "策略",
+        "因子"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "IC",
+        "因子",
+        "回测"
+      ]
+    },
+    {
+      "file": "R100_AlphaTrading波动率因子移植实测.md",
+      "title": "R100 | 2026-05-13 | 实测 | AlphaTrading波动率因子移植IC验证",
+      "date": "2026-05-13",
+      "type": "策略",
+      "r_num": "R100",
+      "categories": [
+        "策略",
+        "因子"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "IC",
+        "因子",
+        "回测"
+      ]
+    },
+    {
+      "file": "R101_规划模式 — R100后新批次TODO产出.md",
+      "title": "R101 | 2026-05-13 | 规划 | R100后新批次TODO产出",
+      "date": "2026-05-13",
+      "type": "其他",
+      "r_num": "R101",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "IC",
+        "因子",
+        "回测"
+      ]
+    },
+    {
+      "file": "R102_批量因子IC筛选.md",
+      "title": "R102 | 2026-05-14 | 实测 | AlphaTrading批量因子IC筛选",
+      "date": "2026-05-14",
+      "type": "策略",
+      "r_num": "R102",
+      "categories": [
+        "策略",
+        "因子"
+      ],
+      "keywords": [
+        "IC",
+        "因子",
+        "回测"
+      ]
+    },
+    {
+      "file": "R103_file_monitor_v2工作流优化.md",
+      "title": "R103 | 2026-05-18 | 能力 | file_monitor.py工作流优化",
+      "date": "2026-05-18",
+      "type": "维护",
+      "r_num": "R103",
+      "categories": [
+        "维护"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "回测"
+      ]
+    },
+    {
+      "file": "R103_reversal因子regime特异性分析.md",
+      "title": "R103 | 2026-05-14 | 诊断 | ScoreSys reversal因子regime特异性分析",
+      "date": "2026-05-14",
+      "type": "分析",
+      "r_num": "R103",
+      "categories": [
+        "分析",
+        "策略",
+        "因子"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "IC",
+        "因子"
+      ]
+    },
+    {
+      "file": "R104_AlphaTrading因子库实用筛选.md",
+      "title": "R104 | 2026-05-18 | 产出 | AlphaTrading因子库实用筛选",
+      "date": "2026-05-18",
+      "type": "策略",
+      "r_num": "R104",
+      "categories": [
+        "策略",
+        "因子"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "IC",
+        "因子"
+      ]
+    },
+    {
+      "file": "R104_权重敏感性分析.md",
+      "title": "R104 | 2026-05-14 | 工具 | ScoreSys因子权重敏感性分析",
+      "date": "2026-05-14",
+      "type": "分析",
+      "r_num": "R104",
+      "categories": [
+        "分析"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "IC",
+        "因子"
+      ]
+    },
+    {
+      "file": "R105_L1记忆索引更新.md",
+      "title": "R105 | 2026-05-13 | 维护 | L1记忆索引更新",
+      "date": "2026-05-13",
+      "type": "记忆",
+      "r_num": "R105",
+      "categories": [
+        "记忆"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R105_temp目录瘦身.md",
+      "title": "R105 | 2026-05-19 | 环境 | temp目录瘦身+pycache清理",
+      "date": "2026-05-19",
+      "type": "其他",
+      "r_num": "R105",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R106_AKShare腾讯源实测.md",
+      "title": "R106 | 2026-05-14 | 验证 | AKShare腾讯源实测评估",
+      "date": "2026-05-14",
+      "type": "其他",
+      "r_num": "R106",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "IC"
+      ]
+    },
+    {
+      "file": "R106_auto_git_commit守护进程健康检查.md",
+      "title": "R106 | 2026-05-19 | 能力 | auto_git_commit守护进程健康检查",
+      "date": "2026-05-19",
+      "type": "维护",
+      "r_num": "R106",
+      "categories": [
+        "维护"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R106_任务规划-新批次TODO.md",
+      "title": "R106 | 2026-05-13 | 规划 | 任务规划-新批次TODO",
+      "date": "2026-05-13",
+      "type": "其他",
+      "r_num": "R106",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R107_L3_SOP交叉引用检查.md",
+      "title": "R107 | 2026-05-19 | 记忆 | L3 SOP交叉引用检查",
+      "date": "2026-05-19",
+      "type": "其他",
+      "r_num": "R107",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R108_otel_trace装饰器集成到GA.md",
+      "title": "R108 | 2026-05-19 | 能力 | otel_trace装饰器集成到GA",
+      "date": "2026-05-19",
+      "type": "其他",
+      "r_num": "R108",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "GA"
+      ]
+    },
+    {
+      "file": "R109_ScoreSys_min_score参数优化实验方案.md",
+      "title": "R109 | 2026-05-19 | 产出 | ScoreSys min_score参数优化实验方案",
+      "date": "2026-05-19",
+      "type": "维护",
+      "r_num": "R109",
+      "categories": [
+        "维护"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "选股",
+        "IC",
+        "评分"
+      ]
+    },
+    {
+      "file": "R109_regime动态权重.md",
+      "title": "R109 | 2026-05-14 | 实现 | Regime动态权重方案",
+      "date": "2026-05-14",
+      "type": "其他",
+      "r_num": "R109",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "IC",
+        "因子"
+      ]
+    },
+    {
+      "file": "R10_浏览器书签与历史记录分析报告.md",
+      "title": "R10 - 浏览器书签与历史记录分析报告",
+      "date": "2026-05-05",
+      "type": "分析",
+      "r_num": "R10",
+      "categories": [
+        "分析"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R110_reversal因子方向修复验证方案.md",
+      "title": "R110 | 2026-05-19 | 产出 | reversal因子方向修复验证方案",
+      "date": "2026-05-19",
+      "type": "策略",
+      "r_num": "R110",
+      "categories": [
+        "策略",
+        "因子",
+        "维护"
+      ],
+      "keywords": [
+        "IC",
+        "因子"
+      ]
+    },
+    {
+      "file": "R111_auto_git_commit守护进程启动脚本.md",
+      "title": "R111 | 2026-05-19 | 能力 | auto_git_commit守护进程启动脚本",
+      "date": "2026-05-19",
+      "type": "工具",
+      "r_num": "R111",
+      "categories": [
+        "工具"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R112_global_mem_L2发现区块整理.md",
+      "title": "R112 | 2026-05-19 | 记忆 | global_mem L2发现区块整理",
+      "date": "2026-05-19",
+      "type": "其他",
+      "r_num": "R112",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R113_ScoreSys README文档一致性审查.md",
+      "title": "R108 | 2026-05-13 | 优化 | ScoreSys README文档一致性审查",
+      "date": "2026-05-13",
+      "type": "分析",
+      "r_num": "R113",
+      "categories": [
+        "分析"
+      ],
+      "keywords": [
+        "ScoreSys"
+      ]
+    },
+    {
+      "file": "R113_file_monitor_v2自动回测触发验证.md",
+      "title": "R113 | 2026-05-19 | 能力 | file_monitor_v2自动回测触发验证",
+      "date": "2026-05-19",
+      "type": "回测",
+      "r_num": "R113",
+      "categories": [
+        "回测"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "回测"
+      ]
+    },
+    {
+      "file": "R114_L2记忆时效性审查.md",
+      "title": "R109 | 2026-05-13 | 优化 | L2记忆时效性审查与精简",
+      "date": "2026-05-13",
+      "type": "分析",
+      "r_num": "R114",
+      "categories": [
+        "分析",
+        "记忆"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R114_ScoreSys行情数据补录验证.md",
+      "title": "R114 | 2026-05-19 | 产出 | ScoreSys行情数据补录验证",
+      "date": "2026-05-19",
+      "type": "数据",
+      "r_num": "R114",
+      "categories": [
+        "数据"
+      ],
+      "keywords": [
+        "ScoreSys"
+      ]
+    },
+    {
+      "file": "R115_R110 _ Python依赖版本统一.md",
+      "title": "R115: AKShare 因子数据源实测",
+      "date": "2026-05-14",
+      "type": "其他",
+      "r_num": "R115",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "IC",
+        "因子"
+      ]
+    },
+    {
+      "file": "R115_ScoreSys_data目录盘点.md",
+      "title": "R115 | 2026-05-19 | 环境 | D:/Project/ScoreSys/data目录盘点",
+      "date": "2026-05-19",
+      "type": "数据",
+      "r_num": "R115",
+      "categories": [
+        "数据"
+      ],
+      "keywords": [
+        "ScoreSys"
+      ]
+    },
+    {
+      "file": "R116_R112 _ 安装包一键安装脚本权限测试.md",
+      "title": "R116: 安装包一键安装脚本权限测试",
+      "date": "2026-05-14",
+      "type": "工具",
+      "r_num": "R116",
+      "categories": [
+        "工具"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R116_ScoreSys行业中性化回测.md",
+      "title": "R116 | 2026-05-19 | 产出 | ScoreSys行业中性化回测",
+      "date": "2026-05-19",
+      "type": "回测",
+      "r_num": "R116",
+      "categories": [
+        "回测"
+      ],
+      "keywords": [
+        "评分",
+        "ScoreSys",
+        "IC",
+        "回测"
+      ]
+    },
+    {
+      "file": "R117_R101 _ AlphaTrading alpha010反转IC验证.md",
+      "title": "R101 | 2026-05-14 | 实测 | AlphaTrading alpha010反转IC验证",
+      "date": "2026-05-14",
+      "type": "其他",
+      "r_num": "R117",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "IC",
+        "因子"
+      ]
+    },
+    {
+      "file": "R118_wechatapp消息链路死代码清理与参数修复.md",
+      "title": "R118 | 2026-05-14 | 修复 | wechatapp.py 消息链路死代码清理与参数修复",
+      "date": "2026-05-14",
+      "type": "维护",
+      "r_num": "R118",
+      "categories": [
+        "维护"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R119_微信Bot深度诊断.md",
+      "title": "微信Bot诊断报告 — 用户离开期间自主探测",
+      "date": "2026-05-14",
+      "type": "其他",
+      "r_num": "R119",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "微信"
+      ]
+    },
+    {
+      "file": "R11_ruff代码质量检查.md",
+      "title": "R11 · ruff 代码质量检查",
+      "date": "2026-05-05",
+      "type": "其他",
+      "r_num": "R11",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R120_微信Bot修复自主行动总结.md",
+      "title": "R120 | 2026-05-14 | 自主行动 | 微信Bot修复状态总结",
+      "date": "2026-05-14",
+      "type": "维护",
+      "r_num": "R120",
+      "categories": [
+        "维护"
+      ],
+      "keywords": [
+        "微信"
+      ]
+    },
+    {
+      "file": "R121_任务规划-新批次TODO产出.md",
+      "title": "R120 | 任务规划 — 新批次TODO产出与评审",
+      "date": "2026-05-14",
+      "type": "其他",
+      "r_num": "R121",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "IC",
+        "因子",
+        "回测"
+      ]
+    },
+    {
+      "file": "R122_AKShare_东方财富API网络问题根因诊断.md",
+      "title": "R121 | 2026-05-14 | 诊断 | AKShare/东方财富API网络问题根因诊断",
+      "date": "2026-05-14",
+      "type": "其他",
+      "r_num": "R122",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R123_Clash方案B验证+东方财富API诊断.md",
+      "title": "R123 | 2026-05-14 | 验证 | Clash方案B网络配置+东方财富API诊断收尾",
+      "date": "2026-05-14",
+      "type": "其他",
+      "r_num": "R123",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R125_V14.1优化+因子看板.md",
+      "title": "R124 | 2026-05-15 | 自主行动 | ScoreSys V14.1优化 + 因子看板",
+      "date": "2026-05-15",
+      "type": "策略",
+      "r_num": "R125",
+      "categories": [
+        "策略",
+        "因子",
+        "维护"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "评分",
+        "因子"
+      ]
+    },
+    {
+      "file": "R126_PC闲置GPU推理能力边界探测.md",
+      "title": "R126 | 2026-05-15 | PC闲置GPU推理能力边界探测",
+      "date": "2026-05-15",
+      "type": "其他",
+      "r_num": "R126",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R127_探测PC上已安装但未使用的Python包.md",
+      "title": "R128 — PC已安装但未使用的Python包探测",
+      "date": "2026-05-15",
+      "type": "其他",
+      "r_num": "R127",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R128_PC外网访问能力恢复探测.md",
+      "title": "R129 — PC外网访问能力恢复探测",
+      "date": "2026-05-15",
+      "type": "其他",
+      "r_num": "R128",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R129_BfM实时流推送ScoreSys选股结果.md",
+      "title": "R129 — BfM实时流推送ScoreSys选股结果 验证报告",
+      "date": "unknown",
+      "type": "策略",
+      "r_num": "R129",
+      "categories": [
+        "策略"
+      ],
+      "keywords": [
+        "BfM",
+        "ScoreSys",
+        "选股"
+      ]
+    },
+    {
+      "file": "R12_微信Bot处理机制深度评估.md",
+      "title": "R13 - 微信Bot处理机制深度评估",
+      "date": "2026-05-05",
+      "type": "分析",
+      "r_num": "R12",
+      "categories": [
+        "分析"
+      ],
+      "keywords": [
+        "微信"
+      ]
+    },
+    {
+      "file": "R12_自主行动规划_新TODO产出.md",
+      "title": "R12 - 自主行动规划：新TODO产出",
+      "date": "2026-05-05",
+      "type": "其他",
+      "r_num": "R12",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R130_ScoreSys+BfM信号融合回测.md",
+      "title": "ScoreSys + BfM 信号融合分析报告",
+      "date": "2026-05-15",
+      "type": "回测",
+      "r_num": "R130",
+      "categories": [
+        "回测",
+        "策略"
+      ],
+      "keywords": [
+        "BfM",
+        "ScoreSys",
+        "选股",
+        "评分"
+      ]
+    },
+    {
+      "file": "R131_ScoreSys+BfM信号融合回测.md",
+      "title": "ScoreSys + BfM 信号融合分析报告",
+      "date": "unknown",
+      "type": "回测",
+      "r_num": "R131",
+      "categories": [
+        "回测",
+        "策略"
+      ],
+      "keywords": [
+        "BfM",
+        "选股",
+        "评分",
+        "因子",
+        "ScoreSys"
+      ]
+    },
+    {
+      "file": "R132_ScoreSys看板增加BfM信号叠加.md",
+      "title": "ScoreSys看板BfM信号叠加 — 验收报告",
+      "date": "unknown",
+      "type": "策略",
+      "r_num": "R132",
+      "categories": [
+        "策略"
+      ],
+      "keywords": [
+        "BfM",
+        "ScoreSys",
+        "评分"
+      ]
+    },
+    {
+      "file": "R133_微信Bot新增ScoreSys一键评分命令.md",
+      "title": "R133 — 微信Bot新增ScoreSys一键评分命令",
+      "date": "2026-05-15",
+      "type": "其他",
+      "r_num": "R133",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "微信",
+        "ScoreSys",
+        "选股",
+        "评分"
+      ]
+    },
+    {
+      "file": "R134_PC已装ML库(scikit-learn_statsmodels)深度利用.md",
+      "title": "R134 — ML库深度利用：PCA降维 + 聚类 + OLS统计检验",
+      "date": "2026-05-15",
+      "type": "其他",
+      "r_num": "R134",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "IC",
+        "评分",
+        "因子"
+      ]
+    },
+    {
+      "file": "R134_fusion_picker工具实现.md",
+      "title": "ScoreSys + BfM 动态权重融合选股工具实现报告",
+      "date": "unknown",
+      "type": "工具",
+      "r_num": "R134",
+      "categories": [
+        "工具"
+      ],
+      "keywords": [
+        "BfM",
+        "ScoreSys",
+        "选股",
+        "回测"
+      ]
+    },
+    {
+      "file": "R135_规划模式-新批次TODO产出(8条).md",
+      "title": "R135 规划模式 — 新批次TODO产出",
+      "date": "unknown",
+      "type": "其他",
+      "r_num": "R135",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "IC",
+        "因子"
+      ]
+    },
+    {
+      "file": "R136_fusion_picker.py README文档补充.md",
+      "title": "R136 — fusion_picker.py README文档补充",
+      "date": "unknown",
+      "type": "其他",
+      "r_num": "R136",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "BfM",
+        "ScoreSys",
+        "选股"
+      ]
+    },
+    {
+      "file": "R137_微信Bot新增_bfm命令.md",
+      "title": "R137 — 微信Bot新增/bfm命令",
+      "date": "unknown",
+      "type": "其他",
+      "r_num": "R137",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "微信",
+        "BfM",
+        "评分"
+      ]
+    },
+    {
+      "file": "R138_验证fusion_picker.py可运行性.md",
+      "title": "R100 — fusion_picker.py 验证通过",
+      "date": "2026-05-14",
+      "type": "其他",
+      "r_num": "R138",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "BfM",
+        "ScoreSys",
+        "选股",
+        "评分"
+      ]
+    },
+    {
+      "file": "R139_ScoreSys README文档一致性修复.md",
+      "title": "R113b — ScoreSys README文档一致性修复",
+      "date": "unknown",
+      "type": "维护",
+      "r_num": "R139",
+      "categories": [
+        "维护"
+      ],
+      "keywords": [
+        "ScoreSys"
+      ]
+    },
+    {
+      "file": "R13_polars_langfuse_otel关键发现写入global_mem.md",
+      "title": "R13 - polars/langfuse/otel 关键发现写入 global_mem.txt",
+      "date": "2026-05-05",
+      "type": "其他",
+      "r_num": "R13",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R140_全局记忆L2时效性审查第二轮.md",
+      "title": "R114b — 全局记忆L2时效性审查(第二轮)",
+      "date": "unknown",
+      "type": "分析",
+      "r_num": "R140",
+      "categories": [
+        "分析",
+        "记忆"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R141_PC文件系统用户数据发现.md",
+      "title": "R135 — PC文件系统用户数据发现",
+      "date": "unknown",
+      "type": "数据",
+      "r_num": "R141",
+      "categories": [
+        "数据",
+        "系统"
+      ],
+      "keywords": [
+        "RPS20",
+        "选股"
+      ]
+    },
+    {
+      "file": "R142_RPS20选股系统+AnnualScorer深度探测.md",
+      "title": "R143 | 探测 | RPS20选股系统 + AnnualScorer 深度探测",
+      "date": "2026-05-15",
+      "type": "策略",
+      "r_num": "R142",
+      "categories": [
+        "策略",
+        "系统"
+      ],
+      "keywords": [
+        "RPS20",
+        "选股"
+      ]
+    },
+    {
+      "file": "R142_wechat_bfm_command.md",
+      "title": "R142 | 微信Bot /bfm 命令修复与增强",
+      "date": "2026-05-15",
+      "type": "其他",
+      "r_num": "R142",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "微信",
+        "BfM"
+      ]
+    },
+    {
+      "file": "R143_apscheduler替换Windows定时任务.md",
+      "title": "R144 | 工程 | apscheduler替换Windows定时任务",
+      "date": "2026-05-15",
+      "type": "其他",
+      "r_num": "R143",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "ScoreSys"
+      ]
+    },
+    {
+      "file": "R144_ScoreSys CHANGELOG补全.md",
+      "title": "R145 | 维护 | ScoreSys CHANGELOG补全",
+      "date": "2026-05-15",
+      "type": "其他",
+      "r_num": "R144",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "ScoreSys"
+      ]
+    },
+    {
+      "file": "R145_L3 SOP文件瘦身整理.md",
+      "title": "R146 | 维护 | L3 SOP文件瘦身整理",
+      "date": "2026-05-15",
+      "type": "其他",
+      "r_num": "R145",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R146_apscheduler替换Windows不稳定定时任务.md",
+      "title": "R147 | 收尾 | apscheduler TODO标记完成",
+      "date": "unknown",
+      "type": "其他",
+      "r_num": "R146",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R147_R147任务规划-批判历史127条产出6条新TODO.md",
+      "title": "R147 — 自主行动任务规划",
+      "date": "2026-05-15",
+      "type": "其他",
+      "r_num": "R147",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R148_PC外网代理稳定性探测.md",
+      "title": "R148 — PC外网代理稳定性探测",
+      "date": "2026-05-16",
+      "type": "其他",
+      "r_num": "R148",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R148_proxy_health.md",
+      "title": "R148 — PC外网代理稳定性探测",
+      "date": "2026-05-16",
+      "type": "其他",
+      "r_num": "R148",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R149_CPU轻量模型推理能力边界实测.md",
+      "title": "R149 — CPU轻量模型推理能力边界实测",
+      "date": "2026-05-16",
+      "type": "其他",
+      "r_num": "R149",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R150_自主行动历史记录去重整理.md",
+      "title": "R150 — 自主行动历史记录去重整理",
+      "date": "2026-05-16",
+      "type": "其他",
+      "r_num": "R150",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "微信",
+        "ScoreSys",
+        "IC"
+      ]
+    },
+    {
+      "file": "R151_TODO.txt清理与重置.md",
+      "title": "R151 — TODO.txt清理与重置",
+      "date": "2026-05-16",
+      "type": "维护",
+      "r_num": "R151",
+      "categories": [
+        "维护"
+      ],
+      "keywords": [
+        "选股"
+      ]
+    },
+    {
+      "file": "R152_融合选股工具v2.md",
+      "title": "R153 — GA上游代码自动同步工具",
+      "date": "unknown",
+      "type": "策略",
+      "r_num": "R152",
+      "categories": [
+        "策略",
+        "工具"
+      ],
+      "keywords": [
+        "GA"
+      ]
+    },
+    {
+      "file": "R153_GA上游代码自动同步工具.md",
+      "title": "R153 — GA上游代码自动同步工具",
+      "date": "unknown",
+      "type": "工具",
+      "r_num": "R153",
+      "categories": [
+        "工具"
+      ],
+      "keywords": [
+        "GA"
+      ]
+    },
+    {
+      "file": "R154_RPS20xScoreSys交叉分析.md",
+      "title": "R154 | RPS20 × ScoreSys 交叉分析报告",
+      "date": "2026-05-16",
+      "type": "分析",
+      "r_num": "R154",
+      "categories": [
+        "分析"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "评分",
+        "RPS20"
+      ]
+    },
+    {
+      "file": "R155_scheduled_backtest运行状态验证.md",
+      "title": "R155 — scheduled_backtest 运行状态验证",
+      "date": "unknown",
+      "type": "回测",
+      "r_num": "R155",
+      "categories": [
+        "回测"
+      ],
+      "keywords": [
+        "ScoreSys"
+      ]
+    },
+    {
+      "file": "R156_RPS20xScoreSys融合回测报告.md",
+      "title": "RPS20 × ScoreSys 融合回测报告",
+      "date": "2026-05-16",
+      "type": "回测",
+      "r_num": "R156",
+      "categories": [
+        "回测"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "回测",
+        "RPS20"
+      ]
+    },
+    {
+      "file": "R157_GA上游安全提交自动合并.md",
+      "title": "R156 — GA上游安全提交自动合并",
+      "date": "unknown",
+      "type": "其他",
+      "r_num": "R157",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "GA"
+      ]
+    },
+    {
+      "file": "R158_proxy_health持续监控.md",
+      "title": "R157 — proxy_health持续监控",
+      "date": "unknown",
+      "type": "其他",
+      "r_num": "R158",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R159_自主行动报告知识图谱.md",
+      "title": "R158 — 报告知识图谱索引",
+      "date": "unknown",
+      "type": "记忆",
+      "r_num": "R159",
+      "categories": [
+        "记忆"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "选股",
+        "评分",
+        "RPS20"
+      ]
+    },
+    {
+      "file": "R160_任务规划-批判历史产出6条新TODO.md",
+      "title": "R160 任务规划 — 批判历史产出6条新TODO",
+      "date": "2026-05-16",
+      "type": "其他",
+      "r_num": "R160",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R161_RPS20xScoreSys融合策略参数优化.md",
+      "title": "RPS20+ScoreSys融合策略分析报告",
+      "date": "unknown",
+      "type": "策略",
+      "r_num": "R161",
+      "categories": [
+        "策略",
+        "维护"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "RPS20"
+      ]
+    },
+    {
+      "file": "R162_RPS20xScoreSys定时任务修复.md",
+      "title": "R156 — scheduled_backtest.py verbose参数修复",
+      "date": "unknown",
+      "type": "维护",
+      "r_num": "R162",
+      "categories": [
+        "维护"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R163_backtest_engine通用回测引擎+定时任务收尾.md",
+      "title": "R163 - 通用回测引擎模块化 + 定时任务重建收尾",
+      "date": "unknown",
+      "type": "回测",
+      "r_num": "R163",
+      "categories": [
+        "回测",
+        "系统"
+      ],
+      "keywords": [
+        "选股",
+        "回测"
+      ]
+    },
+    {
+      "file": "R165_计划任务修复+自动评分创建.md",
+      "title": "R164 计划任务修复 + 自动评分任务创建",
+      "date": "2026-05-18",
+      "type": "维护",
+      "r_num": "R165",
+      "categories": [
+        "维护"
+      ],
+      "keywords": [
+        "评分"
+      ]
+    },
+    {
+      "file": "R166_计划任务修复+自动评分创建.md",
+      "title": "R166 计划任务修复 + 自动评分任务创建",
+      "date": "2026-05-18",
+      "type": "维护",
+      "r_num": "R166",
+      "categories": [
+        "维护"
+      ],
+      "keywords": [
+        "评分"
+      ]
+    },
+    {
+      "file": "R167_proxy_health监控中期分析.md",
+      "title": "proxy_health 监控中期分析报告",
+      "date": "2026-05-18",
+      "type": "分析",
+      "r_num": "R167",
+      "categories": [
+        "分析"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R168_polars加速回测引擎分析.md",
+      "title": "Polars 加速回测引擎 — 可行性分析",
+      "date": "2026-05-18",
+      "type": "回测",
+      "r_num": "R168",
+      "categories": [
+        "回测",
+        "分析",
+        "系统"
+      ],
+      "keywords": [
+        "回测"
+      ]
+    },
+    {
+      "file": "R168_proxy_health持续监控.md",
+      "title": "Proxy Health 持续监控报告",
+      "date": "2026-05-18",
+      "type": "其他",
+      "r_num": "R168",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R169_ScoreSys定时任务诊断.md",
+      "title": "ScoreSys_DailyScore 定时任务诊断",
+      "date": "2026-05-18",
+      "type": "其他",
+      "r_num": "R169",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "ScoreSys"
+      ]
+    },
+    {
+      "file": "R170_规划模式_新批次TODO产出.md",
+      "title": "R171 — 规划模式：新批次 TODO 产出",
+      "date": "2026-05-18",
+      "type": "其他",
+      "r_num": "R170",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R171_db索引优化+记忆健康度验证.md",
+      "title": "R172 — stock_data.db 索引优化 + 记忆系统健康度验证",
+      "date": "2026-05-18",
+      "type": "维护",
+      "r_num": "R171",
+      "categories": [
+        "维护",
+        "记忆"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R172_报告知识图谱自动更新.md",
+      "title": "{",
+      "date": "2026-05-18",
+      "type": "记忆",
+      "r_num": "R172",
+      "categories": [
+        "记忆"
+      ],
+      "keywords": [
+        "IC",
+        "因子",
+        "回测"
+      ]
+    },
+    {
+      "file": "R173_R174-探测受阻TODO状态.md",
+      "title": "GA — 自主行动 TODO (R160批次)",
+      "date": "2026-05-16",
+      "type": "其他",
+      "r_num": "R173",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "RPS20",
+        "GA",
+        "回测"
+      ]
+    },
+    {
+      "file": "R174_TODO整理与状态同步.md",
+      "title": "R179 — TODO 整理与状态同步",
+      "date": "2026-05-18",
+      "type": "其他",
+      "r_num": "R174",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "ScoreSys"
+      ]
+    },
+    {
+      "file": "R175_ScoreSys数据完整性验证.md",
+      "title": "R180 — ScoreSys 数据完整性验证",
+      "date": "2026-05-18",
+      "type": "数据",
+      "r_num": "R175",
+      "categories": [
+        "数据"
+      ],
+      "keywords": [
+        "ScoreSys"
+      ]
+    },
+    {
+      "file": "R176_IC加权因子改造回测.md",
+      "title": "IC 加权因子改造回测报告",
+      "date": "2026-05-18",
+      "type": "回测",
+      "r_num": "R176",
+      "categories": [
+        "回测",
+        "策略",
+        "因子"
+      ],
+      "keywords": [
+        "IC",
+        "因子",
+        "回测"
+      ]
+    },
+    {
+      "file": "R176_PC闲置资源利用方案.md",
+      "title": "PC 闲置计算资源利用方案",
+      "date": "2026-05-18",
+      "type": "其他",
+      "r_num": "R176",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R176_ScoreSys项目全景文档.md",
+      "title": "ScoreSys 项目全景文档",
+      "date": "2026-05-18",
+      "type": "其他",
+      "r_num": "R176",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "评分",
+        "因子"
+      ]
+    },
+    {
+      "file": "R176_scheduled_backtest.py 日志增强.md",
+      "title": "R188 | 2026-05-18 | 维护 | scheduled_backtest.py 日志增强",
+      "date": "2026-05-18",
+      "type": "回测",
+      "r_num": "R176",
+      "categories": [
+        "回测"
+      ],
+      "keywords": [
+        "评分",
+        "回测"
+      ]
+    },
+    {
+      "file": "R177_update_index.py增强-自动分类+关键词+交叉引用.md",
+      "title": "R177 | 2026-05-18 | 维护 | update_index.py增强-自动分类+关键词+交叉引用",
+      "date": "2026-05-18",
+      "type": "其他",
+      "r_num": "R177",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R178_backfill_v2验证OK+pe_ttm断档回填.md",
+      "title": "R189 | pe_ttm 断档回填",
+      "date": "2026-05-18",
+      "type": "其他",
+      "r_num": "R178",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R179_自主巡检R190.md",
+      "title": "R190 | 自主巡检",
+      "date": "2026-05-18",
+      "type": "其他",
+      "r_num": "R179",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "RPS20"
+      ]
+    },
+    {
+      "file": "R180_定时任务诊断R191.md",
+      "title": "R191 | 定时任务诊断",
+      "date": "2026-05-15",
+      "type": "其他",
+      "r_num": "R180",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "回测",
+        "RPS20"
+      ]
+    },
+    {
+      "file": "R181_自主行动R192 — 阻塞诊断与环境盘点.md",
+      "title": "R192 自主行动 — 阻塞诊断与环境盘点",
+      "date": "2026-05-18",
+      "type": "数据",
+      "r_num": "R181",
+      "categories": [
+        "数据"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R182_ScoreSys评分数据深度诊断 — 分布异常_valuation缺陷_regime单一化.md",
+      "title": "R193 自主行动 — ScoreSys评分数据深度诊断",
+      "date": "2026-05-18",
+      "type": "数据",
+      "r_num": "R182",
+      "categories": [
+        "数据"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "评分",
+        "因子"
+      ]
+    },
+    {
+      "file": "R183_状态巡检 — 系统正常等待5_19新数据.md",
+      "title": "R194 自主行动 — 状态巡检与记忆审查",
+      "date": "2026-05-18",
+      "type": "数据",
+      "r_num": "R183",
+      "categories": [
+        "数据",
+        "系统"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R184_PC环境深度发现 — Redis数据源+七维选股+未利用工具.md",
+      "title": "R195 PC环境深度发现 — 未被利用的数据源与工具",
+      "date": "2026-05-18",
+      "type": "策略",
+      "r_num": "R184",
+      "categories": [
+        "策略",
+        "数据",
+        "工具"
+      ],
+      "keywords": [
+        "选股",
+        "Redis"
+      ]
+    },
+    {
+      "file": "R185_记忆整理 — global_mem.txt 4处过时_错误信息更新提案.md",
+      "title": "R196 记忆整理 — global_mem.txt 过时信息更新提案",
+      "date": "2026-05-18",
+      "type": "记忆",
+      "r_num": "R185",
+      "categories": [
+        "记忆"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R186_定时任务状态确认+Redis实时数据深度探测.md",
+      "title": "R190 | 2026-05-18 | 巡检 | 定时任务状态确认 + Redis实时数据深度探测",
+      "date": "2026-05-18",
+      "type": "数据",
+      "r_num": "R186",
+      "categories": [
+        "数据"
+      ],
+      "keywords": [
+        "Redis"
+      ]
+    },
+    {
+      "file": "R187_ScoreSys定时任务不运行根因诊断与修复.md",
+      "title": "R191 | 2026-05-18 | 诊断+修复 | ScoreSys定时任务不运行根因",
+      "date": "2026-05-18",
+      "type": "维护",
+      "r_num": "R187",
+      "categories": [
+        "维护"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "IC",
+        "评分"
+      ]
+    },
+    {
+      "file": "R188_系统状态确认+Redis数据探索.md",
+      "title": "R192 | 2026-05-18 | 巡检 | 系统状态确认+Redis数据探索",
+      "date": "2026-05-18",
+      "type": "数据",
+      "r_num": "R188",
+      "categories": [
+        "数据",
+        "系统"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "IC",
+        "Redis"
+      ]
+    },
+    {
+      "file": "R189_quotes表pe_ttm数据完整性深度分析.md",
+      "title": "R189 | quotes表pe_ttm数据完整性深度分析",
+      "date": "2026-05-18",
+      "type": "分析",
+      "r_num": "R189",
+      "categories": [
+        "分析",
+        "数据"
+      ],
+      "keywords": [
+        "选股"
+      ]
+    },
+    {
+      "file": "R190_Redis实时数据开发日内信号推送系统.md",
+      "title": "R190 | 2026-05-18 | 开发 | Redis实时数据开发日内信号推送系统",
+      "date": "2026-05-18",
+      "type": "策略",
+      "r_num": "R190",
+      "categories": [
+        "策略",
+        "数据",
+        "系统"
+      ],
+      "keywords": [
+        "Redis"
+      ]
+    },
+    {
+      "file": "R191_Redis实时数据开发日内信号推送系统.md",
+      "title": "R190 | 2026-05-18 | 开发 | Redis实时数据开发日内信号推送系统",
+      "date": "2026-05-18",
+      "type": "策略",
+      "r_num": "R191",
+      "categories": [
+        "策略",
+        "数据",
+        "系统"
+      ],
+      "keywords": [
+        "Redis"
+      ]
+    },
+    {
+      "file": "R192_PC闲置GPU推理能力边界测试.md",
+      "title": "R192 | 2026-05-18 | 环境 | 探测PC闲置GPU推理能力边界扩展",
+      "date": "2026-05-18",
+      "type": "其他",
+      "r_num": "R192",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R192_RPS20+ScoreSys融合策略参数优化(夏普目标0.75).md",
+      "title": "R191 | 2026-05-18 | 优化 | RPS20+ScoreSys融合策略参数优化(夏普目标0.75)",
+      "date": "2026-05-18",
+      "type": "回测",
+      "r_num": "R192",
+      "categories": [
+        "回测",
+        "策略",
+        "维护"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "回测",
+        "评分",
+        "RPS20"
+      ]
+    },
+    {
+      "file": "R193_Intel扩展包安装验证.md",
+      "title": "R193 | 2026-05-18 | 环境 | Intel扩展包安装验证",
+      "date": "2026-05-18",
+      "type": "其他",
+      "r_num": "R193",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R194_Intel优化持续监控.md",
+      "title": "R194 | 2026-05-18 | 监控 | Intel优化持续监控",
+      "date": "2026-05-18",
+      "type": "维护",
+      "r_num": "R194",
+      "categories": [
+        "维护"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R195_L2记忆时效性审查与健康度评估.md",
+      "title": "R195 | 2026-05-18 | 维护 | L2记忆时效性审查与健康度评估",
+      "date": "2026-05-18",
+      "type": "分析",
+      "r_num": "R195",
+      "categories": [
+        "分析",
+        "维护",
+        "记忆"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R196_AlphaTrading因子库移植验证.md",
+      "title": "R196 | 2026-05-18 | 探索 | AlphaTrading因子库移植验证",
+      "date": "2026-05-18",
+      "type": "策略",
+      "r_num": "R196",
+      "categories": [
+        "策略",
+        "因子"
+      ],
+      "keywords": [
+        "因子"
+      ]
+    },
+    {
+      "file": "R197_Redis日内信号推送系统开发.md",
+      "title": "R197 | 2026-05-18 | 探索 | Redis日内信号推送系统开发",
+      "date": "2026-05-18",
+      "type": "策略",
+      "r_num": "R197",
+      "categories": [
+        "策略",
+        "系统"
+      ],
+      "keywords": [
+        "Redis"
+      ]
+    },
+    {
+      "file": "R197_mini_sop_collection整理.md",
+      "title": "Mini-SOP 集合整理报告",
+      "date": "2026-05-19",
+      "type": "其他",
+      "r_num": "R197",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R198_TODO.txt_任务完成验证.md",
+      "title": "R198 | 2026-05-18 | TODO.txt任务完成验证",
+      "date": "2026-05-18",
+      "type": "其他",
+      "r_num": "R198",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "Redis"
+      ]
+    },
+    {
+      "file": "R198_otel_trace装饰器集成到GA核心.md",
+      "title": "otel_trace装饰器集成到GA核心",
+      "date": "2026-05-19",
+      "type": "其他",
+      "r_num": "R198",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "GA"
+      ]
+    },
+    {
+      "file": "R199_GA核心依赖健康检查.md",
+      "title": "GA核心依赖健康检查报告",
+      "date": "2026-05-19",
+      "type": "维护",
+      "r_num": "R199",
+      "categories": [
+        "维护"
+      ],
+      "keywords": [
+        "GA"
+      ]
+    },
+    {
+      "file": "R199_file_monitor_v2_backtest_integration.md",
+      "title": "file_monitor_v2 真正回测触发集成报告",
+      "date": "2026-05-19",
+      "type": "回测",
+      "r_num": "R199",
+      "categories": [
+        "回测"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "回测"
+      ]
+    },
+    {
+      "file": "R1_LM_Studio探测+推送链路验证.md",
+      "title": "R1 LM Studio探测 + 实盘信号推送链路验证",
+      "date": "unknown",
+      "type": "其他",
+      "r_num": "R1",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R1_首次自主行动规划.md",
+      "title": "R00_首次自主行动规划",
+      "date": "unknown",
+      "type": "其他",
+      "r_num": "R1",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R200_file_monitor_v2多目录监控扩展.md",
+      "title": "file_monitor_v2 多目录监控扩展报告",
+      "date": "2026-05-19",
+      "type": "其他",
+      "r_num": "R200",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "BfM",
+        "ScoreSys",
+        "GA"
+      ]
+    },
+    {
+      "file": "R201_autonomous_reports索引优化.md",
+      "title": "autonomous_reports 索引优化报告",
+      "date": "2026-05-19",
+      "type": "维护",
+      "r_num": "R201",
+      "categories": [
+        "维护",
+        "记忆"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R202_轻量自动化维护.md",
+      "title": "标签内。让我先创建报告内容，然后调用文件写入</summary>",
+      "date": "unknown",
+      "type": "工具",
+      "r_num": "R202",
+      "categories": [
+        "工具"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R203_系统性能优化.md",
+      "title": "系统性能优化执行报告 R118",
+      "date": "unknown",
+      "type": "维护",
+      "r_num": "R203",
+      "categories": [
+        "维护",
+        "系统"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R204_annualscorer_file_monitor.md",
+      "title": "AnnualScorer file_monitor 实施报告",
+      "date": "2026-05-19",
+      "type": "其他",
+      "r_num": "R204",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "选股",
+        "评分"
+      ]
+    },
+    {
+      "file": "R204_自主行动规划模式总结.md",
+      "title": "自主行动规划模式总结报告 R204",
+      "date": "unknown",
+      "type": "其他",
+      "r_num": "R204",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "评分"
+      ]
+    },
+    {
+      "file": "R205_ScoreSys_Industry_Neutral_Backtest_Framework.md",
+      "title": "ScoreSys行业中性化回测框架构建报告 R205",
+      "date": "2020-01-01",
+      "type": "回测",
+      "r_num": "R205",
+      "categories": [
+        "回测"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "IC",
+        "因子",
+        "回测"
+      ]
+    },
+    {
+      "file": "R205_ascorer_in_unified_index.md",
+      "title": "AnnualScorer 纳入 GA 统一搜索索引报告",
+      "date": "2026-05-19",
+      "type": "其他",
+      "r_num": "R205",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "GA"
+      ]
+    },
+    {
+      "file": "R205_扫描D__GenericAgent工具链.md",
+      "title": "🔍 D:/GenericAgent 工具链扫描报告",
+      "date": "2026-05-20",
+      "type": "数据",
+      "r_num": "R205",
+      "categories": [
+        "数据",
+        "工具"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R206_L2_global_mem_audit.md",
+      "title": "L2 global_mem.txt 时效性深度审查报告",
+      "date": "2026-05-19",
+      "type": "其他",
+      "r_num": "R206",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R206_global_mem L2索引更新.md",
+      "title": "global_mem L2索引更新报告",
+      "date": "2026-05-20",
+      "type": "记忆",
+      "r_num": "R206",
+      "categories": [
+        "记忆"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R207_GA_startup_perf.md",
+      "title": "GA 启动耗时分析报告",
+      "date": "2026-05-19",
+      "type": "其他",
+      "r_num": "R207",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "GA"
+      ]
+    },
+    {
+      "file": "R207_file_monitor_v2自动回测优化.md",
+      "title": "file_monitor_v2 → v3 自动回测优化报告",
+      "date": "2026-05-20",
+      "type": "回测",
+      "r_num": "R207",
+      "categories": [
+        "回测",
+        "维护"
+      ],
+      "keywords": [
+        "回测"
+      ]
+    },
+    {
+      "file": "R208_自主行动重新规划.md",
+      "title": "自主行动规划模式报告 - 第9轮",
+      "date": "2026-05-20",
+      "type": "其他",
+      "r_num": "R208",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R209_ultralytics YOLO屏幕元素检测.md",
+      "title": "ultralytics YOLO屏幕元素检测报告",
+      "date": "2026-05-20",
+      "type": "其他",
+      "r_num": "R209",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R210_PySide6桌面GUI启动器.md",
+      "title": "PySide6桌面GUI启动器报告",
+      "date": "2026-05-20",
+      "type": "其他",
+      "r_num": "R210",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "回测"
+      ]
+    },
+    {
+      "file": "R211_autonomous_reports智能摘要.md",
+      "title": "autonomous_reports智能摘要报告",
+      "date": "2026-05-20",
+      "type": "其他",
+      "r_num": "R211",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R212_PowerShell_CMD工具链扫描.md",
+      "title": "Windows系统工具链扫描报告",
+      "date": "2026-05-20",
+      "type": "数据",
+      "r_num": "R212",
+      "categories": [
+        "数据",
+        "工具"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R213_自主行动重新规划.md",
+      "title": "自主行动规划模式报告 - 第14轮",
+      "date": "2026-05-20",
+      "type": "其他",
+      "r_num": "R213",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "Redis",
+        "GA"
+      ]
+    },
+    {
+      "file": "R214_GA核心能力集成与增强.md",
+      "title": "GA核心能力集成报告",
+      "date": "2026-05-20",
+      "type": "其他",
+      "r_num": "R214",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "GA"
+      ]
+    },
+    {
+      "file": "R215_PostgreSQL数据库集成.md",
+      "title": "PostgreSQL数据库集成报告",
+      "date": "2026-05-20",
+      "type": "数据",
+      "r_num": "R215",
+      "categories": [
+        "数据"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R216_LM Studio本地LLM测试.md",
+      "title": "LM Studio已安装但未运行(配置文件在AppData/Roaming)，端口1234不通，标记阻塞",
+      "date": "unknown",
+      "type": "其他",
+      "r_num": "R216",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R217_Redis集成测试.md",
+      "title": "Redis on Windows 集成测试报告",
+      "date": "2026-05-20",
+      "type": "其他",
+      "r_num": "R217",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "Redis"
+      ]
+    },
+    {
+      "file": "R218_自主报告交叉引用分析.md",
+      "title": "自主报告交叉引用分析报告",
+      "date": "2026-05-20",
+      "type": "分析",
+      "r_num": "R218",
+      "categories": [
+        "分析"
+      ],
+      "keywords": [
+        "微信",
+        "因子"
+      ]
+    },
+    {
+      "file": "R219_D__Project项目结构深度扫描.md",
+      "title": "D:/Project 项目结构深度扫描报告",
+      "date": "2026-05-20",
+      "type": "数据",
+      "r_num": "R219",
+      "categories": [
+        "数据"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R220_ga_tools.py扩展Redis缓存层.md",
+      "title": "ga_tools.py Redis缓存层扩展报告",
+      "date": "2026-05-20",
+      "type": "其他",
+      "r_num": "R220",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "Redis",
+        "GA"
+      ]
+    },
+    {
+      "file": "R221_L2_L3记忆索引审查.md",
+      "title": "R?? | 记忆索引审查报告",
+      "date": "unknown",
+      "type": "分析",
+      "r_num": "R221",
+      "categories": [
+        "分析",
+        "记忆"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R222_GA工作流自动化脚本.md",
+      "title": "R222 | GA工作流自动化脚本",
+      "date": "unknown",
+      "type": "工具",
+      "r_num": "R222",
+      "categories": [
+        "工具"
+      ],
+      "keywords": [
+        "GA"
+      ]
+    },
+    {
+      "file": "R223_search_reports语义搜索增强.md",
+      "title": "R223 | search_reports语义搜索增强",
+      "date": "unknown",
+      "type": "其他",
+      "r_num": "R223",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "评分"
+      ]
+    },
+    {
+      "file": "R224_file_monitor_v3守护进程化.md",
+      "title": "R224 | file_monitor_v3守护进程化",
+      "date": "unknown",
+      "type": "其他",
+      "r_num": "R224",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R225_otel_trace可视化面板.md",
+      "title": "R225 | otel_trace可视化面板",
+      "date": "unknown",
+      "type": "其他",
+      "r_num": "R225",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R226_PostgreSQL数据库集成.md",
+      "title": "R226 | PostgreSQL数据库集成",
+      "date": "unknown",
+      "type": "数据",
+      "r_num": "R226",
+      "categories": [
+        "数据"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R227_adbutils手机控制增强.md",
+      "title": "R227 | 能力 | adbutils手机控制增强",
+      "date": "unknown",
+      "type": "其他",
+      "r_num": "R227",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R228_file_monitor_v3回测结果自动解析.md",
+      "title": "R228 | 能力 | file_monitor_v3回测结果自动解析",
+      "date": "unknown",
+      "type": "回测",
+      "r_num": "R228",
+      "categories": [
+        "回测"
+      ],
+      "keywords": [
+        "回测"
+      ]
+    },
+    {
+      "file": "R229_D__Project项目代码质量扫描.md",
+      "title": "D:/Project 代码质量扫描报告",
+      "date": "2026-05-22",
+      "type": "数据",
+      "r_num": "R229",
+      "categories": [
+        "数据"
+      ],
+      "keywords": [
+        "BfM",
+        "ScoreSys"
+      ]
+    },
+    {
+      "file": "R230_自主行动知识库整理.md",
+      "title": "🤖 GA 能力手册 (Generic Agent Capability Handbook)",
+      "date": "2026-05-22",
+      "type": "其他",
+      "r_num": "R230",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "GA"
+      ]
+    },
+    {
+      "file": "R231_Windows服务化GA核心守护.md",
+      "title": "R231 | 能力 | Windows服务化GA核心守护",
+      "date": "unknown",
+      "type": "其他",
+      "r_num": "R231",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "GA"
+      ]
+    },
+    {
+      "file": "R232_Redis实时数据管道.md",
+      "title": "R232 | 能力 | Redis实时数据管道",
+      "date": "unknown",
+      "type": "数据",
+      "r_num": "R232",
+      "categories": [
+        "数据"
+      ],
+      "keywords": [
+        "Redis"
+      ]
+    },
+    {
+      "file": "R233_ga_dashboard任务监控面板.md",
+      "title": "R233 | 能力 | ga_dashboard任务监控面板",
+      "date": "unknown",
+      "type": "其他",
+      "r_num": "R233",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R234_系统环境健康检查.md",
+      "title": "R234 | 系统环境健康检查 | 2026-05-22",
+      "date": "2026-05-22",
+      "type": "维护",
+      "r_num": "R234",
+      "categories": [
+        "维护",
+        "系统"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R235_自主行动规划模式-批判历史产出新TODO.md",
+      "title": "R235 | 自主行动规划模式 | 2026-05-22",
+      "date": "2026-05-22",
+      "type": "其他",
+      "r_num": "R235",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R236_D__Project代码质量自动修复.md",
+      "title": "R236 | D:/Project代码质量自动修复 | 2026-05-22",
+      "date": "2026-05-22",
+      "type": "维护",
+      "r_num": "R236",
+      "categories": [
+        "维护"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R237_定时任务max_delay优化.md",
+      "title": "R237 | 定时任务max_delay优化 | 2026-05-22",
+      "date": "2026-05-22",
+      "type": "维护",
+      "r_num": "R237",
+      "categories": [
+        "维护"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R238_auto_git_commit守护进程健康检查.md",
+      "title": "R238 | auto_git_commit守护进程健康检查 | 2026-05-22",
+      "date": "2026-05-22",
+      "type": "维护",
+      "r_num": "R238",
+      "categories": [
+        "维护"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R239_file_monitor_v3回测结果SQLite适配+GA技术债扫描.md",
+      "title": "R240 | file_monitor_v3回测结果SQLite适配 + GA代码库技术债扫描 | 2026-05-22",
+      "date": "2026-05-22",
+      "type": "回测",
+      "r_num": "R239",
+      "categories": [
+        "回测",
+        "数据"
+      ],
+      "keywords": [
+        "GA",
+        "回测"
+      ]
+    },
+    {
+      "file": "R239_file_monitor_v3回测结果SQLite适配.md",
+      "title": "R239 - file_monitor_v3回测结果SQLite适配",
+      "date": "unknown",
+      "type": "回测",
+      "r_num": "R239",
+      "categories": [
+        "回测"
+      ],
+      "keywords": [
+        "回测"
+      ]
+    },
+    {
+      "file": "R240_GA代码库技术债扫描.md",
+      "title": "R240 - 系统巡检与日志清理",
+      "date": "unknown",
+      "type": "数据",
+      "r_num": "R240",
+      "categories": [
+        "数据"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R240_系统健康检查.md",
+      "title": "R241 | 系统健康检查 | 2026-05-22",
+      "date": "2026-05-22",
+      "type": "维护",
+      "r_num": "R240",
+      "categories": [
+        "维护",
+        "系统"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R241_LM Studio本地LLM测试.md",
+      "title": "R242 | LM Studio本地LLM测试 | 2026-05-22",
+      "date": "2026-05-22",
+      "type": "其他",
+      "r_num": "R241",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R242_规划模式_批判历史产出新TODO.md",
+      "title": "R242 | 2026-05-22 | 规划模式 | 第N轮批判性规划",
+      "date": "2026-05-22",
+      "type": "其他",
+      "r_num": "R242",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R243_D__Project剩余ruff问题手动修复.md",
+      "title": "R243 | 2026-05-22 | 能力 | D:/Project剩余ruff问题手动修复",
+      "date": "2026-05-22",
+      "type": "维护",
+      "r_num": "R243",
+      "categories": [
+        "维护"
+      ],
+      "keywords": [
+        "BfM",
+        "ScoreSys"
+      ]
+    },
+    {
+      "file": "R244_file_monitor_v3 SQLite端到端回测验证.md",
+      "title": "R244 | 2026-05-22 | 能力 | file_monitor_v3 SQLite端到端回测验证",
+      "date": "2026-05-22",
+      "type": "回测",
+      "r_num": "R244",
+      "categories": [
+        "回测"
+      ],
+      "keywords": [
+        "回测"
+      ]
+    },
+    {
+      "file": "R245_LM Studio本地LLM集成到GA工具链.md",
+      "title": "R245 | 2026-05-22 | 能力 | LM Studio本地LLM集成到GA工具链",
+      "date": "2026-05-22",
+      "type": "工具",
+      "r_num": "R245",
+      "categories": [
+        "工具"
+      ],
+      "keywords": [
+        "GA"
+      ]
+    },
+    {
+      "file": "R246_auto_git_commit守护进程恢复.md",
+      "title": "R246 | 2026-05-22 | 能力 | auto_git_commit守护进程恢复",
+      "date": "2026-05-22",
+      "type": "其他",
+      "r_num": "R246",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R247_规划模式_批判历史产出新TODO.md",
+      "title": "R247 规划模式：批判历史 + 产出新 TODO",
+      "date": "unknown",
+      "type": "其他",
+      "r_num": "R247",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R248_ScoreSys+BfM融合选股实盘信号生成.md",
+      "title": "R248 | 融合选股实盘信号生成器",
+      "date": "unknown",
+      "type": "策略",
+      "r_num": "R248",
+      "categories": [
+        "策略"
+      ],
+      "keywords": [
+        "BfM",
+        "选股",
+        "评分",
+        "因子",
+        "ScoreSys"
+      ]
+    },
+    {
+      "file": "R249_GA微信Bot+定时任务联动能力验证.md",
+      "title": "🔗 定时任务-微信推送联动验证报告",
+      "date": "2026-05-23",
+      "type": "其他",
+      "r_num": "R249",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "微信",
+        "GA"
+      ]
+    },
+    {
+      "file": "R250_BfM仓库代码深度扫描与优化建议.md",
+      "title": "R252 | BfM仓库代码深度扫描与优化建议",
+      "date": "2026-05-23",
+      "type": "数据",
+      "r_num": "R250",
+      "categories": [
+        "数据",
+        "维护"
+      ],
+      "keywords": [
+        "BfM"
+      ]
+    },
+    {
+      "file": "R251_三仓库端到端回测联动收尾.md",
+      "title": "R254 — 三仓库端到端回测联动收尾",
+      "date": "2026-05-23",
+      "type": "回测",
+      "r_num": "R251",
+      "categories": [
+        "回测"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "因子",
+        "回测"
+      ]
+    },
+    {
+      "file": "R252_ScoreSys因子冗余分析.md",
+      "title": "R255 — ScoreSys 因子冗余分析",
+      "date": "2026-05-23",
+      "type": "分析",
+      "r_num": "R252",
+      "categories": [
+        "分析",
+        "策略",
+        "因子"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "评分",
+        "因子"
+      ]
+    },
+    {
+      "file": "R253_第15轮规划模式 — 定时任务修复与新TODO产出.md",
+      "title": "第15轮自主行动规划报告",
+      "date": "unknown",
+      "type": "维护",
+      "r_num": "R253",
+      "categories": [
+        "维护"
+      ],
+      "keywords": [
+        "Redis"
+      ]
+    },
+    {
+      "file": "R254_L2记忆时效性审查(第三轮).md",
+      "title": "R260 — L2记忆时效性审查(第三轮)",
+      "date": "2026-05-23",
+      "type": "分析",
+      "r_num": "R254",
+      "categories": [
+        "分析",
+        "记忆"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R255_PC闲置GPU推理能力边界探测(续).md",
+      "title": "R261 — PC闲置GPU推理能力边界探测(续)",
+      "date": "2026-05-23",
+      "type": "其他",
+      "r_num": "R255",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R257_LM Studio推理服务可用性探测.md",
+      "title": "R261 LM Studio 推理服务可用性探测",
+      "date": "unknown",
+      "type": "其他",
+      "r_num": "R257",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R258_定时任务体系架构整合.md",
+      "title": "R258 定时任务体系架构整合报告",
+      "date": "unknown",
+      "type": "系统",
+      "r_num": "R258",
+      "categories": [
+        "系统"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R258_定时任务调度器健康检查.md",
+      "title": "定时任务调度器健康检查",
+      "date": "unknown",
+      "type": "维护",
+      "r_num": "R258",
+      "categories": [
+        "维护"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R259_系统健康检查+TODO清理.md",
+      "title": "R263 | 2026-05-24 | 系统 | 自主健康检查+TODO清理",
+      "date": "2026-05-24",
+      "type": "维护",
+      "r_num": "R259",
+      "categories": [
+        "维护",
+        "系统"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R260_L2记忆时效性审查第三轮.md",
+      "title": "R260 — L2记忆时效性审查(第三轮)",
+      "date": "2026-05-23",
+      "type": "分析",
+      "r_num": "R260",
+      "categories": [
+        "分析",
+        "记忆"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R260_Scheduler重启+健康检查.md",
+      "title": "R264 | 2026-05-24 | 系统 | Scheduler重启+健康检查",
+      "date": "2026-05-24",
+      "type": "维护",
+      "r_num": "R260",
+      "categories": [
+        "维护"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R260_技术债扫描.md",
+      "title": "R260 - GA代码库技术债扫描",
+      "date": "2026-05-24",
+      "type": "数据",
+      "r_num": "R260",
+      "categories": [
+        "数据"
+      ],
+      "keywords": [
+        "GA"
+      ]
+    },
+    {
+      "file": "R262_wechatapp_bare_except_fix.md",
+      "title": "R262 - 微信Bot空except修复",
+      "date": "2026-05-25",
+      "type": "其他",
+      "r_num": "R262",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "微信"
+      ]
+    },
+    {
+      "file": "R263_scikit-learn_statsmodels在ScoreSys中的应用探测.md",
+      "title": "R263 - scikit-learn/statsmodels在ScoreSys中的应用探测",
+      "date": "2026-05-25",
+      "type": "其他",
+      "r_num": "R263",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "ScoreSys"
+      ]
+    },
+    {
+      "file": "R264_PC闲置GPU推理能力实测.md",
+      "title": "R264 — PC闲置GPU推理能力实测",
+      "date": "2026-05-25",
+      "type": "其他",
+      "r_num": "R264",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R265_backtest_engine通用回测引擎补全.md",
+      "title": "R265 — backtest_engine 通用回测引擎补全",
+      "date": "2026-05-25",
+      "type": "回测",
+      "r_num": "R265",
+      "categories": [
+        "回测",
+        "系统"
+      ],
+      "keywords": [
+        "回测"
+      ]
+    },
+    {
+      "file": "R266_PC数据资产盘点与推荐.md",
+      "title": "R266 — PC数据资产盘点与个性化推荐",
+      "date": "unknown",
+      "type": "数据",
+      "r_num": "R266",
+      "categories": [
+        "数据"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R2_环境 _ 扫描PC上已安装但未利用的Python包和CLI工具.md",
+      "title": "R02 - 扫描本地Python包和未利用的CLI工具",
+      "date": "2026-05-04",
+      "type": "数据",
+      "r_num": "R2",
+      "categories": [
+        "数据",
+        "工具"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R3_环境 _ 探测系统可用端口和服务，发现可本地调用的API.md",
+      "title": "R03 - 探测系统可用端口和服务",
+      "date": "2026-05-04",
+      "type": "系统",
+      "r_num": "R3",
+      "categories": [
+        "系统"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R45_Token使用量统计分析.md",
+      "title": "Token使用量统计分析报告",
+      "date": "2026-05-18",
+      "type": "分析",
+      "r_num": "R45",
+      "categories": [
+        "分析"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R46_产出 _ ScoreSys回测结果深度分析.md",
+      "title": "R46 - ScoreSys回测结果深度分析报告",
+      "date": "2026-05-18",
+      "type": "回测",
+      "r_num": "R46",
+      "categories": [
+        "回测",
+        "分析"
+      ],
+      "keywords": [
+        "评分",
+        "ScoreSys",
+        "IC",
+        "回测"
+      ]
+    },
+    {
+      "file": "R47_产出 _ file_monitor.py集成到项目工作流.md",
+      "title": "R47 - file_monitor集成完成报告",
+      "date": "2026-05-18",
+      "type": "其他",
+      "r_num": "R47",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "BfM",
+        "ScoreSys"
+      ]
+    },
+    {
+      "file": "R48_ScoreSys行业中性化Bug修复验证.md",
+      "title": "R117 | 2026-05-19 | 产出 | ScoreSys行业中性化Bug修复验证",
+      "date": "2026-05-19",
+      "type": "维护",
+      "r_num": "R48",
+      "categories": [
+        "维护"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "IC",
+        "因子"
+      ]
+    },
+    {
+      "file": "R48_自主运行状态报告.md",
+      "title": "R48 - 自主运行状态报告",
+      "date": "2026-05-18",
+      "type": "其他",
+      "r_num": "R48",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "回测"
+      ]
+    },
+    {
+      "file": "R48_规划模式：R48+新批次TODO产出.md",
+      "title": "R48 — 规划模式：R48+新批次TODO产出",
+      "date": "unknown",
+      "type": "其他",
+      "r_num": "R48",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "微信",
+        "因子",
+        "回测"
+      ]
+    },
+    {
+      "file": "R49_ScoreSys回测结果索引.md",
+      "title": "ScoreSys 回测结果索引",
+      "date": "2026-05-19",
+      "type": "回测",
+      "r_num": "R49",
+      "categories": [
+        "回测",
+        "记忆"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "IC",
+        "回测"
+      ]
+    },
+    {
+      "file": "R4_环境 _ 分析用户PC上的项目目录结构推断技术栈偏好.md",
+      "title": "R04 - 分析用户PC项目目录结构推断技术栈偏好",
+      "date": "2026-05-04",
+      "type": "分析",
+      "r_num": "R4",
+      "categories": [
+        "分析"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R54_每日回测_20260509.md",
+      "title": "ScoreSys 每日回测报告",
+      "date": "2026-05-09",
+      "type": "回测",
+      "r_num": "R54",
+      "categories": [
+        "回测"
+      ],
+      "keywords": [
+        "评分",
+        "ScoreSys",
+        "IC",
+        "回测"
+      ]
+    },
+    {
+      "file": "R54_每日回测_20260511.md",
+      "title": "ScoreSys 每日回测报告",
+      "date": "2026-05-11",
+      "type": "回测",
+      "r_num": "R54",
+      "categories": [
+        "回测"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "IC",
+        "回测"
+      ]
+    },
+    {
+      "file": "R5_自主行动规划：批判分析+R5报告+7条新TODO.md",
+      "title": "R05 - 自主行动规划：新TODO产出",
+      "date": "2026-05-04",
+      "type": "分析",
+      "r_num": "R5",
+      "categories": [
+        "分析"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R66_微信Bot消息格式自适应.md",
+      "title": "R66 — 微信Bot消息格式自适应",
+      "date": "2026-05-08",
+      "type": "其他",
+      "r_num": "R66",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "微信"
+      ]
+    },
+    {
+      "file": "R67_BfM前端SSE连接状态UI.md",
+      "title": "R67 BfM前端SSE连接状态UI修复",
+      "date": "2026-05-08",
+      "type": "其他",
+      "r_num": "R67",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "BfM"
+      ]
+    },
+    {
+      "file": "R68_BfM项目TypeScript编译验证.md",
+      "title": "R68 BfM项目TypeScript编译验证",
+      "date": "2026-05-08",
+      "type": "其他",
+      "r_num": "R68",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "BfM"
+      ]
+    },
+    {
+      "file": "R69_东方财富K线图修复报告.md",
+      "title": "R69 - 东方财富K线图数据源修复",
+      "date": "2026-05-08",
+      "type": "维护",
+      "r_num": "R69",
+      "categories": [
+        "维护"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R69_集成 _ K线图集成到微信Bot _ kline_chart.py→wechatapp.py_ import + dispatch拦截器(K线正则→generate_kline→send_image)，kline_chart_test通过(平安银行69.3KB PNG)，wechatapp语法OK.md",
+      "title": "R69 — K线图集成到微信Bot",
+      "date": "2026-05-08",
+      "type": "其他",
+      "r_num": "R69",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "微信"
+      ]
+    },
+    {
+      "file": "R6_项目架构探测报告.md",
+      "title": "R6 - D:/Project 四大项目架构深度探测报告",
+      "date": "2026-05-05",
+      "type": "系统",
+      "r_num": "R6",
+      "categories": [
+        "系统"
+      ],
+      "keywords": [
+        "ScoreSys"
+      ]
+    },
+    {
+      "file": "R70_ScoreSys权重优化器V1.3全Regime混入.md",
+      "title": "R70 — ScoreSys 权重优化器 V1.3 全Regime混入",
+      "date": "2026-05-08",
+      "type": "维护",
+      "r_num": "R70",
+      "categories": [
+        "维护"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "回测"
+      ]
+    },
+    {
+      "file": "R71_微信Bot回复速度诊断.md",
+      "title": "R71 — 微信Bot回复速度诊断：ScoreSys数据抓取拖慢系统",
+      "date": "2026-05-08",
+      "type": "其他",
+      "r_num": "R71",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "微信",
+        "ScoreSys"
+      ]
+    },
+    {
+      "file": "R72_ScoreSys因子改造方案.md",
+      "title": "ScoreSys V11.0 因子改造方案",
+      "date": "2026-05-09",
+      "type": "策略",
+      "r_num": "R72",
+      "categories": [
+        "策略",
+        "因子"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "因子"
+      ]
+    },
+    {
+      "file": "R74_记忆系统覆盖率补全.md",
+      "title": "R74 | 记忆系统覆盖率补全",
+      "date": "2026-05-09",
+      "type": "系统",
+      "r_num": "R74",
+      "categories": [
+        "系统",
+        "记忆"
+      ],
+      "keywords": [
+        "BfM"
+      ]
+    },
+    {
+      "file": "R75_小众工具挖掘：因子分析_选股辅助.md",
+      "title": "R75 | 小众工具挖掘：因子分析/选股辅助",
+      "date": "2026-05-09",
+      "type": "分析",
+      "r_num": "R75",
+      "categories": [
+        "分析",
+        "策略",
+        "因子",
+        "工具"
+      ],
+      "keywords": [
+        "选股",
+        "因子",
+        "回测"
+      ]
+    },
+    {
+      "file": "R76_ScoreSys因子改造分析.md",
+      "title": "R77 - ScoreSys 因子层面改造分析报告",
+      "date": "2026-05-09",
+      "type": "分析",
+      "r_num": "R76",
+      "categories": [
+        "分析",
+        "策略",
+        "因子"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "IC",
+        "因子",
+        "回测"
+      ]
+    },
+    {
+      "file": "R76_V10.1回测分析.md",
+      "title": "V10.1 回测分析报告",
+      "date": "unknown",
+      "type": "回测",
+      "r_num": "R76",
+      "categories": [
+        "回测",
+        "分析"
+      ],
+      "keywords": [
+        "IC",
+        "回测"
+      ]
+    },
+    {
+      "file": "R78_微信Bot回复速度优化.md",
+      "title": "R77 - 微信Bot回复速度优化验证",
+      "date": "2026-05-10",
+      "type": "维护",
+      "r_num": "R78",
+      "categories": [
+        "维护"
+      ],
+      "keywords": [
+        "微信"
+      ]
+    },
+    {
+      "file": "R79_环境健康检查.md",
+      "title": "R79 - 环境健康检查",
+      "date": "2026-05-10",
+      "type": "维护",
+      "r_num": "R79",
+      "categories": [
+        "维护"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R7_bigdata目录探测报告.md",
+      "title": "R7 - D:/Other/bigdata 大数据学习资料目录深度探测报告",
+      "date": "2026-05-05",
+      "type": "其他",
+      "r_num": "R7",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R80_scorer_unit_bug.md",
+      "title": "R80 — ScoreSys 四因子全50 bug 根因诊断报告",
+      "date": "unknown",
+      "type": "其他",
+      "r_num": "R80",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "因子"
+      ]
+    },
+    {
+      "file": "R81_regime_weights_v134.md",
+      "title": "R81 — V13.4 Regime 自适应权重优化",
+      "date": "unknown",
+      "type": "其他",
+      "r_num": "R81",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "因子"
+      ]
+    },
+    {
+      "file": "R82_R81_ScoreSys 0分股票诊断与修复.md",
+      "title": "R80 | ScoreSys 0分股票诊断",
+      "date": "2026-05-09",
+      "type": "维护",
+      "r_num": "R82",
+      "categories": [
+        "维护"
+      ],
+      "keywords": [
+        "ScoreSys"
+      ]
+    },
+    {
+      "file": "R83_regime_ic_deep_analysis.md",
+      "title": "R83 — ScoreSys 三Regime因子IC矩阵深度分析",
+      "date": "unknown",
+      "type": "其他",
+      "r_num": "R83",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "IC",
+        "因子",
+        "评分"
+      ]
+    },
+    {
+      "file": "R83_三regime因子IC矩阵深度分析.md",
+      "title": "R83 — ScoreSys 三Regime因子IC矩阵深度分析",
+      "date": "unknown",
+      "type": "分析",
+      "r_num": "R83",
+      "categories": [
+        "分析",
+        "策略",
+        "因子"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "IC",
+        "因子",
+        "评分"
+      ]
+    },
+    {
+      "file": "R84_K线图数据源修复&微信Bot链路接通.md",
+      "title": "R84 — ScoreSys K线图数据源修复 & 微信Bot链路接通",
+      "date": "unknown",
+      "type": "数据",
+      "r_num": "R84",
+      "categories": [
+        "数据",
+        "维护"
+      ],
+      "keywords": [
+        "微信",
+        "ScoreSys"
+      ]
+    },
+    {
+      "file": "R85_规划模式TODO产出.md",
+      "title": "R85 — 规划模式 TODO 产出",
+      "date": "2026-05-11",
+      "type": "其他",
+      "r_num": "R85",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R86_P2P3执行-瘦身+轮转+去重.md",
+      "title": "R86 — P2 & P3 执行报告",
+      "date": "2026-05-11",
+      "type": "其他",
+      "r_num": "R86",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R87_PC硬件性能基线建档.md",
+      "title": "🖥️ PC 硬件性能基线建档报告 (R87)",
+      "date": "2026-05-11",
+      "type": "其他",
+      "r_num": "R87",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R88_微信Bot summary泄漏修复.md",
+      "title": "微信Bot summary泄漏修复报告 (R88)",
+      "date": "2026-05-11",
+      "type": "维护",
+      "r_num": "R88",
+      "categories": [
+        "维护"
+      ],
+      "keywords": [
+        "微信"
+      ]
+    },
+    {
+      "file": "R89_ScoreSys V13.5因子改造IC回测实测.md",
+      "title": "R89 | ScoreSys V13.5因子改造IC回测实测",
+      "date": "2015-01-05",
+      "type": "回测",
+      "r_num": "R89",
+      "categories": [
+        "回测",
+        "策略",
+        "因子"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "IC",
+        "因子",
+        "回测"
+      ]
+    },
+    {
+      "file": "R8_OCR_Vision时效性审查报告.md",
+      "title": "R8 - global_mem.txt 中 OCR/Vision 记录时效性审查报告",
+      "date": "2026-05-05",
+      "type": "分析",
+      "r_num": "R8",
+      "categories": [
+        "分析"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R90_BfM SSE 多客户端并发广播验证.md",
+      "title": "R90 | BfM SSE 多客户端并发广播验证",
+      "date": "unknown",
+      "type": "其他",
+      "r_num": "R90",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "BfM"
+      ]
+    },
+    {
+      "file": "R91_ScoreSys_V13.5因子改造实测-终止报告.md",
+      "title": "R91 | ScoreSys V13.5因子改造实测 — 终止报告",
+      "date": "2023-01-03",
+      "type": "策略",
+      "r_num": "R91",
+      "categories": [
+        "策略",
+        "因子"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "IC",
+        "因子",
+        "回测"
+      ]
+    },
+    {
+      "file": "R91_规划模式 — 新批次TODO产出.md",
+      "title": "R92 | 规划模式 — 新批次TODO产出",
+      "date": "unknown",
+      "type": "其他",
+      "r_num": "R91",
+      "categories": [
+        "其他"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R92_ScoreSys因子IC诊断.md",
+      "title": "R92 — ScoreSys V13.5因子改造IC回测诊断",
+      "date": "unknown",
+      "type": "策略",
+      "r_num": "R92",
+      "categories": [
+        "策略",
+        "因子"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "IC",
+        "因子",
+        "回测"
+      ]
+    },
+    {
+      "file": "R93_ScoreSys因子分层IC分析（中证500，2022-2025）.md",
+      "title": "R93 | 2026-05-12 | 分析 | ScoreSys因子分层IC分析（中证500，2022-2025）",
+      "date": "2026-05-12",
+      "type": "分析",
+      "r_num": "R93",
+      "categories": [
+        "分析",
+        "策略",
+        "因子"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "IC",
+        "因子"
+      ]
+    },
+    {
+      "file": "R94_ScoreSys分层回测（中证500，5因子 vs 9因子）.md",
+      "title": "R94 | 2026-05-12 | 分析 | ScoreSys分层回测（中证500，5因子 vs 9因子）",
+      "date": "2026-05-12",
+      "type": "回测",
+      "r_num": "R94",
+      "categories": [
+        "回测",
+        "策略",
+        "因子"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "因子",
+        "回测"
+      ]
+    },
+    {
+      "file": "R95_AlphaTrading(lca-123_alphas)因子库实测评估.md",
+      "title": "R95 | 2026-05-12 | 评估 | AlphaTrading(lca-123/alphas)因子库实测评估",
+      "date": "2026-05-12",
+      "type": "分析",
+      "r_num": "R95",
+      "categories": [
+        "分析",
+        "策略",
+        "因子"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "因子",
+        "回测"
+      ]
+    },
+    {
+      "file": "R96_工具域使用经验盲区补全.md",
+      "title": "R96 | 2026-05-12 | 记忆 | 工具域使用经验盲区补全",
+      "date": "2026-05-12",
+      "type": "工具",
+      "r_num": "R96",
+      "categories": [
+        "工具"
+      ],
+      "keywords": [
+        "BfM",
+        "ScoreSys",
+        "微信",
+        "因子"
+      ]
+    },
+    {
+      "file": "R97_AlphaTrading因子互补性深度分析.md",
+      "title": "R97 | 2026-05-12 | 分析 | AlphaTrading因子与ScoreSys互补性深度分析",
+      "date": "2026-05-12",
+      "type": "分析",
+      "r_num": "R97",
+      "categories": [
+        "分析",
+        "策略",
+        "因子"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "因子"
+      ]
+    },
+    {
+      "file": "R98_下载缺失安装包+生成一键安装脚本.md",
+      "title": "R98 软件安装包下载与脚本生成",
+      "date": "unknown",
+      "type": "工具",
+      "r_num": "R98",
+      "categories": [
+        "工具"
+      ],
+      "keywords": []
+    },
+    {
+      "file": "R99_微信Bot K线图端到端验证.md",
+      "title": "R99 | 2026-05-13 | 验证 | 微信Bot K线图端到端验证",
+      "date": "2026-05-13",
+      "type": "其他",
+      "r_num": "R99",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "微信"
+      ]
+    },
+    {
+      "file": "R9_Redis_Streamlit股票监控面板原型验证报告.md",
+      "title": "R9 - Redis+Streamlit 实时股票数据监控面板原型验证报告",
+      "date": "2026-05-05",
+      "type": "其他",
+      "r_num": "R9",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "Redis"
+      ]
+    },
+    {
+      "file": "README.md",
+      "title": "📚 自主行动报告索引",
+      "date": "2026-05-16",
+      "type": "其他",
+      "r_num": "unknown",
+      "categories": [
+        "其他"
+      ],
+      "keywords": [
+        "ScoreSys",
+        "因子"
+      ]
+    }
+  ]
+}
