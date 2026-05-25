@@ -40,3 +40,4 @@ L4: L4_raw_sessions/ 历史会话
 14. 代码过滤: 过滤LLM输出中的代码片段，禁用"关键词黑名单"逐行匹配思路（必然遗漏），必须用"大块删除(```/JSON/===)+宽泛模式(20+种语法模式)+多轮迭代(循环3-5次)"策略
 15. EventBus队列: 消费循环禁 get(timeout) 轮询多队列（N×延迟累加），必须用 get_nowait() 批量消费；stop() 先排空队列再发毒丸；丢弃事件需累计计数(_dropped)
 16. 严谨查问题: 禁信文档描述，必须实际验证（查DB/读源码/跑命令）；多比较找原因，多问为什么，从根本上解决问题
+17. Git diverged(reset --hard origin/branch + cherry-pick本地commit); 冲突标记清理大文件用PowerShell流式行处理; 嵌套冲突需整行删除非仅行首匹配
