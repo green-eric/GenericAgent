@@ -1,3 +1,6 @@
+R272 | 2026-05-25 | 代码 | ScoreSys V15.2权重IC验证 | 8/8 regime全部改善，平均IC +0.0103→+0.1156 (+0.1052)，负IC因子反转策略有效
+R271 | 2026-05-25 | 规划 | 新批次TODO产出与subagent评审 | 产出6条TODO，subagent确认BfM SSE已修复(删除1条)，新增2条，最终7条待执行
+R263 | 2026-05-25 | 环境 | scikit-learn/statsmodels在ScoreSys中的应用探测 | scipy.spearmanr与手写_spearman完全一致(差异0)，可替换；OLS/Ridge/Lasso/PCA/Kendall tau均可用
 R262 | 2026-05-25 | 代码 | 微信Bot空except修复 | 修复5个空except为except Exception+注释，git commit 6cca6c1
 R48 | 2026-05-24 | 规划 | R48+新批次TODO产出 | 7条新TODO已写入TODO.txt，subagent评审完成
 R47 | 2026-05-18 | 产出 | file_monitor.py集成到项目工作流 | 完成基础统计分析并生成报告
@@ -45,3 +48,4 @@ R7 | 2026-05-05 | 环境探测 | D:/Other/bigdata大数据学习资料目录分�
 R9 | 2026-05-05 | 能力扩展 | Redis+Streamlit股票监控面板原型 | 数据链路验证通过(Redis→fetcher→JSON→polars)，Streamlit端口被占用未启动浏览器，代码语法正确
 R10 | 2026-05-05 | 个性化 | 浏览器书签与历史记录分析 | Chrome为主力浏览器，百度+DeepSeek为核心工具，关注A股投资研究R25 | 2026-05-06 | 规划 | 任务规划模式，产出6条新TODO（subagent调度SOP/实时流稳定性/ScoreSys记忆审查/SOP整理/pytest用例/项目完整性检查）
 R26 | 2026-05-06 | 环境 | BullishForMonitoring实时流稳定性探测 | SSE数据流异常(仅connected无行情/新闻)，根因：SSE_BROADCAST转发链路缺失
+R270 | 2026-05-25 | 规划 | 新批次TODO产出与subagent评审 | 产出6条TODO，subagent评审确认BfM SSE已修复(删除1条)，新增2条，最终7条待执行

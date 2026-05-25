@@ -67,6 +67,26 @@
 - 项目路径: D:/Project/ScoreSys/
 - calculator.py 已是 Polars 版（490行，完全向量化，零逐行循环）
 - calculator_polars.py 旧文件已于 2026-05-06 删除（dead code cleanup, commit 0e2d43d）
+
+## [ScoreSys IC修复 V15.2] (2026-05-25)
+- 问题：weight_optimizer中负IC因子被简单降权而非反向使用，导致组合IC为负
+- 修复1: config.yaml min_weight 0.03→0.005 (commit fef400f)
+- 修复2: weight_optimizer V15.2 - 负IC因子方向反转+绝对值归一化+双向裁剪 (commit ea410fd)
+  - compute_weights: 用|IC|^smooth计算权重，负IC因子权重取负值
+  - 绝对值之和归一化到1.0（非权重总和归一化）
+  - max_single_weight双向裁剪（正负都裁）
+  - scorer.py winsorize: 负权重因子分数反向后再winsorize
+- IC数据: data/ic_data/regime_ic.json，8个regime(full_cycle/trending/choppy/crash_sharp/crash_slow/low_vol/range_bound/volatile)
+- 验证结果: 8个regime加权IC全为正，平均+0.0539
+- R272补充验证(2026-05-25): 权重层面IC分析，V15.2 vs 固定权重，8/8 regime全部改善，平均IC +0.0103→+0.1156 (+0.1052)，34个(regime,因子)对负IC反转
+
+## [BfM实时流SSE_BROADCAST修复] (2026-05-06 完成, 2026-05-25 确认)
+- 问题：R26发现SSE_BROADCAST转发链路缺失，实时行情/新闻无法推送到前端
+- 修复：consumer处理完后转发到SSE_BROADCAST（commit f33efd9，21次提交，已merge到master）
+- 验证：R268-ScoreSys+BfM端到端验证通过（2026-05-25）
+- 状态：✅ 已完成，TODO.txt中相关待办已删除
+- 关键理解: 负权重×正分数=负贡献=反向使用因子（数学等价于reverse_score×正权重）
+- 权重总和≠1.0是正常的（正负抵消），绝对值之和=1.0
 - DB: D:/Project/ScoreSys/stock_data.db (SQLite, 4344 symbols, 937万条行情)
 
 ## [ScoreSys V8.0.10 行业中性化] (2026-05-06 验证完成)
@@ -315,3 +335,14 @@
 - 端口: 9004 (config/trading.yaml)
 - Git: 4个commit (17fb9c2/02d93aa/2520850 + 前序)
 - 用法: python token_stats.py [--date YYYY-MM-DD | --all | --week | --yesterday]
+
+## [R263~R268 自主行动周期完成] (2026-05-25)
+- R263: backtest_engine通用回测引擎补全 → 独立回测脚本可运行+README
+- R264: PC闲置GPU推理能力实测 → GPU不可用(Intel Iris Xe无CUDA)，CPU推理替代
+- R265: scikit-learn/statsmodels因子有效性检验 → IC/秩相关验证通过
+- R266: 微信Bot空except修复 → 104条→ruff无警告
+- R267: 知识图谱更新 126→260份(R1~R266全覆盖), index.json+README.md重建
+- R268: ScoreSys+BfM端到端集成验证 → /bfm命令可用, BfM API v9.2.0正常, agent.observe_list含ScoreSys评分
+  - BfM端口9004, 49只精选+8只热门, Agent状态HOLD, 50笔交易胜率32%
+  - wechatapp.py L922 /bfm命令, L975 _handle函数
+- TODO全部清空(6/6), 本周期全部完成

@@ -18,6 +18,19 @@
 **用途**：观察agent真实行为，修正RULES/L2/L3/SOP
 **流程**：创建test_path/写input.txt→启动subagent→轮询output.txt(2秒间隔)→验证→清理重复
 **测试原则**：只给目标，不提示位置/不诱导做法，观察自主选择
+
+## 避坑：subagent评审任务卡死
+
+**场景**：subagent执行TODO评审类任务时，反复读global_mem.txt做交叉验证，进入"读文件→更新checkpoint→再读文件"循环，不再产出最终结论。
+
+**识别**：连续2轮只有file_read/update_working_checkpoint，无新推理输出。
+
+**处置**：
+1. 写`_intervene2`文件，明确要求"直接输出最终结果，不要再做工具调用"
+2. 若干预无效，taskkill /PID精确kill，主agent接管完成
+3. **事后**：将评审结论写入autonomous_reports/R{N}_评审报告.md
+
+**根因**：评审任务不需要更多数据收集，subagent过度收集信息导致循环。input应明确"已有足够信息，直接输出"。
 **修正闭环**：发现问题→设计测试→定位根源(RULES/L2/L3/SOP)→patch修正→验证
 **技术要点**：Insight优先级>SOP；subagent的cwd=temp/
 **两种测试**：
