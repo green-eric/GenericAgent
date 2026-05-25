@@ -346,3 +346,24 @@
   - BfM端口9004, 49只精选+8只热门, Agent状态HOLD, 50笔交易胜率32%
   - wechatapp.py L922 /bfm命令, L975 _handle函数
 - TODO全部清空(6/6), 本周期全部完成
+
+## [Proxy Health 代理稳定性] (2026-05-25 R274综合分析)
+- 监控脚本: D:\GenericAgent\proxy_health_check.py (已按计划任务运行, 每日3次 9/15/21点)
+- 数据文件: temp/proxy_logs/proxy_health.jsonl (22条记录, 5-16~5-25)
+- Phase1 (5-16~5-18): 全端口正常, 外网连通93%+, port7897可用率100%
+- Phase2 (5-23~5-25): clash-verge主进程每日崩溃, port7897可用率仅38%, Google完全不可达
+- 根因: clash-verge进程间歇性退出(仅service残留), 每日约09:00后崩溃, 21:00可能自动恢复
+- 模式: crash→port7897 down→Google/GitHub fail; bing/baidu不受影响(走直连)
+- 待查: Windows事件日志中clash-verge崩溃原因(OOM/异常/被终止)
+- Clash API检测脚本bug: /version端点返回400(非真正故障, 脚本URL有误)
+
+## [V15.2 实盘模拟信号生成] (2026-05-25 R275)
+- 流水线: run_daily_score.py(7步评分) → live_signal_generator.py(DB读取+信号生成) → live_signal_pusher.py(微信推送)
+- 今日(2026-05-25)产出: 404信号(23重点推荐 + 381观察), 全部A+/A评级
+- 重点推荐分数范围: 65.0~73.2, 全部高动量(M74-75)
+- 行业分布: 汽车(14)、电子(18)、基础化工(16)、机械设备(15)等29行业
+- 信号文件: D:\GenericAgent\temp\live_signals_latest.json
+- 报告文件: D:\GenericAgent\temp\live_signals_2026-05-25.md
+- V15.2权重已集成: weight_optimizer.py负IC反向+绝对值归一化, 8/8 regime验证改善(R272)
+- 注意: 观察名单含更高分股票(如格林达73.2)但因动量不足未入重点推荐
+- 待优化: 动量阈值可放宽、行业集中度风控、高PE过滤
