@@ -985,7 +985,8 @@ def on_message(bot, msg):
             prompt = text if text.startswith('/') else f"{_wx_fmt_hint}\nIf you need to show files to user, use [FILE:filepath] in your response.\n\n{text}"
             dq = agent.put_task(prompt, source="wechat")
             try: bot.send_typing(uid)
-            except: pass
+            except Exception:
+                pass  # send_typing失败不影响主流程
 
             result = ''
             raw_accum = ''
@@ -1149,8 +1150,8 @@ if __name__ == '__main__':
                 try:
                     r = bot._post('ilink/bot/getupdates', {'limit': 1, 'timeout': 10})
                     _result[0] = r
-                except:
-                    pass
+                except Exception:
+                    pass  # API检测失败不阻塞主流程
             t = _th.Thread(target=_check, daemon=True)
             t.start()
             t.join(timeout=5)
@@ -1163,8 +1164,8 @@ if __name__ == '__main__':
                 def _check2():
                     try:
                         _result2[0] = bot._post('ilink/bot/getupdates', {'limit': 1, 'timeout': 1})
-                    except:
-                        pass
+                    except Exception:
+                        pass  # 第1次重试失败不阻塞
                 t2 = _th.Thread(target=_check2, daemon=True)
                 t2.start()
                 t2.join(timeout=5)
@@ -1176,8 +1177,8 @@ if __name__ == '__main__':
                     def _check3():
                         try:
                             _result3[0] = bot._post('ilink/bot/getupdates', {'limit': 1, 'timeout': 1})
-                        except:
-                            pass
+                        except Exception:
+                            pass  # 第2次重试失败不阻塞
                     t3 = _th.Thread(target=_check3, daemon=True)
                     t3.start()
                     t3.join(timeout=5)
@@ -1201,7 +1202,7 @@ if __name__ == '__main__':
             else:
                 # ★ 其他业务错误不一定是token过期，不标记
                 print(f'[启动检测] 业务错误 errcode={_test.get("errcode")}, 不标记过期', file=sys.__stdout__)
-        except:
+        except Exception:
             # ★ 异常不标记过期，让run_loop自己处理
             print('[启动检测] 预检异常，跳过（非token问题）', file=sys.__stdout__)
     # Start agent in a supervised daemon thread that auto-restarts on crash
