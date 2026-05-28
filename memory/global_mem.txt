@@ -4,13 +4,34 @@
 0. 源码修改: 不轻易改 → 确需改 → git commit 后再改动（无需 .bak 备份）
 1. 任务完成后务必更新记忆，特别是 L1 层索引（global_mem_insight.txt）
 
+## [GA自我进化准则] (2026-05-19)
+- **自我更新**: 主动修复自身bug（如权限/防抖/导入错误），不等用户发现
+- **自我优化**: 改进代码质量（消除重复、提升性能、简化逻辑）
+- **自我完善**: 补全缺失功能（如print模拟→真实调用、子进程→API直调）
+- **自我明智**: 知道何时该做、何时该问用户；3次失败请求干预；不可逆操作先请示
+- **核心**: 每次自主行动后必须闭环（写报告、更新记忆、标记TODO）
+
 ## [VBS提权教训] (2026-05-05)
 - VBS ShellExecute 提权（runas）在 code_run 里会超时（UAC弹窗无法自动确认）
 - 不要用 VBS 提权来重启服务，改用 sc 命令或直接让用户手动确认
 - auto_git_commit 守护进程会自动检测文件变更并重启 bot
-2. 任务完成后务必更新记忆，特别是 L1 层索引（global_mem_insight.txt）
 
-## [Vision API] (2026-05-04 配置完成)
+## [Everything工具] (2026-05-19 验证完成)
+- 安装路径: C:\Program Files\Everything\everything.exe
+- 配置方法: 手动创建快捷方式或添加到PATH
+- 使用场景: 文件快速搜索、路径定位
+
+## [系统黑屏问题诊断] (2026-05-19 验证完成)
+- **关键发现**: GraphicsPerfSvc服务的驱动程序文件graphicsperf.sys缺失导致服务无法启动
+- **根本原因**: 系统文件损坏导致关键显示服务失效，引发多次异常重启
+- **已尝试方案**: DISM修复失败、SFC扫描异常、DLL注册失败、安全模式检查异常
+- **最终建议**: 需要用户从其他正常系统中复制缺失的驱动文件或Windows安装介质修复
+
+## [脚本编码规范] (2026-05-19 建立)
+- BAT/VBS: 纯ASCII编码(无乱码)
+- Python: UTF-8 with BOM(支持中文)
+- 工具: _NO_ENCODE_TEMPLATE.bat/_vbs/_py (模板文件)
+- 检查: _CHECK_ENCODING.bat (编码验证工具)
 - 脚本: memory/vision_api.py (从 template 复制)
 - 默认后端: modelscope (Qwen/Qwen3-VL-235B-A22B-Instruct)
 - API Base: https://api-inference.modelscope.cn
@@ -40,6 +61,13 @@
 - 注意: enhance(放大+高对比度) 对清晰文字有害，默认关闭
 - 注意: RDP 断开后 ImageGrab 全黑，用 ocr_window(hwnd) 代替 ocr_screen
 
+## [D:\Project项目自我优化策略] (2026-05-19 验证完成)
+- **AnnualScorer**: 行业映射缓存+API批处理+结果持久化 | 风险:大文件内存压力
+- **BfM**: 事件队列优化+监控频率调整+日志轮转 | 风险:Node.js内存泄漏
+- **ScoreSys**: 增量数据加载+并行计算优化+缓存机制 | 风险:38个Python复杂依赖
+- **通用优化**: Python进程监控+分块文件处理+多进程调度+智能缓存策略
+- **系统级**: 开机自启动项分析+依赖包清理+版本控制规范化
+
 ## [微信Bot] (2026-05-04 已修复 + 服务化)
 - 源码: frontends/wechatapp.py
 - token 文件: ~/.wxbot/token.json
@@ -63,8 +91,8 @@
   - 安装脚本: temp/install_service.py (服务被卸载后重新安装用)
   - 注意: sc命令输出为GBK编码，Python捕获必须用encoding='gbk'
 
-## [ScoreSys Polars Calculator] (2026-05-06 确认)
-- 项目路径: D:/Project/ScoreSys/
+## [ScoreSys Polars Calculator] (2026-05-06 确认, 2026-05-19 路径确认)
+- 项目路径: D:/Project/ScoreSys/ (注意：不在 GA 根目录下)
 - calculator.py 已是 Polars 版（490行，完全向量化，零逐行循环）
 - calculator_polars.py 旧文件已于 2026-05-06 删除（dead code cleanup, commit 0e2d43d）
 
@@ -105,7 +133,9 @@
 - 关键理解: 负权重×正分数=负贡献=反向使用因子（数学等价于reverse_score×正权重）
 - 权重总和≠1.0是正常的（正负抵消），绝对值之和=1.0
 - DB: D:/Project/ScoreSys/stock_data.db (SQLite, 4344 symbols, 937万条行情)
+- db_backup/: 已不存在（可能已迁移或清理）
 
+<<<<<<< HEAD
 ## [ScoreSys+BfM 日检脚本] (2026-05-25 完成)
 - 脚本: temp/daily_health_check.py (10KB, 可复现)
 - 检查项: DB连接→行情时效→评分时效→评分分布→信号文件时效→综合评级
@@ -115,6 +145,9 @@
 - 验证: 2026-05-25首次运行 PASS, 行情/评分延迟0天, 4344只覆盖, ≥60分378只
 
 ## [ScoreSys V8.0.10 行业中性化] (2026-05-06 验证完成)
+=======
+## [ScoreSys V8.0.10 行业中性化] (2026-05-06 验证完成, 2026-05-19 路径确认)
+>>>>>>> origin/main
 - 版本: V8.0.9 → V8.0.10
 - 核心改进: 行业中性化打分（与同行业p25~p75百分位比较，非绝对阈值）
 - 适用维度: 成长性/盈利能力/现金流质量/偿债风险（估值仍用绝对阈值）
@@ -130,7 +163,7 @@
   - backfill_quotes.py补录行情后quotes表761万行/2015-01-05~2026-05-05
   - 查问题要严谨: 不能只看文档描述，要实际查DB验证数据范围
 - 文档: README.md（384行）, CLAUDE.md（134行，精简版）
-- 项目路径: D:/Project/ScoreSys/
+- 项目路径: D:/Project/ScoreSys/ (注意：不在 GA 根目录下)
 - DB: stock_data.db (1295MB, 6表, quotes 761万行, financials 19万行, stocks 4344只)
 - 测试: tests/ 66个测试全部通过（含行业中性化/金融豁免/边界值）
 
@@ -159,7 +192,7 @@
 - 问题: DNS解析 ilinkai.weixin.qq.com 失败导致微信断连
 - 修复: hosts绑定 36.155.182.76 + 清除代理干扰
 - 状态: 已恢复，PID 19448 运行中
-- 详情: memory/wechat_fix.md
+- 详情: memory/wechat_fix/ (已整合至 wechat_bot_perf_sop)
 
 ## [输出格式优化] (2026-05-05)
 - sys_prompt.txt 新增「输出格式规范」（最高优先级）：emoji、图表、简洁、不输出过程
@@ -361,6 +394,7 @@
 - Git: 4个commit (17fb9c2/02d93aa/2520850 + 前序)
 - 用法: python token_stats.py [--date YYYY-MM-DD | --all | --week | --yesterday]
 
+<<<<<<< HEAD
 ## [R263~R268 自主行动周期完成] (2026-05-25)
 - R263: backtest_engine通用回测引擎补全 → 独立回测脚本可运行+README
 - R264: PC闲置GPU推理能力实测 → GPU不可用(Intel Iris Xe无CUDA)，CPU推理替代
@@ -436,3 +470,143 @@
 - 修复2: config.yaml volatility_squeeze(IC=0)权重清零, 3个regime段全部修复
 - 回测验证: 总收益+80.89%, 年化+50.57%, 夏普1.514, 最大回撤18.36%
 - 教训: 权重归一化必须保证sum=1.0; IC=0因子不应获权重
+=======
+## [工具域使用经验] (2026-05-12 R96补充)
+- web_search引擎选择: baidu最稳定(无需key)；google可能被anti-bot拦截；查github仓库用baidu搜"github 用户名 仓库名"比gh命令可靠
+- web_execute_js: 操作表单必须用原生setter(value=...)+dispatchEvent(new Event('input',{bubbles:true}))，直接赋值不触发Vue/React响应
+- file_patch: 修改前必须先file_read获取精确内容(含缩进/空格)，禁止凭印象写old_content
+- sqlite3探测: PRAGMA table_info查列名，SELECT * LIMIT 3看数据；polars报错时先检查列名
+- 自主行动边界: 不修改核心代码库、不读密钥、不删非临时文件；cwd内实验自由
+
+## [auto_git_commit VBS启动脚本] (2026-05-19 R111)
+- 创建: D:\GenericAgent\start_auto_git_commit.vbs
+- 方法: CreateObject("Shell.Application").ShellExecute (非WScript.Shell，RULES #10)
+- 效果: pythonw.exe 无窗口后台启动 auto_git_commit.py
+- 验证: PID 4360, pythonw.exe running, 监控633个文件
+- 日志: temp/auto_git_commit.log
+- 开机自启: 需用户手动放入 shell:startup 文件夹
+- 教训: VBS提权(runas)在code_run里会超时(UAC弹窗)，普通启动无需runas
+
+## [L3 SOP交叉引用检查] (2026-05-19 R107)
+- 29个SOP文件全部可访问
+- 文件名交叉引用全部有效
+- 1个死链: tmwebdriver_sop.md → temp/start_cdp_stealth.py (文件不存在)
+- 死链率: 1/6 ≈ 17%（仅计算有路径引用的文件）
+
+## [otel_trace装饰器集成方案] (2026-05-19 R108)
+- plugins/otel_trace.py已有完整@trace_llm_call装饰器(205行)
+- 集成方案: 参考langfuse_tracing.py的monkey-patch模式，创建plugins/otel_auto_trace.py
+- 关键挑战: raw_ask()是生成器函数，装饰器需支持生成器wrap
+- 状态: 方案完成，待用户批准实施
+
+### file_monitor_v3 (真正API触发)
+- **路径**: D:\GenericAgent\temp\file_monitor_v3.py (10754 chars)
+- **核心改进**: subprocess调用ScoreSys/backtest.py，替代v2仅打印行为
+- **架构**: BacktestRunner + SmartTriggerHandler + FileMonitorV3
+- **防抖**: 30秒 | 异步: threading | 超时: 600s
+- **结果**: JSON保存到autonomous_reports/auto_bt_*.json，解析IC/夏普/回撤
+- **API入口**: trigger_backtest_api() 可被外部调用
+- **验证**: 语法通过，import成功，D:/Project只读不写
+- **待E2E**: 需用户在场验证端到端回测触发
+
+
+## [Windows系统工具链扫描] (2026-05-20 完成)
+- 注册表软件51个+运行服务104个+PATH工具951个
+- 未利用高价值工具: PostgreSQL 17/18, LM Studio, Node.js 26, Redis on Windows, WSL, Trae CN
+- 已有: Git, Notepad++, Everything, 7-Zip, Python 3.12+3.14
+- 报告: autonomous_reports/sys_tools_scan_report.md
+
+## [autonomous_reports智能摘要] (2026-05-20 完成)
+- 208篇报告→14主题分类，生成topic_index.json+smart_summary.md
+- Top主题: ScoreSys回测(87%) > 自主行动(86%) > 系统维护(63%)
+- 高频词: r1(128) > scoresys(117) > 优化(60) > 记忆(60) > ic(49)
+- 索引: autonomous_reports/topic_index.json
+
+## [GA桌面启动面板] (2026-05-20 创建)
+- **路径**: temp/ga_dashboard.py (299行)
+- **功能**: PySide6桌面面板，12功能卡片(YOLO/宠物/回测/Git/清理等)
+- **状态**: 语法通过，待用户运行测试
+- **不修改**: D:/Project
+
+## [YOLO屏幕元素检测] (2026-05-20 创建)
+- **路径**: temp/yolo_screen_detect.py (3931 chars)
+- **功能**: 截图→YOLOv8检测→输出bbox+类别+置信度
+- **工具链**: ultralytics✅ + cv2(4.13.0)✅ + torch✅ + PIL截图(2560x1600)✅
+- **状态**: 语法通过，import验证通过，待用户E2E测试
+- **不修改**: D:/Project下任何代码
+
+## [工具链扫描] (2026-05-20 验证完成)
+- **Python包**: 358个已安装，70个高价值
+- **AI/ML**: torch, transformers, ultralytics(YOLO), opencv-python, tiktoken, tokenizers
+- **移动端**: adbutils, uiautomator2 (比adb_ui.py更强大)
+- **Web框架**: fastapi, flask, aiohttp, httpx
+- **数据**: pandas, numpy, scipy, statsmodels, matplotlib, seaborn, plotly
+- **OTel**: opentelemetry-api/sdk (已集成到plugins/)
+- **调度**: APScheduler (已安装), schedule
+- **终端UI**: rich, textual, prompt_toolkit
+- **前端**: streamlit, PySide6(qtapp.py 2022行完整桌面GUI)
+- **桌面宠物**: frontends/desktop_pet_v2.pyw (1090行, PySide6, 8种皮肤)
+- **多平台Bot**: dcapp/dingtalkapp/fsapp(飞书)/qqapp/tgapp/wechatapp/wecomapp (frontends/)
+- **服务化**: tools/nssm.exe (已用于微信Bot服务化)
+- **未利用重点**: ultralytics视觉增强, adbutils手机控制, PySide6桌面GUI, APScheduler调度
+- **报告**: temp/toolchain_scan_report.md
+
+## [PostgreSQL 18] (2026-05-21 验证完成, 2026-05-22 更新)
+- 端口: 5432 (默认端口)
+- 数据库: ga_db (已创建)
+- 表: ga_tasks (id, task_name, status, created_at, completed_at, metadata JSONB)
+- 驱动: psycopg2-binary (已安装)
+- 连接: host=localhost port=5432 user=postgres dbname=ga_db
+- pg_hba.conf: local=trust, host=scram-sha-256
+- 注意: pg_ctl start 不用 -w 参数(会超时); postmaster.pid 残留需手动清理
+- 注意: schtasks 创建计划任务需管理员权限(拒绝访问)
+- ⚠️ 2026-05-22: 服务状态 Stopped+Disabled, net start 需管理员权限(拒绝访问)
+- ⚠️ PG17 也存在(Stopped+Disabled), PG18 StartType=Automatic 但当前停止
+
+## [Redis 数据管道] (2026-05-22 验证完成)
+- 版本: Redis 5.0.14.1 (Windows端口, Running+Automatic)
+- redis-py: 5.0.1 (已安装)
+- 连接: 127.0.0.1:6379
+- 管道模块: temp/ga_redis_pipeline.py (13157 bytes)
+  - RedisConnection: 连接管理+断线重连+健康检查
+  - MessageBus: Pub/Sub 发布/订阅
+  - DataStream: Stream数据流+消费者组+ACK
+  - ScoreSysSignalPipeline: 高级API(信号/因子/回测结果)
+- 延迟: 写入avg=0.85ms/p99=1.70ms, 读取avg=1.46ms/p99=1.91ms (远<100ms目标)
+- CLI: python ga_redis_pipeline.py --test/--health/--push-signal CODE ACTION PRICE
+
+## [nssm 服务管理] (2026-05-22)
+- 版本: nssm 2.24
+- 路径: temp/nssm/nssm-2.24/win32/nssm.exe (win32版本)
+- 服务管理脚本: temp/ga_service_manager.py (4692 bytes)
+  - 3个服务: ga_file_monitor / ga_scheduler / ga_auto_git
+  - 支持: install/start/stop/restart/status/uninstall
+  - 崩溃自动重启(5秒延迟), stdout/stderr日志分离
+- ⚠️ nssm install 需管理员权限(拒绝访问), 需用户在场手动安装
+- 安装命令: python ga_service_manager.py install
+
+## [ga_dashboard 任务监控] (2026-05-22 更新)
+- 路径: temp/ga_dashboard.py (446行, 原309行)
+- 新增: 第14个卡片"📊 任务监控" → show_task_monitor() 方法
+- 功能: 弹出QDialog显示TODO.txt实时状态, 彩色标记(绿=完成/橙=阻塞/白=待办)
+- 按钮: 🔄刷新 / ❌关闭
+- 语法验证: AST通过, QDialog/QTextEdit/QFrame导入OK
+
+## [GA能力手册] (2026-05-22 生成)
+- 路径: temp/ga_capability_handbook.md (50610 bytes)
+- 内容: 228篇报告分类到16主题
+- 最多: ScoreSys(70) / GA工具链(39) / 记忆系统(13) / 微信Bot(12)
+- 包含: 能力总览+详细索引+高频问题解决方案+按编号快速索引
+
+## [file_monitor_v3 守护进程化] (2026-05-21 验证完成)
+- 方案: 启动文件夹 (schtasks 需管理员权限)
+- 路径: C:\Users\green\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\GA_FileMonitor_v3.bat
+- 包装脚本: temp/file_monitor_v3_wrapper.bat (无限循环+5秒重启)
+- 注意: 启动文件夹需用户登录才触发; 开机自启(无需登录)需管理员权限
+
+## [otel_trace_viewer] (2026-05-21 新建)
+- 路径: temp/otel_trace_viewer.py (PySide6桌面面板)
+- 数据源: history.txt + model_responses/*.jsonl
+- 功能: 表格展示LLM调用链, 自动刷新30秒, 颜色标记状态
+- ga_dashboard: 新增 "OTel追踪" 卡片, 点击启动 viewer
+>>>>>>> origin/main
