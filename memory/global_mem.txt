@@ -3,6 +3,7 @@
 ## [用户规则] (2026-05-05)
 0. 源码修改: 不轻易改 → 确需改 → git commit 后再改动（无需 .bak 备份）
 1. 任务完成后务必更新记忆，特别是 L1 层索引（global_mem_insight.txt）
+2. 代码功能调整: 任何项目代码功能的调整，必须验证测试通过后，同步更新相关文档（README/CHANGELOG/注释），确保文档与代码一致
 
 ## [GA自我进化准则] (2026-05-19)
 - **自我更新**: 主动修复自身bug（如权限/防抖/导入错误），不等用户发现
@@ -121,7 +122,9 @@
 ## [ScoreSys V15.9 回测+文档] (2026-05-26)
 - 回测结果: +82.81%总收益 / 夏普2.251 / 最大回撤3.22% / 胜率69.6% (23次调仓, 2024-06~2026-03)
 - 21个因子(20活跃+1保留): alpha_023/alpha_momentum/alpha_rsi/alpha_vol_ratio/cash_flow/ff_net_inflow_5d/ff_net_inflow_10d/growth/industry_momentum/intraday_strength/leverage/pca_momentum_val/pca_quality_value/profitability/reversal/turnover/valuation/volatility_deviation/volatility_ma/volume_ratio
-- 保留不活跃: volatility_squeeze (V15.3清零, 全regime权重=0)
+- 保留不活跃: volatility_squeeze (V15.3清零, 全regime权重=0), acceleration (IC=-0.028全因子唯一负值, 保持禁用, R299)
+- 权重机制: weight_optimizer.py → data/ic_data/regime_ic.json (IC文件无条目的因子自动权重=0)
+- DB结构: stock_data.db 主表quotes (trade_date/close_price/ret_5d/ret_10d/ret_1m/volume/total_mv/pe_ttm/industry_mom_1m), 无daily_kline表, 804日×4344股
 - 4段regime权重: short_term(14非零)/bear(17)/bull(14)/shock(15)
 - README因子体系章节全面更新(commit 00c5a4c): 21因子完整regime权重表+架构图修正+BfM-28→21
 
@@ -473,3 +476,11 @@
 - 关键操作: 回测long_term需临时改config.yaml mode: long_term, 测完恢复short_term
 - short_term weights不受影响(独立配置)
 - commit: 79a3d0a
+
+## [R300 回测引擎bug修复-benchmark+layered_backtest] (2026-05-28)
+- _fetch_benchmark DB降级: self._cfg方法不存在→改用len(df)//n_periods计算rebalance
+- layered_backtest: _get_rebalance_dates/_get_next_rebalance_date方法不存在→改用_gen_trading_dates
+- 基准降级逻辑: akshare直连不可用→DB全市场均价作基准代理(4344只×94日)
+- benchmark验证: 超额+7.47%, 胜率60%, 最大超额回撤6.19%
+- layered验证: 5层IC单调性90%(L1=+0.0052→L5=-0.0007)
+- commit: 82c3109
