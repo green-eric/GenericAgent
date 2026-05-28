@@ -138,7 +138,7 @@ def _patch_write_llm_log():
 
     _orig_log = llmcore._write_llm_log
 
-    def _patched_log(label, content):
+    def _patched_log(label, content, log_path=None):
         _ensure_tracer()
         if _tracer is not None:
             try:
@@ -172,7 +172,7 @@ def _patch_write_llm_log():
                         _tls.gen_span = None
             except Exception as e:
                 logger.debug("otel_auto_trace: log hook error: %s", e)
-        return _orig_log(label, content)
+        return _orig_log(label, content, log_path)
 
     llmcore._write_llm_log = _patched_log
     logger.info("otel_auto_trace: patched llmcore._write_llm_log")
