@@ -465,3 +465,11 @@
 - 修复2: config.yaml volatility_squeeze(IC=0)权重清零, 3个regime段全部修复
 - 回测验证: 总收益+80.89%, 年化+50.57%, 夏普1.514, 最大回撤18.36%
 - 教训: 权重归一化必须保证sum=1.0; IC=0因子不应获权重
+
+## [ScoreSys V16.0 波动率+流动性因子移植] (2026-05-28)
+- long_term weights 新增5因子: volatility_deviation(0.024), volatility_ma(0.0192), volume_ratio(0.0192), vol_price_divergence(0.0144), volatility_squeeze(0.0096)
+- 现有13因子等比缩减(×0.92), 总权重≈1.0, long_term因子数: 13→18
+- long_term回测(2024-01~2025-12): 总收益+34.40%, 夏普1.015, 回撤6.72%, 胜率62.5%
+- 关键操作: 回测long_term需临时改config.yaml mode: long_term, 测完恢复short_term
+- short_term weights不受影响(独立配置)
+- commit: 79a3d0a
