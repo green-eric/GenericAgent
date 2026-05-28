@@ -1,13 +1,18 @@
 # ScoreSys 项目 TODO 列表
 
+## 已完成
 1. [x] 产出 | GitHub量化因子库系统性调研 — 调研6个因子库(WorldQuant101/Alpha191/Qlib/AKShare/FactorHub/Tushare)，ScoreSys 9因子覆盖度87.8%，推荐P0移植波动率+流动性因子，P1动量加速度+偏度
+2. [x] 产出 | PCA因子合成集成到ScoreSys — R281分析PC1(质量+价值53%)和PC2(动量vs估值20%)，已编码集成到calculator.py（R288）
+3. [x] 产出 | ScoreSys信号自动推送配置 — daily_health_check.py配Windows计划任务每日18:00运行+--push推送（R282/R287）
+4. [x] 产出 | 因子IC衰减半衰期分析 — 9因子跨regime IC统计+稳定性排名+权重调整建议（R285）
+5. [x] 诊断 | BfM SSE稳定性根因 — clash-verge代理层问题，需用户恢复后验证（R291）
+6. [x] 产出 | V16.8智能网络适配 — _smart_request()函数，有代理用代理无代理直连（R292）
 
-2. [x] 产出 | PCA因子合成集成到ScoreSys — R281已分析PC1(质量+价值53%)和PC2(动量vs估值20%)，但未实际编码。将PCA合成因子作为第10个因子集成到calculator.py，验证IC和回测表现。验收标准：PCA因子IC绝对值>0.02，回测胜率提升。
+## 待执行（R293评审后精简版）
+1. [x] 产出 | 波动率+流动性因子移植 — R286推荐P0移植。V16.0完成：long_term新增5因子(volatility_deviation/ma,volume_ratio,vol_price_divergence,volatility_squeeze)，回测+34.40%/夏普1.015(R294)
 
-3. [x] 产出 | ScoreSys回测引擎覆盖率提升 — 当前backtest.py仅覆盖简单持有期回测。增加：多因子分层回测、换手率分析、最大回撤计算、与基准(沪深300)对比。验收标准：回测报告包含年化收益/最大回撤/夏普比率。
+2. [ ] 产出 | ScoreSys回测引擎增强 — 增加多因子分层回测、换手率分析、最大回撤计算、基准(沪深300)对比。同时作为PCA合成因子(R288)的验证闭环。验收标准：分层回测5层IC单调性>70%，换手率分析报告完整，最大回撤<15%，基准对比胜率>55%。
 
-4. [~] 环境 | BfM实时流SSE连接稳定性根因修复 — R274发现clash-verge每日崩溃，port7897可用率38%。诊断SSE断连根因，配置自动重连机制，确保BfM实时流24h可用。验收标准：SSE连续运行72h无断连。 → R291诊断完成：clash-verge主进程从5-27起持续缺失，port7897连续3天0%可用，问题从间歇崩溃恶化为持续离线；根因在代理层非BfM代码层；需用户手动恢复clash-verge后验证。
+3. [ ] 产出 | 动量加速度+偏度因子调研与移植 — R286推荐P1移植。调研动量加速度（动量二阶导）和收益偏度因子，评估与现有9因子互补性。验收标准：因子IC分析+回测对比报告。
 
-5. [x] 产出 | ScoreSys信号自动推送配置 — daily_health_check.py配Windows计划任务每日18:00运行+--push推送，手动触发测试通过
-
-6. [x] 产出 | 因子IC衰减半衰期分析 — 基于regime_ic.json做跨regime IC衰减代理分析。关键发现：profitability在choppy regime IC=-0.3674需降至0，growth全regime最稳定(CV=90.9%)，industry_momentum是万能因子。真正时间序列衰减需scores表30+交易日。
+4. [x] 探测 | ScoreSys数据源健康度扫描+自动化监控 — 腾讯/新浪/Tushare直连OK(0.07-0.36s)，AkShare双失败(直连+代理)，DB1.5GB健康(quotes3.2M行最新2026-05-28)。R295
