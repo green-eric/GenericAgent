@@ -78,7 +78,24 @@
   - scorer.py winsorize: 负权重因子分数反向后再winsorize
 - IC数据: data/ic_data/regime_ic.json，8个regime(full_cycle/trending/choppy/crash_sharp/crash_slow/low_vol/range_bound/volatile)
 - 验证结果: 8个regime加权IC全为正，平均+0.0539
+
+## [ScoreSys PCA合成因子 V15.7] (2026-05-26)
+- 基于 R281 PCA分析：PC1解释53%方差(质量+价值)，PC2解释20%方差(动量vs估值)
+- 新增 scorer 类: PCAQualityValueScorer(PC1) + PCAMomentumValScorer(PC2)
+- 注册到 FACTOR_REGISTRY + CORE_SCORERS
+- 所有4个regime权重段添加PCA权重: pca_quality_value=0.04, pca_momentum_val=0.03
+- 修复scorer.py调用方式: 用_make_scorer创建实例后注入_pca_input_scores
+- PC1载荷: profitability(+0.52), cash_flow(+0.48), valuation(+0.41), reversal(+0.38)
+- PC2载荷: momentum(+0.55), growth(+0.42) vs valuation(-0.38), leverage(-0.35)
+- commit: a9e0e87
 - R272补充验证(2026-05-25): 权重层面IC分析，V15.2 vs 固定权重，8/8 regime全部改善，平均IC +0.0103→+0.1156 (+0.1052)，34个(regime,因子)对负IC反转
+
+## [ScoreSys V15.9 回测+文档] (2026-05-26)
+- 回测结果: +82.81%总收益 / 夏普2.251 / 最大回撤3.22% / 胜率69.6% (23次调仓, 2024-06~2026-03)
+- 21个因子(20活跃+1保留): alpha_023/alpha_momentum/alpha_rsi/alpha_vol_ratio/cash_flow/ff_net_inflow_5d/ff_net_inflow_10d/growth/industry_momentum/intraday_strength/leverage/pca_momentum_val/pca_quality_value/profitability/reversal/turnover/valuation/volatility_deviation/volatility_ma/volume_ratio
+- 保留不活跃: volatility_squeeze (V15.3清零, 全regime权重=0)
+- 4段regime权重: short_term(14非零)/bear(17)/bull(14)/shock(15)
+- README因子体系章节全面更新(commit 00c5a4c): 21因子完整regime权重表+架构图修正+BfM-28→21
 
 ## [BfM实时流SSE_BROADCAST修复] (2026-05-06 完成, 2026-05-25 确认)
 - 问题：R26发现SSE_BROADCAST转发链路缺失，实时行情/新闻无法推送到前端
@@ -88,6 +105,14 @@
 - 关键理解: 负权重×正分数=负贡献=反向使用因子（数学等价于reverse_score×正权重）
 - 权重总和≠1.0是正常的（正负抵消），绝对值之和=1.0
 - DB: D:/Project/ScoreSys/stock_data.db (SQLite, 4344 symbols, 937万条行情)
+
+## [ScoreSys+BfM 日检脚本] (2026-05-25 完成)
+- 脚本: temp/daily_health_check.py (10KB, 可复现)
+- 检查项: DB连接→行情时效→评分时效→评分分布→信号文件时效→综合评级
+- 信号文件: live_signals_latest.json (字段: total_signals/key_recommendations)
+- 用法: python daily_health_check.py [--push] [--quiet]
+- 退出码: 0=PASS, 1=WARN, 2=FAIL (供调度器判断)
+- 验证: 2026-05-25首次运行 PASS, 行情/评分延迟0天, 4344只覆盖, ≥60分378只
 
 ## [ScoreSys V8.0.10 行业中性化] (2026-05-06 验证完成)
 - 版本: V8.0.9 → V8.0.10
@@ -367,3 +392,47 @@
 - V15.2权重已集成: weight_optimizer.py负IC反向+绝对值归一化, 8/8 regime验证改善(R272)
 - 注意: 观察名单含更高分股票(如格林达73.2)但因动量不足未入重点推荐
 - 待优化: 动量阈值可放宽、行业集中度风控、高PE过滤
+## [ScoreSys 因子IC衰减分析 R276] (2026-05-25)
+- 分析范围: scores表9日期(2026-05-15~25) × 9因子 × ~4344股票
+- 方法: Spearman秩相关(因子得分, 未来N天收益), 持有期1d/3d/5d
+- 10d/20d IC: N/A (scores表仅9个交易日，数据不足)
+- 关键发现:
+  - 🥇 反转/盈利性/估值: IC随持有期显著增强(+200%~+318%), 适合3-5d持有策略
+  - 🥈 现金流/行业动量: IC正向稳定, 维持权重
+  - 🥉 换手率: 1d IC最高(+0.061)但5d衰减58%, 仅用于短期信号
+  - ⚠️ 动量/成长性: IC为负, 需检查因子打分方向(positive/reverse配置)
+  - ❓ 杠杆率: IC≈0方向不稳定, 暂时降低权重
+- 市场状态: 5月下半月处于价值/盈利驱动状态, 动量因子失效
+- 报告: D:\GenericAgent\temp\autonomous_reports\R276_ScoreSys因子IC衰减分析.md
+- 建议: 积累30+交易日后重新运行, 可获得可靠10d/20d衰减曲线
+- 权重建议: 提升反转/盈利性/估值在long_term中权重, 换手率仅用于short_term
+
+## [ScoreSys stock_data.db schema] (2026-05-25 验证)
+- 路径: D:/Project/ScoreSys/stock_data.db
+- quotes表(3.2M行): 列=symbol, trade_date(非date), open/high/low/close_price, volume, turnover_5d, total_mv, pe_ttm, industry_mom_1m/3m, ma_5/10/20/60, ret_5d(预计算), ret_10d(预计算), ret_1m, mom_1m/3m, industry, pb
+  - ⚠️ 日期列名是 trade_date 不是 date
+  - 有预计算收益列 ret_5d/ret_10d，无1d/3d/20d，需用close_price shift计算
+- scores表(39K行,9日期): 列=id, symbol, calc_date, factor1~9(score_real), total_score, rank, percentile, regime, created_at
+  - 日期范围: 2026-05-15~25(仅9个交易日), ~4344股票/日期
+  - 因子列: growth/cash_flow/leverage/valuation/momentum/industry_momentum/reversal/turnover/profitability
+- IC计算经验: 用pandas merge+scipy.spearmanr向量化; per-row Python循环在30K+行会超时(>120s)
+
+## [R277 fusion_picker_v2代码审查] (2026-05-25)
+- 文件: archive/fusion_picker_v2.py (609行), 语法OK, 运行OK(需--db参数)
+- 架构: 4类(ScoreSysReader/BfMScorer/FusionEngine/backtest)+main, 清晰
+- 评分: RPS20预筛选 → ScoreSys(8维) + BfM(5维) → 动态权重融合 → RPS20动量bonus
+- P0问题: ①默认DB路径错误(archive/stock_data.db不存在, 应为../stock_data.db) ②run_backtest中LEFT JOIN stocks表不存在
+- P1问题: ①BfM硬编码阈值(5%/10%/20%分位数)未配置化 ②regime自动推断=crash_sharp需确认合理性 ③回测模块过简(仅TOP-N统计, 无净值曲线)
+- 综合: 7/10, 修复P0后可实盘
+- TODO #5: R125看板文件不存在, 确认无需集成, regime_ic.json数据已存在
+
+## [R276 IC衰减分析结论] (2026-05-25)
+- 9因子1-5d IC: 反转/盈利性/估值IC增强(+200%~318%), 换手率衰减58%, 动量/成长性IC为负需检查方向
+- 10d+数据不足(仅9交易日)
+
+## [ScoreSys V15.3 权重归一化修复] (2026-05-25)
+- 根因: weight_optimizer V15.2 负IC赋负值→abs_sum归一化→sum(weights)<1.0(系统性低配)
+- 修复1: weight_optimizer.py 权重始终为正(|IC|^smoothing), sum=1.0 (commit 7ac00ae)
+- 修复2: config.yaml volatility_squeeze(IC=0)权重清零, 3个regime段全部修复
+- 回测验证: 总收益+80.89%, 年化+50.57%, 夏普1.514, 最大回撤18.36%
+- 教训: 权重归一化必须保证sum=1.0; IC=0因子不应获权重
