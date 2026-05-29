@@ -5,10 +5,10 @@
 - [x] #8 V17.0 Fold4胜率20%异常分析（Q4市场风格切换+因子IC变化） R312
 
 ## P1（重要）
-- [ ] #9 因子IC质量提升 — 低IC因子筛选（IC<0.015的因子降权/移除方案）
-- [ ] #10 V17.0权重不稳定改进（相关系数0.504→目标>0.7，正则化/因子聚类）
-- [ ] #11 AccelerationScorer IC回测验证（权重0.05，实测IC是否>0.02）
+- [x] #9 因子IC质量提升 — 低IC因子筛选（IC<0.015的因子降权/移除方案） R313
+- [x] #10 V17.0权重不稳定改进（相关系数0.504→目标>0.7，正则化/因子聚类） R314
+- [x] #11 AccelerationScorer IC回测验证（权重0.05，实测IC是否>0.02） R315
 
 ## P2（可选）
-- [ ] #12 V2.0 weight_optimizer跟进（soft混合诊断完成→实施修复）
-- [ ] #13 README+CHANGELOG V17.0同步（WalkForward+AccelerationScorer更新）
+- [x] #12 V2.0 weight_optimizer跟进（soft混合诊断完成→实施修复） R316
+- [x] #13 README+CHANGELOG V17.0同步（WalkForward+AccelerationScorer更新） R317
