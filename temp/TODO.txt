@@ -1,14 +1,14 @@
-# TODO列表 — V17.0 新批次（2026-05-30）
+# TODO列表 — V17.1 新批次（2026-05-30）
 
 ## P0（必须）
-- [x] #7 ScoreSys未提交变更检查与提交（backtest.py/fetcher.py/walk_forward.py等） R311
-- [x] #8 V17.0 Fold4胜率20%异常分析（Q4市场风格切换+因子IC变化） R312
+- [ ] #1 权重体系稳定性升级（R314方案A λ=0.3正则化 + 方案C ic_smoothing=4.0，改动配置+回测对比，预期相关系数0.504→>0.65）
+- [ ] #2 Fold4 bear regime权重修复（R312: Q4风格切换+bear权重错配，调整因子权重+回测验证Fold4胜率>40%）
+- [ ] #3 WalkForward修复验证（R317: WalkForward修复后需回测验证可信度，确保walk-forward Sharpe与全量回测偏差<10%）
 
 ## P1（重要）
-- [x] #9 因子IC质量提升 — 低IC因子筛选（IC<0.015的因子降权/移除方案） R313
-- [x] #10 V17.0权重不稳定改进（相关系数0.504→目标>0.7，正则化/因子聚类） R314
-- [x] #11 AccelerationScorer IC回测验证（权重0.05，实测IC是否>0.02） R315
+- [ ] #4 低IC因子降权回测验证（R313: 6因子降权+profitability bear归零，跑完整回测看夏普/胜率变化）
+- [ ] #5 V2.0 weight_optimizer滚动窗口IC实现（R316: 滚动窗口IC替代静态IC，提升权重时效性）
+- [ ] #6 因子IC衰减持续监控（R276/R285: 建立定期IC监控机制，V17.1加入自动化IC衰减预警）
 
 ## P2（可选）
-- [x] #12 V2.0 weight_optimizer跟进（soft混合诊断完成→实施修复） R316
-- [x] #13 README+CHANGELOG V17.0同步（WalkForward+AccelerationScorer更新） R317
+- [ ] #7 实盘信号推送稳定性跟踪（R287/R291: 代理层不稳定，需跟踪推送成功率+失败自动重试）
