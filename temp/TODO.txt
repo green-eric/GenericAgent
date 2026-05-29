@@ -1,7 +1,7 @@
 # TODO列表 — V17.0 新批次（2026-05-30）
 
 ## P0（必须）
-- [ ] #7 ScoreSys未提交变更检查与提交（backtest.py/fetcher.py/walk_forward.py等）
+- [x] #7 ScoreSys未提交变更检查与提交（backtest.py/fetcher.py/walk_forward.py等） R311
 - [ ] #8 V17.0 Fold4胜率20%异常分析（Q4市场风格切换+因子IC变化）
 
 ## P1（重要）
