@@ -1,0 +1,805 @@
+{
+  "need_fix": [
+    {
+      "file": "agentmain.py",
+      "line": 17,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "from plugins.otel_auto_trace import activate as _otel_activate\n    _otel_activate()\nexcept Exception:\n    pass\n\nscript_dir = os.path.dirname(os.path.abspath(__file__))"
+    },
+    {
+      "file": "agentmain.py",
+      "line": 41,
+      "except_line": "except Exception as e: print(f'[WARN] CDP config init failed: {e} — advanced web features (tmwebdriver) will be unavailable.')",
+      "next_line": "",
+      "context": "os.makedirs(os.path.dirname(cdp_cfg), exist_ok=True)\n        open(cdp_cfg, 'w', encoding='utf-8').write(f\"const TID = '__ljq_{hex(random.randint(0, 99999999))[2:8]}';\")\n    except Exception as e: print(f'[WARN] CDP config init failed: {e} — advanced web features (tmwebdriver) will be unavailable.')\n\ndef get_system_prompt():\n    with open(os.path.join(script_dir, f'assets/sys_prompt{lang_suffix}.txt'), 'r', encoding='utf-8') as f: prompt = f.read()"
+    },
+    {
+      "file": "ga.py",
+      "line": 49,
+      "except_line": "except: pass",
+      "next_line": "",
+      "context": "try: print(line, end=\"\") \n                except: pass\n        except: pass\n\n    try:\n        process = subprocess.Popen("
+    },
+    {
+      "file": "ga.py",
+      "line": 232,
+      "except_line": "except Exception as e: return {\"status\": \"error\", \"msg\": format_error(e)}",
+      "next_line": "",
+      "context": "result = simphtml.execute_js_rich(script, driver, no_monitor=no_monitor)\n        return result\n    except Exception as e: return {\"status\": \"error\", \"msg\": format_error(e)}\n\ndef web_search(query, engine=\"baidu\", num_results=5, no_cache=False):\n    \"\"\"Search the web for real-time information. Returns top search results with title, URL, and snippet."
+    },
+    {
+      "file": "ga.py",
+      "line": 281,
+      "except_line": "except:",
+      "next_line": "pass",
+      "context": "if url_match:\n                                        snippets[url_match.group(1)] = text[:200]\n                except:\n                    pass\n            for r_item in results:\n                if r_item[\"url\"] in snippets:"
+    },
+    {
+      "file": "ga.py",
+      "line": 327,
+      "except_line": "except Exception as e: return {\"status\": \"error\", \"msg\": str(e)}",
+      "next_line": "",
+      "context": "with open(path, 'w', encoding='utf-8') as f: f.write(updated_text)\n        return {\"status\": \"success\", \"msg\": \"文件局部修改成功\"}\n    except Exception as e: return {\"status\": \"error\", \"msg\": str(e)}\n\n_read_dirs = set()\ndef _scan_files(base, depth=2):"
+    },
+    {
+      "file": "ga.py",
+      "line": 374,
+      "except_line": "except Exception as e: return f\"Error: {str(e)}\"",
+      "next_line": "",
+      "context": "except Exception: pass\n        return msg\n    except Exception as e: return f\"Error: {str(e)}\"\n\ndef smart_format(data, max_str_len=100, omit_str=' ... '):\n    if not isinstance(data, str): data = str(data)"
+    },
+    {
+      "file": "ga.py",
+      "line": 553,
+      "except_line": "except: return None",
+      "next_line": "",
+      "context": "if not os.path.isfile(p:=self._in_plan_mode() or ''): return None\n        try: return len(re.findall(r'\\[ \\]', open(p, encoding='utf-8', errors='replace').read()))\n        except: return None\n    \n    def do_update_working_checkpoint(self, args, response):\n        '''为整个任务设定后续需要临时记忆的重点。'''"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 220,
+      "except_line": "except:",
+      "next_line": "pass",
+      "context": "try:\n                    records.append(json.loads(line))\n                except:\n                    pass\n    \n    if not records:"
+    },
+    {
+      "file": "proxy_health_report.py",
+      "line": 21,
+      "except_line": "except:",
+      "next_line": "pass",
+      "context": "try:\n                    records.append(json.loads(line))\n                except:\n                    pass\n\n    if not records:"
+    },
+    {
+      "file": "simphtml.py",
+      "line": 638,
+      "except_line": "except: pass",
+      "next_line": "",
+      "context": "def start_temp_monitor(driver):  \n    try: driver.execute_js(temp_monitor_js)\n    except: pass\n\ndef get_temp_texts(driver):  \n    js = \"\"\"function stopStrMonitor() {"
+    },
+    {
+      "file": "frontends\\btw_cmd.py",
+      "line": 98,
+      "except_line": "except Exception as e: return f'❌ /btw 失败: {type(e).__name__}: {e}'",
+      "next_line": "",
+      "context": "\"\"\"Catches errors at the boundary so neither caller path needs its own try/except.\"\"\"\n    try: return _ask(agent, question, deadline)\n    except Exception as e: return f'❌ /btw 失败: {type(e).__name__}: {e}'\n\n\ndef handle(agent, query, display_queue) -> Optional[str]:"
+    },
+    {
+      "file": "frontends\\continue_cmd.py",
+      "line": 171,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n        agent.abort()\n    except Exception:\n        pass\n    _snapshot_current_log()\n    if hasattr(agent, 'history'):"
+    },
+    {
+      "file": "frontends\\continue_cmd.py",
+      "line": 269,
+      "except_line": "except Exception: return []",
+      "next_line": "",
+      "context": "try:\n        with open(path, encoding='utf-8', errors='replace') as f: content = f.read()\n    except Exception: return []\n\n    rounds = []  # [(user_text, [turn_text, ...]), ...]\n    for prompt, response in _pairs(content):"
+    },
+    {
+      "file": "frontends\\fsapp.py",
+      "line": 704,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n            client = create_client()\n        except Exception:\n            pass"
+    },
+    {
+      "file": "frontends\\qqapp.py",
+      "line": 40,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n                    setattr(intents, attr, True)\n                except Exception:\n                    pass\n        return intents"
+    },
+    {
+      "file": "frontends\\qtapp.py",
+      "line": 449,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "with open(HISTORY_FILE, \"r\", encoding=\"utf-8\") as f:\n                return json.load(f)\n        except Exception:\n            pass\n    return []"
+    },
+    {
+      "file": "frontends\\qtapp.py",
+      "line": 710,
+      "except_line": "except:",
+      "next_line": "pass",
+      "context": "time_lbl.setStyleSheet(\"color: #a1a1aa; font-size: 11px; background: transparent;\")\n                    alayout.addWidget(time_lbl)\n                except:\n                    pass\n\n            self._action_row.hide()"
+    },
+    {
+      "file": "frontends\\qtapp.py",
+      "line": 794,
+      "except_line": "except:",
+      "next_line": "pass",
+      "context": "time_lbl.setStyleSheet(\"color: #a1a1aa; font-size: 11px; background: transparent;\")\n                    alayout.addWidget(time_lbl)\n                except:\n                    pass\n\n            self._action_row.hide()"
+    },
+    {
+      "file": "frontends\\stapp.py",
+      "line": 196,
+      "except_line": "except BaseException:",
+      "next_line": "pass",
+      "context": "st.session_state.display_queue = None\n            st.session_state.partial_response = ''\n        except BaseException:\n            pass"
+    },
+    {
+      "file": "frontends\\tgapp.py",
+      "line": 184,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "with open(fpath, \"rb\") as fp:\n                    await root_msg.reply_photo(fp)\n            except Exception:\n                pass\n        else:\n            try:"
+    },
+    {
+      "file": "frontends\\tgapp.py",
+      "line": 190,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "with open(fpath, \"rb\") as fp:\n                    await root_msg.reply_document(fp)\n            except Exception:\n                pass\n\nasync def _send_files_from_text(root_msg, text):"
+    },
+    {
+      "file": "frontends\\tuiapp.py",
+      "line": 261,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n            agent.inc_out = True\n        except Exception:\n            pass\n        session = AgentSession(agent_id=agent_id, name=name or f\"agent-{agent_id}\", agent=agent)\n        thread = threading.Thread(target=agent.run, name=f\"ga-tui-agent-{agent_id}\", daemon=True)"
+    },
+    {
+      "file": "frontends\\tuiapp_v2.py",
+      "line": 221,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n            self.app._cancel_choice(self.msg)\n        except Exception:\n            pass"
+    },
+    {
+      "file": "frontends\\tuiapp_v2.py",
+      "line": 326,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n            self.app._hide_palette()\n        except Exception:\n            pass\n        try:\n            self.app._resize_input(self)"
+    },
+    {
+      "file": "frontends\\tuiapp_v2.py",
+      "line": 330,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n            self.app._resize_input(self)\n        except Exception:\n            pass\n\n    def _insert_via_keyboard(self, text: str) -> None:"
+    },
+    {
+      "file": "frontends\\tuiapp_v2.py",
+      "line": 340,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n                self.app._resize_input(self)\n            except Exception:\n                pass\n\n    def _paste_file_from_clipboard(self) -> bool:"
+    },
+    {
+      "file": "frontends\\tuiapp_v2.py",
+      "line": 401,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n            self.app._resize_input(self)\n        except Exception:\n            pass\n        return True"
+    },
+    {
+      "file": "frontends\\tuiapp_v2.py",
+      "line": 914,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n            sys.stdout.write(\"\\x1b[?1007l\"); sys.stdout.flush()\n        except Exception:\n            pass\n\n    def _tick(self) -> None:"
+    },
+    {
+      "file": "frontends\\tuiapp_v2.py",
+      "line": 1077,
+      "except_line": "except Exception: pass",
+      "next_line": "",
+      "context": "self._quit_timer = None\n        try: self._refresh_bottombar()\n        except Exception: pass\n\n    def on_key(self, event: events.Key) -> None:\n        # Any key other than the quit trigger (Ctrl+C or its Cmd+C alias) disarms."
+    },
+    {
+      "file": "frontends\\tuiapp_v2.py",
+      "line": 1309,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n                    self.query_one(\"#messages\", VerticalScroll).scroll_end(animate=False)\n                except Exception:\n                    pass\n                return\n        self.submit_user_message(text, images=images)"
+    },
+    {
+      "file": "frontends\\tuiapp_v2.py",
+      "line": 1377,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n            self.query_one(\"#input\", InputArea).focus()\n        except Exception:\n            pass\n\n    def _collapse_choice(self, msg: ChatMessage, idx: int) -> None:"
+    },
+    {
+      "file": "frontends\\tuiapp_v2.py",
+      "line": 1694,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "inp.focus()\n                self._resize_input(inp)\n            except Exception:\n                pass\n        self.call_after_refresh(_fill)\n        return \"✏️ 已填入默认文件名，按 Enter 确认或先编辑\""
+    },
+    {
+      "file": "frontends\\tuiapp_v2.py",
+      "line": 1758,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n            self.query_one(\"#messages\", VerticalScroll).scroll_end(animate=False)\n        except Exception:\n            pass\n        try:\n            dq = sess.agent.put_task(text, source=\"user\")"
+    },
+    {
+      "file": "frontends\\tuiapp_v2.py",
+      "line": 1870,
+      "except_line": "except Exception: pass",
+      "next_line": "",
+      "context": "self._input_owner_id = self.current_id\n        try: self._resize_input(inp)\n        except Exception: pass\n\n    def _refresh_topbar(self):\n        if not self.is_mounted or self.current_id is None: return"
+    },
+    {
+      "file": "frontends\\tuiapp_v2.py",
+      "line": 1885,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n            self.query_one(\"#bottombar\", Static).update(render_bottombar(quit_armed=self._quit_armed))\n        except Exception:\n            pass\n\n    def _refresh_sidebar(self):"
+    },
+    {
+      "file": "frontends\\wechatapp.py",
+      "line": 89,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n                qr.print_ascii(invert=True)\n            except Exception:\n                pass\n            print(f'[QR登录] 二维码已保存: {img}')\n            print(f'[QR登录] 扫码链接: {url}')"
+    },
+    {
+      "file": "frontends\\wechatapp.py",
+      "line": 299,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n                        self._session.close()\n                    except Exception:\n                        pass\n                    self._session = requests.Session()\n                    from requests.adapters import HTTPAdapter"
+    },
+    {
+      "file": "memory\\ljqCtrl.py",
+      "line": 20,
+      "except_line": "except: pass",
+      "next_line": "",
+      "context": "from PIL import ImageGrab, Image, ImageEnhance, ImageFilter, ImageDraw\n\timport cv2\nexcept: pass\n\n_hdc = ctypes.windll.user32.GetDC(0)\nswidth = ctypes.windll.gdi32.GetDeviceCaps(_hdc, 118)   # DESKTOPHORZRES (物理)"
+    },
+    {
+      "file": "memory\\autonomous_operation_sop\\helper.py",
+      "line": 124,
+      "except_line": "except:",
+      "next_line": "pass",
+      "context": "try:\n            shutil.move(str(dest_path), str(report))\n        except:\n            pass\n        return f\"[ERROR] 写入 history 失败: {e}（报告已回滚）\""
+    },
+    {
+      "file": "memory\\L4_raw_sessions\\compress_session.py",
+      "line": 18,
+      "except_line": "except Exception: return None",
+      "next_line": "",
+      "context": "\"\"\"'2026-04-03 20:13:06' → '0403_2013'\"\"\"\n    try: return datetime.strptime(ts_str.strip(), '%Y-%m-%d %H:%M:%S').strftime('%m%d_%H%M')\n    except Exception: return None\n\ndef _detect_format(text):\n    \"\"\"Detect A (json) vs B (raw) by checking content after first Prompt marker.\"\"\""
+    },
+    {
+      "file": "plugins\\otel_auto_trace.py",
+      "line": 57,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "from llmcore import _load_mykeys\n        _cfg = _load_mykeys().get('otel_config')\n    except Exception:\n        pass\n\n    if _cfg:"
+    },
+    {
+      "file": "plugins\\otel_trace.py",
+      "line": 89,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "usage[\"output_tokens\"] = u.get(\"output_tokens\", u.get(\"completion_tokens\", 0))\n                usage[\"total_tokens\"] = u.get(\"total_tokens\", 0)\n    except Exception:\n        pass\n    return usage"
+    },
+    {
+      "file": "plugins\\otel_trace.py",
+      "line": 105,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "if isinstance(result, dict):\n            return result.get(\"content\", result.get(\"text\", str(result)))\n    except Exception:\n        pass\n    return str(result) if result else \"\""
+    },
+    {
+      "file": "scripts\\ga_watchdog.py",
+      "line": 51,
+      "except_line": "except:",
+      "next_line": "pass",
+      "context": "with open(LOG, \"a\", encoding=\"utf-8\") as f:\n            f.write(line + \"\\n\")\n    except:\n        pass"
+    },
+    {
+      "file": "scripts\\ga_watchdog.py",
+      "line": 204,
+      "except_line": "except:",
+      "next_line": "pass",
+      "context": "ctypes.windll.kernel32.GetConsoleWindow(), 0\n            )\n    except:\n        pass\n\n    fail_ga = 0"
+    },
+    {
+      "file": "scripts\\score_monitor.py",
+      "line": 38,
+      "except_line": "except:",
+      "next_line": "pass",
+      "context": "try:\n            return set(json.loads(open(SENT_LOG).read()))\n        except:\n            pass\n    return set()"
+    },
+    {
+      "file": "scripts\\start_service.py",
+      "line": 71,
+      "except_line": "except:",
+      "next_line": "pass",
+      "context": "log(f\"  ✅ wechatapp 运行中 (PID={proc2.info['pid']})\")\n            running = True\n    except:\n        pass\nif not running:\n    log(\"  ❌ wechatapp 进程未找到!\")"
+    },
+    {
+      "file": "temp\\akshare_factor_ic.py",
+      "line": 104,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "ep_val = 1.0 / pe_val\n                    pe_data[sym] = {'pe': pe_val, 'ep': ep_val}\n        except Exception:\n            pass\n        \n        if (i + 1) % 10 == 0:"
+    },
+    {
+      "file": "temp\\akshare_factor_ic.py",
+      "line": 123,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "if pb_val > 0:\n                        pe_data[sym] = {'pe': pb_val, 'ep': 1.0 / pb_val}\n            except Exception:\n                pass\n        print(f\"   PB factor: {len(pe_data)} stocks\")\n        results['factor_type'] = 'PB (fallback)'"
+    },
+    {
+      "file": "temp\\check_and_push_score.py",
+      "line": 51,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "with open(PENDING_FILE, encoding='utf-8') as f:\n                pending = json.load(f)\n        except Exception:\n            pass\n    if filepath not in pending['pushed']:\n        pending['pushed'].append(filepath)"
+    },
+    {
+      "file": "temp\\file_monitor_v3.py",
+      "line": 179,
+      "except_line": "except:",
+      "next_line": "pass",
+      "context": "try:\n                    result['ic_mean'] = float(line.split(':')[-1].strip())\n                except:\n                    pass\n            elif '总收益' in line or 'Total return' in line:\n                try:"
+    },
+    {
+      "file": "temp\\file_monitor_v3.py",
+      "line": 184,
+      "except_line": "except:",
+      "next_line": "pass",
+      "context": "try:\n                    result['total_return'] = float(line.split(':')[-1].strip().rstrip('%'))\n                except:\n                    pass\n            elif '夏普' in line or 'Sharpe' in line:\n                try:"
+    },
+    {
+      "file": "temp\\file_monitor_v3.py",
+      "line": 189,
+      "except_line": "except:",
+      "next_line": "pass",
+      "context": "try:\n                    result['sharpe_ratio'] = float(line.split(':')[-1].strip())\n                except:\n                    pass\n            elif '最大回撤' in line or 'Max drawdown' in line:\n                try:"
+    },
+    {
+      "file": "temp\\file_monitor_v3.py",
+      "line": 194,
+      "except_line": "except:",
+      "next_line": "pass",
+      "context": "try:\n                    result['max_drawdown'] = float(line.split(':')[-1].strip().rstrip('%'))\n                except:\n                    pass\n            elif '胜率' in line or 'Win rate' in line:\n                try:"
+    },
+    {
+      "file": "temp\\file_monitor_v3.py",
+      "line": 199,
+      "except_line": "except:",
+      "next_line": "pass",
+      "context": "try:\n                    result['win_rate'] = float(line.split(':')[-1].strip().rstrip('%'))\n                except:\n                    pass\n        \n        result['elapsed'] = round(elapsed, 1)"
+    },
+    {
+      "file": "temp\\ga_dashboard.py",
+      "line": 245,
+      "except_line": "except:",
+      "next_line": "pass",
+      "context": "os.remove(f)\n                    count += 1\n                except:\n                    pass\n        self.status_label.setText(f\"● 清理了{count}个文件\")\n        self.status_label.setStyleSheet(\"color: #4caf50;\")"
+    },
+    {
+      "file": "temp\\ga_redis_pipeline.py",
+      "line": 189,
+      "except_line": "except:",
+      "next_line": "pass",
+      "context": "try:\n            self.create_group(stream, group)\n        except:\n            pass\n        result = self.conn.client.xreadgroup(\n            group, consumer, {stream: \">\"}, count=count, block=block"
+    },
+    {
+      "file": "temp\\ga_redis_pipeline.py",
+      "line": 359,
+      "except_line": "except:",
+      "next_line": "pass",
+      "context": "try:\n            conn.client.delete(stream_name)\n        except:\n            pass\n    for ch_name in CHANNELS.values():\n        try:"
+    },
+    {
+      "file": "temp\\ga_redis_pipeline.py",
+      "line": 364,
+      "except_line": "except:",
+      "next_line": "pass",
+      "context": "try:\n            conn.client.delete(ch_name)\n        except:\n            pass\n    print(\"  ✅ Test data cleaned\")"
+    },
+    {
+      "file": "temp\\ga_tools.py",
+      "line": 72,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "print(f\"[CACHE HIT] {func.__name__}\")\n                    return json.loads(cached)\n            except Exception:\n                pass\n\n            result = func(*args, **kwargs)"
+    },
+    {
+      "file": "temp\\ga_tools.py",
+      "line": 80,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "r.setex(key, ttl, json.dumps(result, default=str))\n                print(f\"[CACHE SET] {func.__name__} (TTL={ttl}s)\")\n            except Exception:\n                pass\n\n            return result"
+    },
+    {
+      "file": "temp\\ga_tools.py",
+      "line": 201,
+      "except_line": "except:",
+      "next_line": "pass",
+      "context": "result[f\"{drive}_used_pct\"] = round(pct, 1)\n            print(f\"  {drive}: {result[f'{drive}_free_mb']}MB free / {result[f'{drive}_total_mb']}MB ({pct:.1f}% used)\")\n        except:\n            pass\n\n    # 工具可用性"
+    },
+    {
+      "file": "temp\\live_signal_pusher.py",
+      "line": 59,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "if uid:\n                return uid\n        except Exception:\n            pass\n    print('[ERROR] 无法获取 admin_notify_uid')\n    sys.exit(1)"
+    },
+    {
+      "file": "temp\\otel_trace_viewer.py",
+      "line": 178,
+      "except_line": "except Exception as e:",
+      "next_line": "pass",
+      "context": "\"raw\": line,\n                            })\n            except Exception as e:\n                pass\n        \n        # 从 model_responses 目录读取最近的响应"
+    },
+    {
+      "file": "temp\\otel_trace_viewer.py",
+      "line": 195,
+      "except_line": "except:",
+      "next_line": "pass",
+      "context": "\"raw\": str(f),\n                    })\n            except:\n                pass\n        \n        # 按时间倒序"
+    },
+    {
+      "file": "temp\\qr_login.py",
+      "line": 117,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "print(f'  登录时间: {tok.get(\"login_time\", \"?\")}')\n                    return\n            except Exception:\n                pass\n        \n        # 检查bot输出"
+    },
+    {
+      "file": "temp\\regime_ic3.py",
+      "line": 82,
+      "except_line": "except: pass",
+      "next_line": "",
+      "context": "say(\"  \"+date+\" ERR:\"+str(e)+\"\\n\")\n            try: eng.db._get_conn().rollback()\n            except: pass\n\n    say(\"\\n-- \"+label+\" IC --\\n\")\n    pr={}"
+    },
+    {
+      "file": "temp\\signal_chart_gen.py",
+      "line": 35,
+      "except_line": "except:",
+      "next_line": "pass",
+      "context": "try:\n                    return ImageFont.truetype(path, size)\n                except:\n                    pass\n    return ImageFont.load_default()"
+    },
+    {
+      "file": "temp\\wx_push_bridge.py",
+      "line": 57,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n            return json.loads(Path(STATE_FILE).read_text('utf-8'))\n        except Exception:\n            pass\n    return {'pushed': [], 'last_check': None}"
+    },
+    {
+      "file": "temp\\wx_push_bridge.py",
+      "line": 72,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "if uid:\n                return uid\n        except Exception:\n            pass\n    log.error('[INIT] admin_notify_uid not found in token file')\n    return ''"
+    },
+    {
+      "file": "temp\\_push_final.py",
+      "line": 39,
+      "except_line": "except:",
+      "next_line": "pass",
+      "context": "try:\n                    return ImageFont.truetype(path, size)\n                except:\n                    pass\n    return ImageFont.load_default()"
+    },
+    {
+      "file": "temp\\_push_final.py",
+      "line": 394,
+      "except_line": "except:",
+      "next_line": "pass",
+      "context": "from live_signal_pusher import get_admin_uid\n            admin_uid = get_admin_uid()\n        except:\n            pass\n        if not admin_uid:\n            cfg = get_bridge_config()"
+    },
+    {
+      "file": "temp\\_wx_ast_check.py",
+      "line": 48,
+      "except_line": "except:",
+      "next_line": "pass",
+      "context": "for j, body_node in enumerate(node.body):\n                    t(f'  body[{j}] {type(body_node).__name__} at L{body_node.lineno}')\n        except:\n            pass\n\ntrace.close()"
+    },
+    {
+      "file": "frontends\\btw_cmd.py",
+      "line": 98,
+      "except_line": "except Exception as e: return f'❌ /btw 失败: {type(e).__name__}: {e}'",
+      "next_line": "",
+      "context": "\"\"\"Catches errors at the boundary so neither caller path needs its own try/except.\"\"\"\n    try: return _ask(agent, question, deadline)\n    except Exception as e: return f'❌ /btw 失败: {type(e).__name__}: {e}'\n\n\ndef handle(agent, query, display_queue) -> Optional[str]:"
+    },
+    {
+      "file": "frontends\\continue_cmd.py",
+      "line": 171,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n        agent.abort()\n    except Exception:\n        pass\n    _snapshot_current_log()\n    if hasattr(agent, 'history'):"
+    },
+    {
+      "file": "frontends\\continue_cmd.py",
+      "line": 269,
+      "except_line": "except Exception: return []",
+      "next_line": "",
+      "context": "try:\n        with open(path, encoding='utf-8', errors='replace') as f: content = f.read()\n    except Exception: return []\n\n    rounds = []  # [(user_text, [turn_text, ...]), ...]\n    for prompt, response in _pairs(content):"
+    },
+    {
+      "file": "frontends\\fsapp.py",
+      "line": 704,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n            client = create_client()\n        except Exception:\n            pass"
+    },
+    {
+      "file": "frontends\\qqapp.py",
+      "line": 40,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n                    setattr(intents, attr, True)\n                except Exception:\n                    pass\n        return intents"
+    },
+    {
+      "file": "frontends\\qtapp.py",
+      "line": 449,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "with open(HISTORY_FILE, \"r\", encoding=\"utf-8\") as f:\n                return json.load(f)\n        except Exception:\n            pass\n    return []"
+    },
+    {
+      "file": "frontends\\qtapp.py",
+      "line": 710,
+      "except_line": "except:",
+      "next_line": "pass",
+      "context": "time_lbl.setStyleSheet(\"color: #a1a1aa; font-size: 11px; background: transparent;\")\n                    alayout.addWidget(time_lbl)\n                except:\n                    pass\n\n            self._action_row.hide()"
+    },
+    {
+      "file": "frontends\\qtapp.py",
+      "line": 794,
+      "except_line": "except:",
+      "next_line": "pass",
+      "context": "time_lbl.setStyleSheet(\"color: #a1a1aa; font-size: 11px; background: transparent;\")\n                    alayout.addWidget(time_lbl)\n                except:\n                    pass\n\n            self._action_row.hide()"
+    },
+    {
+      "file": "frontends\\stapp.py",
+      "line": 196,
+      "except_line": "except BaseException:",
+      "next_line": "pass",
+      "context": "st.session_state.display_queue = None\n            st.session_state.partial_response = ''\n        except BaseException:\n            pass"
+    },
+    {
+      "file": "frontends\\tgapp.py",
+      "line": 184,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "with open(fpath, \"rb\") as fp:\n                    await root_msg.reply_photo(fp)\n            except Exception:\n                pass\n        else:\n            try:"
+    },
+    {
+      "file": "frontends\\tgapp.py",
+      "line": 190,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "with open(fpath, \"rb\") as fp:\n                    await root_msg.reply_document(fp)\n            except Exception:\n                pass\n\nasync def _send_files_from_text(root_msg, text):"
+    },
+    {
+      "file": "frontends\\tuiapp.py",
+      "line": 261,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n            agent.inc_out = True\n        except Exception:\n            pass\n        session = AgentSession(agent_id=agent_id, name=name or f\"agent-{agent_id}\", agent=agent)\n        thread = threading.Thread(target=agent.run, name=f\"ga-tui-agent-{agent_id}\", daemon=True)"
+    },
+    {
+      "file": "frontends\\tuiapp_v2.py",
+      "line": 221,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n            self.app._cancel_choice(self.msg)\n        except Exception:\n            pass"
+    },
+    {
+      "file": "frontends\\tuiapp_v2.py",
+      "line": 326,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n            self.app._hide_palette()\n        except Exception:\n            pass\n        try:\n            self.app._resize_input(self)"
+    },
+    {
+      "file": "frontends\\tuiapp_v2.py",
+      "line": 330,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n            self.app._resize_input(self)\n        except Exception:\n            pass\n\n    def _insert_via_keyboard(self, text: str) -> None:"
+    },
+    {
+      "file": "frontends\\tuiapp_v2.py",
+      "line": 340,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n                self.app._resize_input(self)\n            except Exception:\n                pass\n\n    def _paste_file_from_clipboard(self) -> bool:"
+    },
+    {
+      "file": "frontends\\tuiapp_v2.py",
+      "line": 401,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n            self.app._resize_input(self)\n        except Exception:\n            pass\n        return True"
+    },
+    {
+      "file": "frontends\\tuiapp_v2.py",
+      "line": 914,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n            sys.stdout.write(\"\\x1b[?1007l\"); sys.stdout.flush()\n        except Exception:\n            pass\n\n    def _tick(self) -> None:"
+    },
+    {
+      "file": "frontends\\tuiapp_v2.py",
+      "line": 1077,
+      "except_line": "except Exception: pass",
+      "next_line": "",
+      "context": "self._quit_timer = None\n        try: self._refresh_bottombar()\n        except Exception: pass\n\n    def on_key(self, event: events.Key) -> None:\n        # Any key other than the quit trigger (Ctrl+C or its Cmd+C alias) disarms."
+    },
+    {
+      "file": "frontends\\tuiapp_v2.py",
+      "line": 1309,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n                    self.query_one(\"#messages\", VerticalScroll).scroll_end(animate=False)\n                except Exception:\n                    pass\n                return\n        self.submit_user_message(text, images=images)"
+    },
+    {
+      "file": "frontends\\tuiapp_v2.py",
+      "line": 1377,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n            self.query_one(\"#input\", InputArea).focus()\n        except Exception:\n            pass\n\n    def _collapse_choice(self, msg: ChatMessage, idx: int) -> None:"
+    },
+    {
+      "file": "frontends\\tuiapp_v2.py",
+      "line": 1694,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "inp.focus()\n                self._resize_input(inp)\n            except Exception:\n                pass\n        self.call_after_refresh(_fill)\n        return \"✏️ 已填入默认文件名，按 Enter 确认或先编辑\""
+    },
+    {
+      "file": "frontends\\tuiapp_v2.py",
+      "line": 1758,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n            self.query_one(\"#messages\", VerticalScroll).scroll_end(animate=False)\n        except Exception:\n            pass\n        try:\n            dq = sess.agent.put_task(text, source=\"user\")"
+    },
+    {
+      "file": "frontends\\tuiapp_v2.py",
+      "line": 1870,
+      "except_line": "except Exception: pass",
+      "next_line": "",
+      "context": "self._input_owner_id = self.current_id\n        try: self._resize_input(inp)\n        except Exception: pass\n\n    def _refresh_topbar(self):\n        if not self.is_mounted or self.current_id is None: return"
+    },
+    {
+      "file": "frontends\\tuiapp_v2.py",
+      "line": 1885,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n            self.query_one(\"#bottombar\", Static).update(render_bottombar(quit_armed=self._quit_armed))\n        except Exception:\n            pass\n\n    def _refresh_sidebar(self):"
+    },
+    {
+      "file": "frontends\\wechatapp.py",
+      "line": 89,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n                qr.print_ascii(invert=True)\n            except Exception:\n                pass\n            print(f'[QR登录] 二维码已保存: {img}')\n            print(f'[QR登录] 扫码链接: {url}')"
+    },
+    {
+      "file": "frontends\\wechatapp.py",
+      "line": 299,
+      "except_line": "except Exception:",
+      "next_line": "pass",
+      "context": "try:\n                        self._session.close()\n                    except Exception:\n                        pass\n                    self._session = requests.Session()\n                    from requests.adapters import HTTPAdapter"
+    },
+    {
+      "file": "memory\\ljqCtrl.py",
+      "line": 20,
+      "except_line": "except: pass",
+      "next_line": "",
+      "context": "from PIL import ImageGrab, Image, ImageEnhance, ImageFilter, ImageDraw\n\timport cv2\nexcept: pass\n\n_hdc = ctypes.windll.user32.GetDC(0)\nswidth = ctypes.windll.gdi32.GetDeviceCaps(_hdc, 118)   # DESKTOPHORZRES (物理)"
+    },
+    {
+      "file": "memory\\autonomous_operation_sop\\helper.py",
+      "line": 124,
+      "except_line": "except:",
+      "next_line": "pass",
+      "context": "try:\n            shutil.move(str(dest_path), str(report))\n        except:\n            pass\n        return f\"[ERROR] 写入 history 失败: {e}（报告已回滚）\""
+    },
+    {
+      "file": "memory\\L4_raw_sessions\\compress_session.py",
+      "line": 18,
+      "except_line": "except Exception: return None",
+      "next_line": "",
+      "context": "\"\"\"'2026-04-03 20:13:06' → '0403_2013'\"\"\"\n    try: return datetime.strptime(ts_str.strip(), '%Y-%m-%d %H:%M:%S').strftime('%m%d_%H%M')\n    except Exception: return None\n\ndef _detect_format(text):\n    \"\"\"Detect A (json) vs B (raw) by checking content after first Prompt marker.\"\"\""
+    }
+  ],
+  "reasonable": [
+    {
+      "file": "agent_loop.py",
+      "line": 35,
+      "except_line": "except StopIteration as e: return e.value",
+      "next_line": "",
+      "context": "try: \n        while True: next(g)\n    except StopIteration as e: return e.value\n\ndef get_pretty_json(data):\n    if isinstance(data, dict) and \"script\" in data:"
+    },
+    {
+      "file": "agent_loop.py",
+      "line": 80,
+      "except_line": "except StopIteration as e: outcome = e.value",
+      "next_line": "",
+      "context": "outcome = (yield from proxy()) if verbose else exhaust(proxy())\n                if verbose: yield '`````\\n'\n            except StopIteration as e: outcome = e.value\n            \n            if outcome.should_exit: \n                exit_reason = {'result': 'EXITED', 'data': outcome.data}; break"
+    },
+    {
+      "file": "simphtml.py",
+      "line": 2,
+      "except_line": "except ImportError: print(\"[Error] BeautifulSoup4 未安装，请叫Agent安装BeautifulSoup4，再使用web相关工具。\")",
+      "next_line": "",
+      "context": "try: from bs4 import BeautifulSoup\nexcept ImportError: print(\"[Error] BeautifulSoup4 未安装，请叫Agent安装BeautifulSoup4，再使用web相关工具。\")\n\njs_optHTML = r'''function optHTML(text_only=false) {\nfunction createEnhancedDOMCopy() {"
+    },
+    {
+      "file": "assets\\configure_mykey.py",
+      "line": 582,
+      "except_line": "except ValueError:",
+      "next_line": "pass",
+      "context": "if 0 <= idx < len(choices):\n                        selected.append(choices[idx]['id'])\n                except ValueError:\n                    pass\n            if selected:\n                return selected"
+    },
+    {
+      "file": "assets\\configure_mykey.py",
+      "line": 591,
+      "except_line": "except ValueError:",
+      "next_line": "pass",
+      "context": "if 0 <= idx < len(choices):\n                    return choices[idx]['id']\n            except ValueError:\n                pass\n        print(f\"  {C['red']}✗ 请输入有效序号{C['reset']}\")"
+    },
+    {
+      "file": "frontends\\conductor.py",
+      "line": 407,
+      "except_line": "except WebSocketDisconnect:",
+      "next_line": "pass",
+      "context": "add_chat(msg, role=\"user\")\n            conductor_events.put({\"type\": \"user_message\", \"msg\": msg})\n    except WebSocketDisconnect:\n        pass\n    finally:\n        ws_clients.discard(ws)"
+    },
+    {
+      "file": "frontends\\qtapp.py",
+      "line": 375,
+      "except_line": "except ImportError:",
+      "next_line": "pass",
+      "context": "text, extensions=[\"fenced_code\", \"tables\", \"nl2br\", \"sane_lists\"]\n        )\n    except ImportError:\n        pass\n    html, in_code, in_ul = [], False, False\n    for raw in text.split(\"\\n\"):"
+    },
+    {
+      "file": "temp\\task_scheduler.py",
+      "line": 104,
+      "except_line": "except OSError:",
+      "next_line": "pass",
+      "context": "if os.path.getmtime(f) < cutoff:\n                os.remove(f)\n        except OSError:\n            pass"
+    },
+    {
+      "file": "frontends\\conductor.py",
+      "line": 407,
+      "except_line": "except WebSocketDisconnect:",
+      "next_line": "pass",
+      "context": "add_chat(msg, role=\"user\")\n            conductor_events.put({\"type\": \"user_message\", \"msg\": msg})\n    except WebSocketDisconnect:\n        pass\n    finally:\n        ws_clients.discard(ws)"
+    },
+    {
+      "file": "frontends\\qtapp.py",
+      "line": 375,
+      "except_line": "except ImportError:",
+      "next_line": "pass",
+      "context": "text, extensions=[\"fenced_code\", \"tables\", \"nl2br\", \"sane_lists\"]\n        )\n    except ImportError:\n        pass\n    html, in_code, in_ul = [], False, False\n    for raw in text.split(\"\\n\"):"
+    }
+  ],
+  "already_handled": []
+}

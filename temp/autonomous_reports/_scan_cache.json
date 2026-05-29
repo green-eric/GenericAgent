@@ -1,0 +1,969 @@
+[
+  {
+    "file": "R100_AlphaTrading波动率因子IC回测.md",
+    "desc": "R100_AlphaTrading波动率因子IC回测",
+    "title": "R100 | 2026-05-13 | 实测 | AlphaTrading波动率因子移植IC验证",
+    "date": "2026-05-13",
+    "type": "?",
+    "findings": [
+      "### ✅ 验收标准：至少1个因子 IC > 0.03",
+      "5日IC = +0.0657 >> 0.03 ✅",
+      "ICIR = +1.097 > 0.5 ✅"
+    ]
+  },
+  {
+    "file": "R100_AlphaTrading波动率因子移植实测.md",
+    "desc": "R100_AlphaTrading波动率因子移植实测",
+    "title": "R100 | 2026-05-13 | 实测 | AlphaTrading波动率因子移植IC验证",
+    "date": "2026-05-13",
+    "type": "?",
+    "findings": [
+      "### ✅ 验收标准：至少1个因子 IC > 0.03",
+      "5日IC = +0.0657 >> 0.03 ✅",
+      "ICIR = +1.097 > 0.5 ✅"
+    ]
+  },
+  {
+    "file": "R101_规划模式 — R100后新批次TODO产出.md",
+    "desc": "R101_规划模式 — R100后新批次TODO产出",
+    "title": "R101 | 2026-05-13 | 规划 | R100后新批次TODO产出",
+    "date": "2026-05-13",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R102_批量因子IC筛选.md",
+    "desc": "R102_批量因子IC筛选",
+    "title": "R102 | 2026-05-14 | 实测 | AlphaTrading批量因子IC筛选",
+    "date": "2026-05-14",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R103_reversal因子regime特异性分析.md",
+    "desc": "R103_reversal因子regime特异性分析",
+    "title": "R103 | 2026-05-14 | 诊断 | ScoreSys reversal因子regime特异性分析",
+    "date": "2026-05-14",
+    "type": "?",
+    "findings": [
+      "| reversal在趋势行情中正IC | ❌ trending中IC≈0，几乎无效 |",
+      "| reversal在下跌市中有效 | ✅ crash_slow中极强(+0.42)，crash_sharp中正IC |"
+    ]
+  },
+  {
+    "file": "R104_权重敏感性分析.md",
+    "desc": "R104_权重敏感性分析",
+    "title": "R104 | 2026-05-14 | 工具 | ScoreSys因子权重敏感性分析",
+    "date": "2026-05-14",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R105_L1记忆索引更新.md",
+    "desc": "R105_L1记忆索引更新",
+    "title": "R105 | 2026-05-13 | 维护 | L1记忆索引更新",
+    "date": "2026-05-13",
+    "type": "维护",
+    "findings": [
+      "✅ L1索引已更新完毕，与实际L3文件完全一致"
+    ]
+  },
+  {
+    "file": "R106_AKShare腾讯源实测.md",
+    "desc": "R106_AKShare腾讯源实测",
+    "title": "R106 | 2026-05-14 | 验证 | AKShare腾讯源实测评估",
+    "date": "2026-05-14",
+    "type": "?",
+    "findings": [
+      "| stock_zh_a_spot_em | 东财实时行情 | ❌ RemoteDisconnected |",
+      "| stock_zh_a_hist | 东财日线 | ❌ RemoteDisconnected |",
+      "| stock_zh_a_hist_min_em | 东财分钟 | ❌ RemoteDisconnected |"
+    ]
+  },
+  {
+    "file": "R106_任务规划-新批次TODO.md",
+    "desc": "R106_任务规划-新批次TODO",
+    "title": "R106 | 2026-05-13 | 规划 | 任务规划-新批次TODO",
+    "date": "2026-05-13",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R109_regime动态权重.md",
+    "desc": "R109_regime动态权重",
+    "title": "R109 | 2026-05-14 | 实现 | Regime动态权重方案",
+    "date": "2026-05-14",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R113_ScoreSys README文档一致性审查.md",
+    "desc": "R113_ScoreSys README文档一致性审查",
+    "title": "R108 | 2026-05-13 | 优化 | ScoreSys README文档一致性审查",
+    "date": "2026-05-13",
+    "type": "?",
+    "findings": [
+      "| 9 | 4.2.2 scores表字段 | 列出 `cash_flow` 字段 | DDL中实际字段名是 `cash_flow` ✅ | 一致，无问题 |"
+    ]
+  },
+  {
+    "file": "R114_L2记忆时效性审查.md",
+    "desc": "R114_L2记忆时效性审查",
+    "title": "R109 | 2026-05-13 | 优化 | L2记忆时效性审查与精简",
+    "date": "2026-05-13",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R115_R110 _ Python依赖版本统一.md",
+    "desc": "R115_R110 _ Python依赖版本统一",
+    "title": "R115: AKShare 因子数据源实测",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "### R107 验收状态: ❌ 未完成（网络阻塞）"
+    ]
+  },
+  {
+    "file": "R116_R112 _ 安装包一键安装脚本权限测试.md",
+    "desc": "R116_R112 _ 安装包一键安装脚本权限测试",
+    "title": "R116: 安装包一键安装脚本权限测试",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "**状态**: ✅ 分析完成（无管理员权限，仅做静态分析）",
+      "| `ga-cli-install.cmd` | ✅ 否 | ✅ 是 | 操作 `HKCU\\Environment`（用户级 PATH），不需要管理员 |",
+      "| `setup_task.bat` | ⚠️ 是 | ❌ 否 | `net session` 提权检测 + `schtasks /rl highest` 创建高权限计划任务 |"
+    ]
+  },
+  {
+    "file": "R117_R101 _ AlphaTrading alpha010反转IC验证.md",
+    "desc": "R117_R101 _ AlphaTrading alpha010反转IC验证",
+    "title": "R101 | 2026-05-14 | 实测 | AlphaTrading alpha010反转IC验证",
+    "date": "2026-05-14",
+    "type": "?",
+    "findings": [
+      "### ✅ 验收判断",
+      "| **5日*| ✅ +0.0414 | ✅ +0.547 | **✅ 通过*|",
+      "| 10日 | ✅ +0.0472 | ❌ +0.448 | ❌ ICIR不足 |"
+    ]
+  },
+  {
+    "file": "R118_wechatapp消息链路死代码清理与参数修复.md",
+    "desc": "R118_wechatapp消息链路死代码清理与参数修复",
+    "title": "R118 | 2026-05-14 | 修复 | wechatapp.py 消息链路死代码清理与参数修复",
+    "date": "2026-05-14",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R119_微信Bot深度诊断.md",
+    "desc": "R119_微信Bot深度诊断",
+    "title": "微信Bot诊断报告 — 用户离开期间自主探测",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "| bot进程 | ✅ 运行中 | get_updates 已调用108轮 |",
+      "| get_updates errcode | ✅ 全部为0 | token对get_updates有效 |",
+      "| 收到消息数 | ❌ 0条 | _on_message从未被调用 |"
+    ]
+  },
+  {
+    "file": "R120_微信Bot修复自主行动总结.md",
+    "desc": "R120_微信Bot修复自主行动总结",
+    "title": "R120 | 2026-05-14 | 自主行动 | 微信Bot修复状态总结",
+    "date": "2026-05-14",
+    "type": "?",
+    "findings": [
+      "✅ **已找到可靠解决方案**: 降级微信到 3.9.12.51",
+      "✅ 问题根源已定位",
+      "✅ 解决方案已确认"
+    ]
+  },
+  {
+    "file": "R121_任务规划-新批次TODO产出.md",
+    "desc": "R121_任务规划-新批次TODO产出",
+    "title": "R120 | 任务规划 — 新批次TODO产出与评审",
+    "date": "?",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R122_AKShare_东方财富API网络问题根因诊断.md",
+    "desc": "R122_AKShare_东方财富API网络问题根因诊断",
+    "title": "R121 | 2026-05-14 | 诊断 | AKShare/东方财富API网络问题根因诊断",
+    "date": "2026-05-14",
+    "type": "?",
+    "findings": [
+      "| 198.18.x.x:443 TLS | ❌ SSL EOF失败 | 虚假IP无法完成TLS |",
+      "| 直连真实IP:443 | ✅ HTTP 200, JSON rc=0 | 数据正常返回 |"
+    ]
+  },
+  {
+    "file": "R123_Clash方案B验证+东方财富API诊断.md",
+    "desc": "R123_Clash方案B验证+东方财富API诊断",
+    "title": "R123 | 2026-05-14 | 验证 | Clash方案B网络配置+东方财富API诊断收尾",
+    "date": "2026-05-14",
+    "type": "?",
+    "findings": [
+      "| 网关 ping | ✅ 6ms |",
+      "| 8.8.8.8 ping | ✅ |",
+      "| 百度(直连) | ✅ HTTP 200 |"
+    ]
+  },
+  {
+    "file": "R125_V14.1优化+因子看板.md",
+    "desc": "R125_V14.1优化+因子看板",
+    "title": "R124 | 2026-05-15 | 自主行动 | ScoreSys V14.1优化 + 因子看板",
+    "date": "2026-05-15",
+    "type": "?",
+    "findings": [
+      "完成的任务",
+      "✅ 所有8个regime权重总和严格=1.000",
+      "✅ 语法检查通过"
+    ]
+  },
+  {
+    "file": "R126_PC闲置GPU推理能力边界探测.md",
+    "desc": "R126_PC闲置GPU推理能力边界探测",
+    "title": "R126 | 2026-05-15 | PC闲置GPU推理能力边界探测",
+    "date": "2026-05-15",
+    "type": "?",
+    "findings": [
+      "| 100M | 0.4GB | 0.1GB | 80ms | ✅ 可用 |",
+      "| 350M | 1.4GB | 0.2GB | 280ms | ✅ 勉强 |",
+      "| 3B | 12.0GB | 1.5GB | 2400ms | ❌ 不实用 |"
+    ]
+  },
+  {
+    "file": "R127_探测PC上已安装但未使用的Python包.md",
+    "desc": "R127_探测PC上已安装但未使用的Python包",
+    "title": "R128 — PC已安装但未使用的Python包探测",
+    "date": "2026-05-15",
+    "type": "?",
+    "findings": [
+      "✅ 已完成。216个已安装包中识别出 **17个未使用包**，重点验证 **8个全部可用**，发现多个可直接用于当前项目的隐藏能力。",
+      "**状态**: ✅ 可用",
+      "**状态**: ✅ 可用"
+    ]
+  },
+  {
+    "file": "R128_PC外网访问能力恢复探测.md",
+    "desc": "R128_PC外网访问能力恢复探测",
+    "title": "R129 — PC外网访问能力恢复探测",
+    "date": "2026-05-15",
+    "type": "?",
+    "findings": [
+      "✅ 已完成。确定外网不通根因：**Clash Verge 代理端口未监听**，系统代理未配置。内网正常，国内站点可达。",
+      "| DNS解析 | ✅ 正常 | 114.114.114.114 通(38ms) |",
+      "| 国内TCP | ✅ 正常 | baidu:80(57ms) baidu:443(47ms) |"
+    ]
+  },
+  {
+    "file": "R129_BfM实时流推送ScoreSys选股结果.md",
+    "desc": "R129_BfM实时流推送ScoreSys选股结果",
+    "title": "R129 — BfM实时流推送ScoreSys选股结果 验证报告",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "## 结论：✅ 功能已完整实现，无需开发"
+    ]
+  },
+  {
+    "file": "R130_ScoreSys+BfM信号融合回测.md",
+    "desc": "R130_ScoreSys+BfM信号融合回测",
+    "title": "ScoreSys + BfM 信号融合分析报告",
+    "date": "?",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R131_ScoreSys+BfM信号融合回测.md",
+    "desc": "R131_ScoreSys+BfM信号融合回测",
+    "title": "ScoreSys + BfM 信号融合分析报告",
+    "date": "?",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R132_ScoreSys看板增加BfM信号叠加.md",
+    "desc": "R132_ScoreSys看板增加BfM信号叠加",
+    "title": "ScoreSys看板BfM信号叠加 — 验收报告",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "结论：R129已实质完成",
+      "✅ BfM页面可展示实时更新的ScoreSys评分",
+      "✅ ScoreSys评分与BfM八维信号同屏叠加显示"
+    ]
+  },
+  {
+    "file": "R133_微信Bot新增ScoreSys一键评分命令.md",
+    "desc": "R133_微信Bot新增ScoreSys一键评分命令",
+    "title": "R133 — 微信Bot新增ScoreSys一键评分命令",
+    "date": "?",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R134_PC已装ML库(scikit-learn_statsmodels)深度利用.md",
+    "desc": "R134_PC已装ML库(scikit-learn_statsmodels)深度利用",
+    "title": "R134 — ML库深度利用：PCA降维 + 聚类 + OLS统计检验",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "| 其他7因子 | <5 | ✅ 正常 |"
+    ]
+  },
+  {
+    "file": "R134_fusion_picker工具实现.md",
+    "desc": "R134_fusion_picker工具实现",
+    "title": "ScoreSys + BfM 动态权重融合选股工具实现报告",
+    "date": "?",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R135_规划模式-新批次TODO产出(8条).md",
+    "desc": "R135_规划模式-新批次TODO产出(8条)",
+    "title": "R135 规划模式 — 新批次TODO产出",
+    "date": "?",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R136_fusion_picker.py README文档补充.md",
+    "desc": "R136_fusion_picker.py README文档补充",
+    "title": "R136 — fusion_picker.py README文档补充",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "完成内容"
+    ]
+  },
+  {
+    "file": "R137_微信Bot新增_bfm命令.md",
+    "desc": "R137_微信Bot新增_bfm命令",
+    "title": "R137 — 微信Bot新增/bfm命令",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "完成内容"
+    ]
+  },
+  {
+    "file": "R138_验证fusion_picker.py可运行性.md",
+    "desc": "R138_验证fusion_picker.py可运行性",
+    "title": "R100 — fusion_picker.py 验证通过",
+    "date": "?",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R139_ScoreSys README文档一致性修复.md",
+    "desc": "R139_ScoreSys README文档一致性修复",
+    "title": "R113b — ScoreSys README文档一致性修复",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "config.yaml: max_single_weight=0.30, regime_max_weight=0.30 ✅",
+      "scorer.py: profitability为正向评分 ✅",
+      "weight_optimizer.py: 代码默认值与config一致 ✅"
+    ]
+  },
+  {
+    "file": "R140_全局记忆L2时效性审查第二轮.md",
+    "desc": "R140_全局记忆L2时效性审查第二轮",
+    "title": "R114b — 全局记忆L2时效性审查(第二轮)",
+    "date": "?",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R141_PC文件系统用户数据发现.md",
+    "desc": "R141_PC文件系统用户数据发现",
+    "title": "R135 — PC文件系统用户数据发现",
+    "date": "?",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R142_RPS20选股系统+AnnualScorer深度探测.md",
+    "desc": "R142_RPS20选股系统+AnnualScorer深度探测",
+    "title": "R143 | 探测 | RPS20选股系统 + AnnualScorer 深度探测",
+    "date": "?",
+    "type": "探测",
+    "findings": []
+  },
+  {
+    "file": "R142_wechat_bfm_command.md",
+    "desc": "R142_wechat_bfm_command",
+    "title": "R142 | 微信Bot /bfm 命令修复与增强",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "**验收**: ✅ 通过"
+    ]
+  },
+  {
+    "file": "R143_apscheduler替换Windows定时任务.md",
+    "desc": "R143_apscheduler替换Windows定时任务",
+    "title": "R144 | 工程 | apscheduler替换Windows定时任务",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "结论：✅ 已完成，无需额外迁移",
+      "✅ APScheduler 3.11.2 已安装",
+      "❌ 无任何 ScoreSys/回测/选股相关旧任务"
+    ]
+  },
+  {
+    "file": "R144_ScoreSys CHANGELOG补全.md",
+    "desc": "R144_ScoreSys CHANGELOG补全",
+    "title": "R145 | 维护 | ScoreSys CHANGELOG补全",
+    "date": "?",
+    "type": "维护",
+    "findings": [
+      "## 结论：✅ CHANGELOG.md 已创建并提交"
+    ]
+  },
+  {
+    "file": "R145_L3 SOP文件瘦身整理.md",
+    "desc": "R145_L3 SOP文件瘦身整理",
+    "title": "R146 | 维护 | L3 SOP文件瘦身整理",
+    "date": "?",
+    "type": "维护",
+    "findings": [
+      "结论：✅ 完成，23→17个(-26.1%)，超过20%目标",
+      "✅ L3 Insight索引已更新（删除过时条目，添加mini_sop_collection）",
+      "✅ Git已提交记忆目录变更"
+    ]
+  },
+  {
+    "file": "R146_apscheduler替换Windows不稳定定时任务.md",
+    "desc": "R146_apscheduler替换Windows不稳定定时任务",
+    "title": "R147 | 收尾 | apscheduler TODO标记完成",
+    "date": "?",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R147_R147任务规划-批判历史127条产出6条新TODO.md",
+    "desc": "R147_R147任务规划-批判历史127条产出6条新TODO",
+    "title": "R147 — 自主行动任务规划",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "✅ TODO.txt 已更新 (6条新TODO)"
+    ]
+  },
+  {
+    "file": "R148_PC外网代理稳定性探测.md",
+    "desc": "R148_PC外网代理稳定性探测",
+    "title": "R148 — PC外网代理稳定性探测",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "| clash-verge | 9960 | ✅ 运行中 |",
+      "| clash-verge-service | 3836 | ✅ 运行中 |",
+      "| 7890 | HTTP代理 | ❌ 未监听 |"
+    ]
+  },
+  {
+    "file": "R148_proxy_health.md",
+    "desc": "R148_proxy_health",
+    "title": "R148 — PC外网代理稳定性探测",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "| clash-verge | 9960 | ✅ 运行中 |",
+      "| clash-verge-service | 3836 | ✅ 运行中 |",
+      "| 7890 | HTTP代理 | ❌ 未监听 |"
+    ]
+  },
+  {
+    "file": "R149_CPU轻量模型推理能力边界实测.md",
+    "desc": "R149_CPU轻量模型推理能力边界实测",
+    "title": "R149 — CPU轻量模型推理能力边界实测",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "| PyTorch | 2.11.0+cpu | ✅ |",
+      "| ONNX Runtime | 1.17.x | ✅ (CPU provider) |",
+      "| optimum | 已安装 | ✅ |"
+    ]
+  },
+  {
+    "file": "R150_自主行动历史记录去重整理.md",
+    "desc": "R150_自主行动历史记录去重整理",
+    "title": "R150 — 自主行动历史记录去重整理",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "✅ 131→125条，删除6条重复/碎片",
+      "✅ 无关键信息丢失",
+      "✅ 保留最新/最完整版本"
+    ]
+  },
+  {
+    "file": "R151_TODO.txt清理与重置.md",
+    "desc": "R151_TODO.txt清理与重置",
+    "title": "R151 — TODO.txt清理与重置",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "✅ 归档已完成TODO到 `TODO_archive_R147batch.md`",
+      "✅ TODO.txt 重置为 R151批次，只保留未完成条目",
+      "✅ 历史批次信息不丢失（归档文件）"
+    ]
+  },
+  {
+    "file": "R152_融合选股工具v2.md",
+    "desc": "R152_融合选股工具v2",
+    "title": "R153 — GA上游代码自动同步工具",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "完成内容",
+      "按文件路径和关键词自动三分类：✅安全 / ⚠️需审查 / ❌跳过",
+      "✅ 安全可合并: 15 个（前端UI/文档/配置/测试）"
+    ]
+  },
+  {
+    "file": "R153_GA上游代码自动同步工具.md",
+    "desc": "R153_GA上游代码自动同步工具",
+    "title": "R153 — GA上游代码自动同步工具",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "完成内容",
+      "按文件路径和关键词自动三分类：✅安全 / ⚠️需审查 / ❌跳过",
+      "✅ 安全可合并: 15 个（前端UI/文档/配置/测试）"
+    ]
+  },
+  {
+    "file": "R154_RPS20xScoreSys交叉分析.md",
+    "desc": "R154_RPS20xScoreSys交叉分析",
+    "title": "R154 | RPS20 × ScoreSys 交叉分析报告",
+    "date": "?",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R155_scheduled_backtest运行状态验证.md",
+    "desc": "R155_scheduled_backtest运行状态验证",
+    "title": "R155 — scheduled_backtest 运行状态验证",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "| scheduled_backtest.py 存在 | ✅ `D:\\Project\\ScoreSys\\scheduled_backtest.py` (283行) |",
+      "| 当前运行中的 scheduler 进程 | ❌ 无 |",
+      "| jobstore 持久化文件 | ❌ 无 jobs.sqlite |"
+    ]
+  },
+  {
+    "file": "R157_GA上游安全提交自动合并.md",
+    "desc": "R157_GA上游安全提交自动合并",
+    "title": "R156 — GA上游安全提交自动合并",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "完成内容",
+      "| fetch upstream | ✅ 成功 |",
+      "| 三分类 | ✅安全 15 / ⚠️审查 1 / ❌跳过 0 |"
+    ]
+  },
+  {
+    "file": "R158_proxy_health持续监控.md",
+    "desc": "R158_proxy_health持续监控",
+    "title": "R157 — proxy_health持续监控",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "完成内容",
+      "| Clash 进程 | ✅ clash-verge (PID:9960) + service (PID:3836) |",
+      "| 端口 7897 | ✅ 可用 |"
+    ]
+  },
+  {
+    "file": "R54_每日回测_20260509.md",
+    "desc": "R54_每日回测_20260509",
+    "title": "ScoreSys 每日回测报告",
+    "date": "?",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R54_每日回测_20260511.md",
+    "desc": "R54_每日回测_20260511",
+    "title": "ScoreSys 每日回测报告",
+    "date": "?",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R66_微信Bot消息格式自适应.md",
+    "desc": "R66_微信Bot消息格式自适应",
+    "title": "R66 — 微信Bot消息格式自适应",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "**状态**：✅ 完成",
+      "✅ 语法编译通过",
+      "✅ Bot重启成功（PID 3368，Kill 10旧进程）"
+    ]
+  },
+  {
+    "file": "R67_BfM前端SSE连接状态UI.md",
+    "desc": "R67_BfM前端SSE连接状态UI",
+    "title": "R67 BfM前端SSE连接状态UI修复",
+    "date": "?",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R68_BfM项目TypeScript编译验证.md",
+    "desc": "R68_BfM项目TypeScript编译验证",
+    "title": "R68 BfM项目TypeScript编译验证",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "| tsc --noEmit | ✅ exit 0, 零类型错误 |",
+      "| npm run build (tsc && vite build) | ✅ exit 0, 597 modules, 22.93s |"
+    ]
+  },
+  {
+    "file": "R69_东方财富K线图修复报告.md",
+    "desc": "R69_东方财富K线图修复报告",
+    "title": "R69 - 东方财富K线图数据源修复",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "**状态:*✅ 完成",
+      "| 平安银行 | 000001 | daily | 30 | 03-24 → 05-08 | 97.5 KB | 1667x948 ✅ |",
+      "| 贵州茅台 | 600519 | daily | 60 | 02-02 → 05-08 | 129.1 KB | 1667x948 ✅ |"
+    ]
+  },
+  {
+    "file": "R69_集成 _ K线图集成到微信Bot _ kline_chart.py→wechatapp.py_ import + dispatch拦截器(K线正则→generate_kline→send_image)，kline_chart_test通过(平安银行69.3KB PNG)，wechatapp语法OK.md",
+    "desc": "R69_集成 _ K线图集成到微信Bot _ kline_chart.py→wechatapp.py_ import + dispatch拦截器(K线正则→generate_kline→send_image)，kline_chart_test通过(平安银行69.3KB PNG)，wechatapp语法OK",
+    "title": "R69 — K线图集成到微信Bot",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "**状态**: ✅ 已完成",
+      "bot.send_text(uid, f'❌ {_kl_code} K线图生成失败，请检查代码或稍后重试', context_token=ctx)",
+      "| `000001 K线` | 000001 ✅ |"
+    ]
+  },
+  {
+    "file": "R70_ScoreSys权重优化器V1.3全Regime混入.md",
+    "desc": "R70_ScoreSys权重优化器V1.3全Regime混入",
+    "title": "R70 — ScoreSys 权重优化器 V1.3 全Regime混入",
+    "date": "?",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R71_微信Bot回复速度诊断.md",
+    "desc": "R71_微信Bot回复速度诊断",
+    "title": "R71 — 微信Bot回复速度诊断：ScoreSys数据抓取拖慢系统",
+    "date": "?",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R72_ScoreSys因子改造方案.md",
+    "desc": "R72_ScoreSys因子改造方案",
+    "title": "ScoreSys V11.0 因子改造方案",
+    "date": "?",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R74_记忆系统覆盖率补全.md",
+    "desc": "R74_记忆系统覆盖率补全",
+    "title": "R74 | 记忆系统覆盖率补全",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "| BfM 架构细节 | 部分 | ✅ 完整 |",
+      "| BfM 文档体系 | ❌ 缺失 | ✅ v10.0 |",
+      "| SSE 实时流 | ❌ 缺失 | ✅ 完整 |"
+    ]
+  },
+  {
+    "file": "R75_小众工具挖掘：因子分析_选股辅助.md",
+    "desc": "R75_小众工具挖掘：因子分析_选股辅助",
+    "title": "R75 | 小众工具挖掘：因子分析/选股辅助",
+    "date": "?",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R76_ScoreSys因子改造分析.md",
+    "desc": "R76_ScoreSys因子改造分析",
+    "title": "R77 - ScoreSys 因子层面改造分析报告",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "| profitability | 0.15 | 正向 | ❌ 持续负IC |",
+      "| cash_flow | 0.20 | 正向 | ✅ 全周期最强 |"
+    ]
+  },
+  {
+    "file": "R76_V10.1回测分析.md",
+    "desc": "R76_V10.1回测分析",
+    "title": "V10.1 回测分析报告",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "| avg_ic | +0.0182 | +0.0227 | -19.8% ❌ |",
+      "| 2024-Q2 | +0.1400 | 100% | 趋势市 ✅ |",
+      "| 2024-Q3 | -0.1059 | 0% | 政策底反弹 ❌ |"
+    ]
+  },
+  {
+    "file": "R78_微信Bot回复速度优化.md",
+    "desc": "R78_微信Bot回复速度优化",
+    "title": "R77 - 微信Bot回复速度优化验证",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "| poll_timeout 30→5s | ✅ 已生效 (run_loop.py line ~421) |",
+      "| 流式发送(chunk per turn) | ✅ 已生效 (_handle中sent_any模式) |",
+      "| max_turns 3→10 | ✅ 已生效 |"
+    ]
+  },
+  {
+    "file": "R79_环境健康检查.md",
+    "desc": "R79_环境健康检查",
+    "title": "R79 - 环境健康检查",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "✅ pythonw.exe: 运行中",
+      "✅ python.exe: 运行中",
+      "✅ verge-mihomo.exe: 运行中 (代理正常)"
+    ]
+  },
+  {
+    "file": "R80_scorer_unit_bug.md",
+    "desc": "R80_scorer_unit_bug",
+    "title": "R80 — ScoreSys 四因子全50 bug 根因诊断报告",
+    "date": "?",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R81_regime_weights_v134.md",
+    "desc": "R81_regime_weights_v134",
+    "title": "R81 — V13.4 Regime 自适应权重优化",
+    "date": "?",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R82_R81_ScoreSys 0分股票诊断与修复.md",
+    "desc": "R82_R81_ScoreSys 0分股票诊断与修复",
+    "title": "R80 | ScoreSys 0分股票诊断",
+    "date": "2026-05-09",
+    "type": "?",
+    "findings": [
+      "| pe_ttm | 0 | 0% ✅ |",
+      "| pb | 3 | 1.2% ✅ |",
+      "| total_mv | 0 | 0% ✅ |"
+    ]
+  },
+  {
+    "file": "R83_regime_ic_deep_analysis.md",
+    "desc": "R83_regime_ic_deep_analysis",
+    "title": "R83 — ScoreSys 三Regime因子IC矩阵深度分析",
+    "date": "?",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R83_三regime因子IC矩阵深度分析.md",
+    "desc": "R83_三regime因子IC矩阵深度分析",
+    "title": "R83 — ScoreSys 三Regime因子IC矩阵深度分析",
+    "date": "?",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R84_K线图数据源修复&微信Bot链路接通.md",
+    "desc": "R84_K线图数据源修复&微信Bot链路接通",
+    "title": "R84 — ScoreSys K线图数据源修复 & 微信Bot链路接通",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "| 000001 | 平安银行 | ✅ | 121.8KB |",
+      "| 600519 | 贵州茅台 | ✅ | 128.6KB |",
+      "| 300750 | 宁德时代 | ✅ | 133.2KB |"
+    ]
+  },
+  {
+    "file": "R85_规划模式TODO产出.md",
+    "desc": "R85_规划模式TODO产出",
+    "title": "R85 — 规划模式 TODO 产出",
+    "date": "?",
+    "type": "维护",
+    "findings": []
+  },
+  {
+    "file": "R86_P2P3执行-瘦身+轮转+去重.md",
+    "desc": "R86_P2P3执行-瘦身+轮转+去重",
+    "title": "R86 — P2 & P3 执行报告",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "✅ temp/ 瘦身: 235.8MB → 144.7MB (释放91.1MB)",
+      "✅ usage_log 轮转: 200.9KB → 64.3KB",
+      "✅ 报告去重: 76 → 72"
+    ]
+  },
+  {
+    "file": "R87_PC硬件性能基线建档.md",
+    "desc": "R87_PC硬件性能基线建档",
+    "title": "🖥️ PC 硬件性能基线建档报告 (R87)",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "✅ **TODO完成**: PC硬件性能基线建档"
+    ]
+  },
+  {
+    "file": "R88_微信Bot summary泄漏修复.md",
+    "desc": "R88_微信Bot summary泄漏修复",
+    "title": "微信Bot summary泄漏修复报告 (R88)",
+    "date": "2026-05-11",
+    "type": "?",
+    "findings": [
+      "| `<summary>` 标签 | `_CLEAN_RES[0]` 有 | ✅ 已覆盖 |",
+      "| `<thinking>` 等标签 | `_TAG_PATS` 有 | ✅ 已覆盖 |",
+      "| `<details>`/`<think>`/`<reasoning>` 等变体 | ❌ 未覆盖 | 部分 agent 输出使用这些标签 |"
+    ]
+  },
+  {
+    "file": "R89_ScoreSys V13.5因子改造IC回测实测.md",
+    "desc": "R89_ScoreSys V13.5因子改造IC回测实测",
+    "title": "R89 | ScoreSys V13.5因子改造IC回测实测",
+    "date": "2023-01-03",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R90_BfM SSE 多客户端并发广播验证.md",
+    "desc": "R90_BfM SSE 多客户端并发广播验证",
+    "title": "R90 | BfM SSE 多客户端并发广播验证",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "| 100 | 1 | 100 | 0 ✅ |",
+      "| 100 | 3 | 99 | 1 ❌ |",
+      "| 100 | 10 | 100 | 0 ✅ |"
+    ]
+  },
+  {
+    "file": "R91_ScoreSys_V13.5因子改造实测-终止报告.md",
+    "desc": "R91_ScoreSys_V13.5因子改造实测-终止报告",
+    "title": "R91 | ScoreSys V13.5因子改造实测 — 终止报告",
+    "date": "2023-01-03",
+    "type": "?",
+    "findings": [
+      "❌ avgIC=0.0169 < 0.055，假设不成立",
+      "✅ 行业中性化修复价值已验证（夏普 1.4→6.5）"
+    ]
+  },
+  {
+    "file": "R91_规划模式 — 新批次TODO产出.md",
+    "desc": "R91_规划模式 — 新批次TODO产出",
+    "title": "R92 | 规划模式 — 新批次TODO产出",
+    "date": "?",
+    "type": "产出",
+    "findings": [
+      "3. **微信Bot能力矩阵**：K线图✅ 评分查询❌ 选股推送❌ —— 后续TODO聚焦能力补全。"
+    ]
+  },
+  {
+    "file": "R92_ScoreSys因子IC诊断.md",
+    "desc": "R92_ScoreSys因子IC诊断",
+    "title": "R92 — ScoreSys V13.5因子改造IC回测诊断",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "已完成验证",
+      "[x] momentum_score: V13.8已全局反转 ✅",
+      "[x] cashflow_score: V10.1已有6子维度 ✅"
+    ]
+  },
+  {
+    "file": "R93_ScoreSys因子分层IC分析（中证500，2022-2025）.md",
+    "desc": "R93_ScoreSys因子分层IC分析（中证500，2022-2025）",
+    "title": "R93 | 2026-05-12 | 分析 | ScoreSys因子分层IC分析（中证500，2022-2025）",
+    "date": "2026-05-12",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R94_ScoreSys分层回测（中证500，5因子 vs 9因子）.md",
+    "desc": "R94_ScoreSys分层回测（中证500，5因子 vs 9因子）",
+    "title": "R94 | 2026-05-12 | 分析 | ScoreSys分层回测（中证500，5因子 vs 9因子）",
+    "date": "2026-05-12",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R95_AlphaTrading(lca-123_alphas)因子库实测评估.md",
+    "desc": "R95_AlphaTrading(lca-123_alphas)因子库实测评估",
+    "title": "R95 | 2026-05-12 | 评估 | AlphaTrading(lca-123/alphas)因子库实测评估",
+    "date": "2026-05-12",
+    "type": "?",
+    "findings": [
+      "| 波动率 | 多个 | ❌ 无 | ✅ 新信号 |",
+      "| 价量关系 | 多个 | ❌ 无 | ✅ 新信号 |",
+      "| OHLC形态 | 多个 | ❌ 无 | ✅ 新信号 |"
+    ]
+  },
+  {
+    "file": "R96_工具域使用经验盲区补全.md",
+    "desc": "R96_工具域使用经验盲区补全",
+    "title": "R96 | 2026-05-12 | 记忆 | 工具域使用经验盲区补全",
+    "date": "2026-05-12",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R97_AlphaTrading因子互补性深度分析.md",
+    "desc": "R97_AlphaTrading因子互补性深度分析",
+    "title": "R97 | 2026-05-12 | 分析 | AlphaTrading因子与ScoreSys互补性深度分析",
+    "date": "2026-05-12",
+    "type": "?",
+    "findings": []
+  },
+  {
+    "file": "R98_下载缺失安装包+生成一键安装脚本.md",
+    "desc": "R98_下载缺失安装包+生成一键安装脚本",
+    "title": "R98 软件安装包下载与脚本生成",
+    "date": "?",
+    "type": "?",
+    "findings": [
+      "| Everything 1.4.1.1024 | Everything-1.4.1.1024.x64-Setup.exe | 1.8MB | ✅ |",
+      "| Redis 3.2.100 | Redis-x64-3.2.100.msi | 5.8MB | ✅ |",
+      "| WinRAR 7.10 | winrar-x64-710.exe | 3.6MB | ✅ |"
+    ]
+  },
+  {
+    "file": "R99_微信Bot K线图端到端验证.md",
+    "desc": "R99_微信Bot K线图端到端验证",
+    "title": "R99 | 2026-05-13 | 验证 | 微信Bot K线图端到端验证",
+    "date": "2026-05-13",
+    "type": "?",
+    "findings": [
+      "matplotlib: ❌ 未安装 → ✅ 已安装",
+      "PIL (Pillow): ✅ 已可用",
+      "| 平安银行 | 000001 | ✅ SUCCESS | 108.5KB |"
+    ]
+  }
+]

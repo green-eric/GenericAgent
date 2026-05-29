@@ -1,0 +1,41 @@
+{
+  "timestamp": "2026-05-29 19:28:51",
+  "checks": {
+    "db_connection": {
+      "ok": true,
+      "message": "OK"
+    },
+    "table_counts": {
+      "quotes": 3261507,
+      "financials": 192904,
+      "stocks": 4344,
+      "scores": 56440
+    },
+    "latest_dates": {
+      "latest_quote_date": "2026-05-29",
+      "latest_score_date": "2026-05-29",
+      "scored_stocks": 4344
+    },
+    "freshness": {
+      "quote_delay_days": 0,
+      "score_delay_days": 0
+    },
+    "signals_file": {
+      "exists": true,
+      "file_mtime": "2026-05-29 16:40",
+      "file_age_hours": 2.8,
+      "signal_count": 30,
+      "key_count": 30,
+      "score_date": "2026-05-29"
+    },
+    "score_distribution": {
+      "total_scored": 4344,
+      "avg_score": 47.43,
+      "score_range": "29.6 ~ 72.7",
+      "above_65": 126,
+      "above_60": 409
+    }
+  },
+  "issues": [],
+  "status": "PASS"
+}

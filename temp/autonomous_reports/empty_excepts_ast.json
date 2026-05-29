@@ -1,0 +1,1108 @@
+[
+  {
+    "file": "../agentmain.py",
+    "line": 73,
+    "col": 12,
+    "type": "bare",
+    "handler_line": 73
+  },
+  {
+    "file": "../agentmain.py",
+    "line": 124,
+    "col": 12,
+    "type": "Tuple(elts=[Attribute(value=Name(id='json', ctx=Load()), attr='JSONDecodeError', ctx=Load()), Name(id='ValueError', ctx=Load())], ctx=Load())",
+    "handler_line": 124
+  },
+  {
+    "file": "../agentmain.py",
+    "line": 269,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 269
+  },
+  {
+    "file": "../auto_git_commit.py",
+    "line": 110,
+    "col": 16,
+    "type": "Name(id='OSError', ctx=Load())",
+    "handler_line": 110
+  },
+  {
+    "file": "../ga.py",
+    "line": 335,
+    "col": 4,
+    "type": "Tuple(elts=[Name(id='PermissionError', ctx=Load()), Name(id='OSError', ctx=Load())], ctx=Load())",
+    "handler_line": 335
+  },
+  {
+    "file": "../ga.py",
+    "line": 736,
+    "col": 4,
+    "type": "Name(id='FileNotFoundError', ctx=Load())",
+    "handler_line": 736
+  },
+  {
+    "file": "../ga.py",
+    "line": 49,
+    "col": 8,
+    "type": "bare",
+    "handler_line": 49
+  },
+  {
+    "file": "../ga.py",
+    "line": 372,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 372
+  },
+  {
+    "file": "../ga.py",
+    "line": 692,
+    "col": 12,
+    "type": "bare",
+    "handler_line": 692
+  },
+  {
+    "file": "../ga.py",
+    "line": 48,
+    "col": 16,
+    "type": "bare",
+    "handler_line": 48
+  },
+  {
+    "file": "../ga.py",
+    "line": 130,
+    "col": 12,
+    "type": "bare",
+    "handler_line": 130
+  },
+  {
+    "file": "../ga.py",
+    "line": 197,
+    "col": 16,
+    "type": "bare",
+    "handler_line": 197
+  },
+  {
+    "file": "../ga.py",
+    "line": 281,
+    "col": 16,
+    "type": "bare",
+    "handler_line": 281
+  },
+  {
+    "file": "../llmcore.py",
+    "line": 11,
+    "col": 4,
+    "type": "Name(id='ImportError', ctx=Load())",
+    "handler_line": 11
+  },
+  {
+    "file": "../llmcore.py",
+    "line": 86,
+    "col": 4,
+    "type": "Name(id='OSError', ctx=Load())",
+    "handler_line": 86
+  },
+  {
+    "file": "../llmcore.py",
+    "line": 190,
+    "col": 4,
+    "type": "bare",
+    "handler_line": 190
+  },
+  {
+    "file": "../llmcore.py",
+    "line": 886,
+    "col": 4,
+    "type": "bare",
+    "handler_line": 886
+  },
+  {
+    "file": "../llmcore.py",
+    "line": 889,
+    "col": 4,
+    "type": "bare",
+    "handler_line": 889
+  },
+  {
+    "file": "../llmcore.py",
+    "line": 891,
+    "col": 4,
+    "type": "bare",
+    "handler_line": 891
+  },
+  {
+    "file": "../llmcore.py",
+    "line": 26,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 26
+  },
+  {
+    "file": "../llmcore.py",
+    "line": 854,
+    "col": 8,
+    "type": "bare",
+    "handler_line": 854
+  },
+  {
+    "file": "../llmcore.py",
+    "line": 862,
+    "col": 8,
+    "type": "bare",
+    "handler_line": 862
+  },
+  {
+    "file": "../llmcore.py",
+    "line": 838,
+    "col": 16,
+    "type": "bare",
+    "handler_line": 838
+  },
+  {
+    "file": "../proxy_health_check.py",
+    "line": 220,
+    "col": 16,
+    "type": "bare",
+    "handler_line": 220
+  },
+  {
+    "file": "../proxy_health_report.py",
+    "line": 21,
+    "col": 16,
+    "type": "bare",
+    "handler_line": 21
+  },
+  {
+    "file": "../simphtml.py",
+    "line": 638,
+    "col": 4,
+    "type": "bare",
+    "handler_line": 638
+  },
+  {
+    "file": "../simphtml.py",
+    "line": 825,
+    "col": 8,
+    "type": "bare",
+    "handler_line": 825
+  },
+  {
+    "file": "../frontends\\conductor.py",
+    "line": 407,
+    "col": 4,
+    "type": "Name(id='WebSocketDisconnect', ctx=Load())",
+    "handler_line": 407
+  },
+  {
+    "file": "../frontends\\continue_cmd.py",
+    "line": 171,
+    "col": 4,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 171
+  },
+  {
+    "file": "../frontends\\fsapp.py",
+    "line": 704,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 704
+  },
+  {
+    "file": "../frontends\\qqapp.py",
+    "line": 40,
+    "col": 16,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 40
+  },
+  {
+    "file": "../frontends\\qtapp.py",
+    "line": 375,
+    "col": 4,
+    "type": "Name(id='ImportError', ctx=Load())",
+    "handler_line": 375
+  },
+  {
+    "file": "../frontends\\qtapp.py",
+    "line": 449,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 449
+  },
+  {
+    "file": "../frontends\\qtapp.py",
+    "line": 2125,
+    "col": 8,
+    "type": "Attribute(value=Name(id='_queue', ctx=Load()), attr='Empty', ctx=Load())",
+    "handler_line": 2125
+  },
+  {
+    "file": "../frontends\\qtapp.py",
+    "line": 710,
+    "col": 16,
+    "type": "bare",
+    "handler_line": 710
+  },
+  {
+    "file": "../frontends\\qtapp.py",
+    "line": 794,
+    "col": 16,
+    "type": "bare",
+    "handler_line": 794
+  },
+  {
+    "file": "../frontends\\stapp.py",
+    "line": 7,
+    "col": 0,
+    "type": "bare",
+    "handler_line": 7
+  },
+  {
+    "file": "../frontends\\stapp.py",
+    "line": 9,
+    "col": 0,
+    "type": "bare",
+    "handler_line": 9
+  },
+  {
+    "file": "../frontends\\stapp.py",
+    "line": 196,
+    "col": 8,
+    "type": "Name(id='BaseException', ctx=Load())",
+    "handler_line": 196
+  },
+  {
+    "file": "../frontends\\stapp.py",
+    "line": 83,
+    "col": 16,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 83
+  },
+  {
+    "file": "../frontends\\stapp2.py",
+    "line": 6,
+    "col": 0,
+    "type": "bare",
+    "handler_line": 6
+  },
+  {
+    "file": "../frontends\\stapp2.py",
+    "line": 8,
+    "col": 0,
+    "type": "bare",
+    "handler_line": 8
+  },
+  {
+    "file": "../frontends\\tgapp.py",
+    "line": 184,
+    "col": 12,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 184
+  },
+  {
+    "file": "../frontends\\tgapp.py",
+    "line": 190,
+    "col": 12,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 190
+  },
+  {
+    "file": "../frontends\\tgapp.py",
+    "line": 772,
+    "col": 12,
+    "type": "Attribute(value=Name(id='Q', ctx=Load()), attr='Empty', ctx=Load())",
+    "handler_line": 772
+  },
+  {
+    "file": "../frontends\\tuiapp.py",
+    "line": 261,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 261
+  },
+  {
+    "file": "../frontends\\tuiapp.py",
+    "line": 507,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 507
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 221,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 221
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 326,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 326
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 330,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 330
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 401,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 401
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 914,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 914
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 998,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 998
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1077,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1077
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1217,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1217
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1377,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1377
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1517,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1517
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1758,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1758
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1866,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1866
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1870,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1870
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1885,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1885
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 340,
+    "col": 12,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 340
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1037,
+    "col": 12,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1037
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1046,
+    "col": 12,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1046
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1060,
+    "col": 12,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1060
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1065,
+    "col": 12,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1065
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1074,
+    "col": 12,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1074
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1694,
+    "col": 12,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1694
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 2140,
+    "col": 12,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 2140
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 2144,
+    "col": 12,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 2144
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1309,
+    "col": 16,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1309
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1368,
+    "col": 16,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1368
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 2005,
+    "col": 16,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 2005
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 2083,
+    "col": 16,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 2083
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 2109,
+    "col": 16,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 2109
+  },
+  {
+    "file": "../frontends\\wechatapp.py",
+    "line": 89,
+    "col": 12,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 89
+  },
+  {
+    "file": "../frontends\\wechatapp.py",
+    "line": 656,
+    "col": 12,
+    "type": "bare",
+    "handler_line": 656
+  },
+  {
+    "file": "../frontends\\wechatapp.py",
+    "line": 743,
+    "col": 20,
+    "type": "Tuple(elts=[Name(id='ValueError', ctx=Load()), Name(id='IndexError', ctx=Load())], ctx=Load())",
+    "handler_line": 743
+  },
+  {
+    "file": "../frontends\\wechatapp.py",
+    "line": 299,
+    "col": 20,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 299
+  },
+  {
+    "file": "../memory\\ljqCtrl.py",
+    "line": 20,
+    "col": 0,
+    "type": "bare",
+    "handler_line": 20
+  },
+  {
+    "file": "../memory\\autonomous_operation_sop\\helper.py",
+    "line": 124,
+    "col": 8,
+    "type": "bare",
+    "handler_line": 124
+  },
+  {
+    "file": "../memory\\L4_raw_sessions\\compress_session.py",
+    "line": 229,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 229
+  },
+  {
+    "file": "../plugins\\langfuse_tracing.py",
+    "line": 31,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 31
+  },
+  {
+    "file": "../plugins\\langfuse_tracing.py",
+    "line": 90,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 90
+  },
+  {
+    "file": "../plugins\\langfuse_tracing.py",
+    "line": 99,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 99
+  },
+  {
+    "file": "../plugins\\langfuse_tracing.py",
+    "line": 116,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 116
+  },
+  {
+    "file": "../plugins\\langfuse_tracing.py",
+    "line": 76,
+    "col": 12,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 76
+  },
+  {
+    "file": "../plugins\\langfuse_tracing.py",
+    "line": 114,
+    "col": 12,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 114
+  },
+  {
+    "file": "../plugins\\langfuse_tracing.py",
+    "line": 122,
+    "col": 12,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 122
+  },
+  {
+    "file": "../plugins\\otel_auto_trace.py",
+    "line": 57,
+    "col": 4,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 57
+  },
+  {
+    "file": "../plugins\\otel_trace.py",
+    "line": 89,
+    "col": 4,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 89
+  },
+  {
+    "file": "../plugins\\otel_trace.py",
+    "line": 105,
+    "col": 4,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 105
+  },
+  {
+    "file": "../reflect\\scheduler.py",
+    "line": 49,
+    "col": 8,
+    "type": "Tuple(elts=[Name(id='ValueError', ctx=Load()), Name(id='IndexError', ctx=Load())], ctx=Load())",
+    "handler_line": 49
+  },
+  {
+    "file": "../reflect\\scheduler.py",
+    "line": 133,
+    "col": 20,
+    "type": "bare",
+    "handler_line": 133
+  },
+  {
+    "file": "../scripts\\ga_watchdog.py",
+    "line": 51,
+    "col": 4,
+    "type": "bare",
+    "handler_line": 51
+  },
+  {
+    "file": "../scripts\\ga_watchdog.py",
+    "line": 204,
+    "col": 4,
+    "type": "bare",
+    "handler_line": 204
+  },
+  {
+    "file": "../scripts\\score_monitor.py",
+    "line": 38,
+    "col": 8,
+    "type": "bare",
+    "handler_line": 38
+  },
+  {
+    "file": "../scripts\\start_service.py",
+    "line": 20,
+    "col": 4,
+    "type": "Tuple(elts=[Attribute(value=Name(id='psutil', ctx=Load()), attr='NoSuchProcess', ctx=Load()), Attribute(value=Name(id='psutil', ctx=Load()), attr='AccessDenied', ctx=Load())], ctx=Load())",
+    "handler_line": 20
+  },
+  {
+    "file": "../scripts\\start_service.py",
+    "line": 71,
+    "col": 4,
+    "type": "bare",
+    "handler_line": 71
+  },
+  {
+    "file": "../temp\\ga_redis_pipeline.py",
+    "line": 127,
+    "col": 12,
+    "type": "Tuple(elts=[Attribute(value=Name(id='json', ctx=Load()), attr='JSONDecodeError', ctx=Load()), Name(id='TypeError', ctx=Load())], ctx=Load())",
+    "handler_line": 127
+  },
+  {
+    "file": "../temp\\task_scheduler.py",
+    "line": 104,
+    "col": 8,
+    "type": "Name(id='OSError', ctx=Load())",
+    "handler_line": 104
+  },
+  {
+    "file": "../temp\\tmpe984p9al.ai.py",
+    "line": 75,
+    "col": 12,
+    "type": "Name(id='SyntaxError', ctx=Load())",
+    "handler_line": 75
+  },
+  {
+    "file": "../temp\\tmpe984p9al.ai.py",
+    "line": 77,
+    "col": 12,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 77
+  },
+  {
+    "file": "../frontends\\conductor.py",
+    "line": 407,
+    "col": 4,
+    "type": "Name(id='WebSocketDisconnect', ctx=Load())",
+    "handler_line": 407
+  },
+  {
+    "file": "../frontends\\continue_cmd.py",
+    "line": 171,
+    "col": 4,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 171
+  },
+  {
+    "file": "../frontends\\fsapp.py",
+    "line": 704,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 704
+  },
+  {
+    "file": "../frontends\\qqapp.py",
+    "line": 40,
+    "col": 16,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 40
+  },
+  {
+    "file": "../frontends\\qtapp.py",
+    "line": 375,
+    "col": 4,
+    "type": "Name(id='ImportError', ctx=Load())",
+    "handler_line": 375
+  },
+  {
+    "file": "../frontends\\qtapp.py",
+    "line": 449,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 449
+  },
+  {
+    "file": "../frontends\\qtapp.py",
+    "line": 2125,
+    "col": 8,
+    "type": "Attribute(value=Name(id='_queue', ctx=Load()), attr='Empty', ctx=Load())",
+    "handler_line": 2125
+  },
+  {
+    "file": "../frontends\\qtapp.py",
+    "line": 710,
+    "col": 16,
+    "type": "bare",
+    "handler_line": 710
+  },
+  {
+    "file": "../frontends\\qtapp.py",
+    "line": 794,
+    "col": 16,
+    "type": "bare",
+    "handler_line": 794
+  },
+  {
+    "file": "../frontends\\stapp.py",
+    "line": 7,
+    "col": 0,
+    "type": "bare",
+    "handler_line": 7
+  },
+  {
+    "file": "../frontends\\stapp.py",
+    "line": 9,
+    "col": 0,
+    "type": "bare",
+    "handler_line": 9
+  },
+  {
+    "file": "../frontends\\stapp.py",
+    "line": 196,
+    "col": 8,
+    "type": "Name(id='BaseException', ctx=Load())",
+    "handler_line": 196
+  },
+  {
+    "file": "../frontends\\stapp.py",
+    "line": 83,
+    "col": 16,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 83
+  },
+  {
+    "file": "../frontends\\stapp2.py",
+    "line": 6,
+    "col": 0,
+    "type": "bare",
+    "handler_line": 6
+  },
+  {
+    "file": "../frontends\\stapp2.py",
+    "line": 8,
+    "col": 0,
+    "type": "bare",
+    "handler_line": 8
+  },
+  {
+    "file": "../frontends\\tgapp.py",
+    "line": 184,
+    "col": 12,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 184
+  },
+  {
+    "file": "../frontends\\tgapp.py",
+    "line": 190,
+    "col": 12,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 190
+  },
+  {
+    "file": "../frontends\\tgapp.py",
+    "line": 772,
+    "col": 12,
+    "type": "Attribute(value=Name(id='Q', ctx=Load()), attr='Empty', ctx=Load())",
+    "handler_line": 772
+  },
+  {
+    "file": "../frontends\\tuiapp.py",
+    "line": 261,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 261
+  },
+  {
+    "file": "../frontends\\tuiapp.py",
+    "line": 507,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 507
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 221,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 221
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 326,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 326
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 330,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 330
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 401,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 401
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 914,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 914
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 998,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 998
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1077,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1077
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1217,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1217
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1377,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1377
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1517,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1517
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1758,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1758
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1866,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1866
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1870,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1870
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1885,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1885
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 340,
+    "col": 12,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 340
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1037,
+    "col": 12,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1037
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1046,
+    "col": 12,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1046
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1060,
+    "col": 12,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1060
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1065,
+    "col": 12,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1065
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1074,
+    "col": 12,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1074
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1694,
+    "col": 12,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1694
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 2140,
+    "col": 12,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 2140
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 2144,
+    "col": 12,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 2144
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1309,
+    "col": 16,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1309
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 1368,
+    "col": 16,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 1368
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 2005,
+    "col": 16,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 2005
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 2083,
+    "col": 16,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 2083
+  },
+  {
+    "file": "../frontends\\tuiapp_v2.py",
+    "line": 2109,
+    "col": 16,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 2109
+  },
+  {
+    "file": "../frontends\\wechatapp.py",
+    "line": 89,
+    "col": 12,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 89
+  },
+  {
+    "file": "../frontends\\wechatapp.py",
+    "line": 656,
+    "col": 12,
+    "type": "bare",
+    "handler_line": 656
+  },
+  {
+    "file": "../frontends\\wechatapp.py",
+    "line": 743,
+    "col": 20,
+    "type": "Tuple(elts=[Name(id='ValueError', ctx=Load()), Name(id='IndexError', ctx=Load())], ctx=Load())",
+    "handler_line": 743
+  },
+  {
+    "file": "../frontends\\wechatapp.py",
+    "line": 299,
+    "col": 20,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 299
+  },
+  {
+    "file": "../memory\\ljqCtrl.py",
+    "line": 20,
+    "col": 0,
+    "type": "bare",
+    "handler_line": 20
+  },
+  {
+    "file": "../memory\\autonomous_operation_sop\\helper.py",
+    "line": 124,
+    "col": 8,
+    "type": "bare",
+    "handler_line": 124
+  },
+  {
+    "file": "../memory\\L4_raw_sessions\\compress_session.py",
+    "line": 229,
+    "col": 8,
+    "type": "Name(id='Exception', ctx=Load())",
+    "handler_line": 229
+  }
+]

@@ -1,0 +1,43 @@
+{
+  "timestamp": "2026-05-28 13:02:17",
+  "checks": {
+    "db_connection": {
+      "ok": true,
+      "message": "OK"
+    },
+    "table_counts": {
+      "quotes": 3257163,
+      "financials": 192904,
+      "stocks": 4344,
+      "scores": 52096
+    },
+    "latest_dates": {
+      "latest_quote_date": "2026-05-28",
+      "latest_score_date": "2026-05-28",
+      "scored_stocks": 4344
+    },
+    "freshness": {
+      "quote_delay_days": 0,
+      "score_delay_days": 0
+    },
+    "signals_file": {
+      "exists": true,
+      "file_mtime": "2026-05-25 15:37",
+      "file_age_hours": 69.4,
+      "signal_count": 404,
+      "key_count": 23,
+      "score_date": "2026-05-25"
+    },
+    "score_distribution": {
+      "total_scored": 4344,
+      "avg_score": 45.09,
+      "score_range": "26.5 ~ 76.2",
+      "above_65": 275,
+      "above_60": 523
+    }
+  },
+  "issues": [
+    "信号文件已 69h 未更新"
+  ],
+  "status": "WARN"
+}

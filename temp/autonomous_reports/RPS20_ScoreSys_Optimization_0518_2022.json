@@ -1,0 +1,154 @@
+{
+  "optimization_date": "2026-05-18T20:22:36.567474",
+  "target_sharpe": 0.75,
+  "best_config": {
+    "score_weight": 0.5,
+    "rps_weight": 0.5
+  },
+  "best_sharpe": 0.006459301231618765,
+  "all_results": [
+    {
+      "sharpe_ratio": 0.006459301231618765,
+      "total_return": 0.0006315591182397551,
+      "annual_return": 0.0006315591182397551,
+      "max_drawdown": 0.21662438083802404,
+      "win_rate": 0.5158730158730159,
+      "weight_config": {
+        "score_weight": 0.5,
+        "rps_weight": 0.5
+      }
+    },
+    {
+      "sharpe_ratio": 0.006459301231618744,
+      "total_return": -0.0002931241514767535,
+      "annual_return": -0.0002931241514767535,
+      "max_drawdown": 0.22635740869391285,
+      "win_rate": 0.5158730158730159,
+      "weight_config": {
+        "score_weight": 0.6,
+        "rps_weight": 0.4
+      }
+    },
+    {
+      "sharpe_ratio": 0.006459301231618743,
+      "total_return": -0.0013008271067496135,
+      "annual_return": -0.0013008271067496135,
+      "max_drawdown": 0.23606561325775743,
+      "win_rate": 0.5158730158730159,
+      "weight_config": {
+        "score_weight": 0.7,
+        "rps_weight": 0.30000000000000004
+      }
+    },
+    {
+      "sharpe_ratio": 0.006459301231618759,
+      "total_return": -0.002391279331115048,
+      "annual_return": -0.002391279331115048,
+      "max_drawdown": 0.24574883618516974,
+      "win_rate": 0.5158730158730159,
+      "weight_config": {
+        "score_weight": 0.8,
+        "rps_weight": 0.19999999999999996
+      }
+    },
+    {
+      "sharpe_ratio": 0.006459301231618731,
+      "total_return": -0.003564190486268548,
+      "annual_return": -0.003564190486268548,
+      "max_drawdown": 0.25540692298371426,
+      "win_rate": 0.5158730158730159,
+      "weight_config": {
+        "score_weight": 0.9,
+        "rps_weight": 0.09999999999999998
+      }
+    },
+    {
+      "sharpe_ratio": 0.006459301231618744,
+      "total_return": 0.001472972323903532,
+      "annual_return": 0.001472972323903532,
+      "max_drawdown": 0.20686669189830698,
+      "win_rate": 0.5158730158730159,
+      "weight_config": {
+        "score_weight": 0.4,
+        "rps_weight": 0.6
+      }
+    },
+    {
+      "sharpe_ratio": 0.00645930123161873,
+      "total_return": 0.0022308852333001727,
+      "annual_return": 0.0022308852333001727,
+      "max_drawdown": 0.19708450795825294,
+      "win_rate": 0.5158730158730159,
+      "weight_config": {
+        "score_weight": 0.3,
+        "rps_weight": 0.7
+      }
+    },
+    {
+      "sharpe_ratio": 0.006459301231618739,
+      "total_return": 0.002905087860922695,
+      "annual_return": 0.002905087860922695,
+      "max_drawdown": 0.18727799898762676,
+      "win_rate": 0.5158730158730159,
+      "weight_config": {
+        "score_weight": 0.2,
+        "rps_weight": 0.8
+      }
+    },
+    {
+      "sharpe_ratio": 0.006459301231618729,
+      "total_return": 0.0034953905604842017,
+      "annual_return": 0.0034953905604842017,
+      "max_drawdown": 0.1774473388530261,
+      "win_rate": 0.5158730158730159,
+      "weight_config": {
+        "score_weight": 0.1,
+        "rps_weight": 0.9
+      }
+    },
+    {
+      "sharpe_ratio": 0.006459301231618757,
+      "total_return": 0.001987538787248555,
+      "annual_return": 0.001987538787248555,
+      "max_drawdown": 0.2003479471930958,
+      "win_rate": 0.5158730158730159,
+      "weight_config": {
+        "score_weight": 0.3333333333333333,
+        "rps_weight": 0.6666666666666666
+      }
+    },
+    {
+      "sharpe_ratio": 0.006459301231618765,
+      "total_return": 0.0006315591182397551,
+      "annual_return": 0.0006315591182397551,
+      "max_drawdown": 0.21662438083802404,
+      "win_rate": 0.5158730158730159,
+      "weight_config": {
+        "score_weight": 0.5,
+        "rps_weight": 0.5
+      }
+    },
+    {
+      "sharpe_ratio": 0.006459301231618744,
+      "total_return": -0.0002931241514767535,
+      "annual_return": -0.0002931241514767535,
+      "max_drawdown": 0.22635740869391285,
+      "win_rate": 0.5158730158730159,
+      "weight_config": {
+        "score_weight": 0.6,
+        "rps_weight": 0.4
+      }
+    },
+    {
+      "sharpe_ratio": 0.006459301231618765,
+      "total_return": -0.0009557179934644999,
+      "annual_return": -0.0009557179934644999,
+      "max_drawdown": 0.2328323130670884,
+      "win_rate": 0.5158730158730159,
+      "weight_config": {
+        "score_weight": 0.6666666666666666,
+        "rps_weight": 0.3333333333333333
+      }
+    }
+  ]
+}

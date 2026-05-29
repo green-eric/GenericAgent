@@ -1,0 +1,21 @@
+{
+  "status": "success",
+  "timestamp": "2026-05-22T21:07:55.940790",
+  "mode": "ic",
+  "start_date": "2025-05-22",
+  "end_date": "2026-05-22",
+  "top_n": 30,
+  "min_score": 30,
+  "result_file": "D:\\GenericAgent\\temp\\autonomous_reports\\auto_bt_20260522_210755.json",
+  "summary": {
+    "ic_mean": 0.188,
+    "ic_std": 0.0199,
+    "ic_positive_pct": 100.0,
+    "total_return": 0.245,
+    "sharpe_ratio": 1.82,
+    "max_drawdown": -0.123,
+    "win_rate": 0.67,
+    "elapsed": 12.5,
+    "periods": 24
+  }
+}

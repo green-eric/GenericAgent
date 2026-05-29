@@ -1,0 +1,1 @@
+LM Studio已安装但未运行(配置文件在AppData/Roaming)，端口1234不通，标记阻塞

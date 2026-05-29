@@ -1,0 +1,2297 @@
+{
+  "total": 382,
+  "items": [
+    {
+      "file": "agentmain.py",
+      "line": 17,
+      "type": "空except",
+      "desc": "L17: except Exception: → 静默吞掉异常"
+    },
+    {
+      "file": "agentmain.py",
+      "line": 107,
+      "type": "print调试",
+      "desc": "L107: print('Abort current task...')"
+    },
+    {
+      "file": "agentmain.py",
+      "line": 170,
+      "type": "print调试",
+      "desc": "L170: print(f\"Backend Error: {format_error(e)}\")"
+    },
+    {
+      "file": "agentmain.py",
+      "line": 201,
+      "type": "print调试",
+      "desc": "L201: print(p.pid); sys.exit(0)"
+    },
+    {
+      "file": "agentmain.py",
+      "line": 237,
+      "type": "print调试",
+      "desc": "L237: print(f'[Reflect] loaded {args.reflect}' + (f' args={_reflect_args}' if _reflect"
+    },
+    {
+      "file": "agentmain.py",
+      "line": 243,
+      "type": "print调试",
+      "desc": "L243: print('[Reflect] reloaded')"
+    },
+    {
+      "file": "agentmain.py",
+      "line": 248,
+      "type": "print调试",
+      "desc": "L248: print(f'[Reflect] check() error: {e}'); continue"
+    },
+    {
+      "file": "agentmain.py",
+      "line": 251,
+      "type": "print调试",
+      "desc": "L251: print(f'[Reflect] triggered: {task[:80]}')"
+    },
+    {
+      "file": "agentmain.py",
+      "line": 256,
+      "type": "print调试",
+      "desc": "L256: print(result)"
+    },
+    {
+      "file": "agentmain.py",
+      "line": 259,
+      "type": "print调试",
+      "desc": "L259: print(f'[Reflect] drain error: {e}'); result = f'[ERROR] {e}'"
+    },
+    {
+      "file": "agentmain.py",
+      "line": 282,
+      "type": "print调试",
+      "desc": "L282: print('\\n[Interrupted]')"
+    },
+    {
+      "file": "cdp_bridge.py",
+      "line": 19,
+      "type": "硬编码地址",
+      "desc": "L19: url = f\"http://127.0.0.1:{CDP_PORT}{path}\""
+    },
+    {
+      "file": "cdp_bridge.py",
+      "line": 129,
+      "type": "print调试",
+      "desc": "L129: print(f\"[CDPDriver] 刷新 sessions 失败: {e}\")"
+    },
+    {
+      "file": "cdp_bridge.py",
+      "line": 210,
+      "type": "硬编码地址",
+      "desc": "L210: s.connect((\"127.0.0.1\", port))"
+    },
+    {
+      "file": "cdp_bridge.py",
+      "line": 212,
+      "type": "print调试",
+      "desc": "L212: print(f\"[CDPDriver] Chrome CDP 端口 {port} 已就绪\")"
+    },
+    {
+      "file": "cdp_bridge.py",
+      "line": 223,
+      "type": "print调试",
+      "desc": "L223: print(\"启动 Chrome CDP...\")"
+    },
+    {
+      "file": "cdp_bridge.py",
+      "line": 228,
+      "type": "print调试",
+      "desc": "L228: print(f\"找到 {len(sessions)} 个标签页:\")"
+    },
+    {
+      "file": "cdp_bridge.py",
+      "line": 230,
+      "type": "print调试",
+      "desc": "L230: print(f\"  [{s['id']}] {s['title'][:50]} - {s['url'][:80]}\")"
+    },
+    {
+      "file": "cdp_bridge.py",
+      "line": 234,
+      "type": "print调试",
+      "desc": "L234: print(\"\\n导航到百度...\")"
+    },
+    {
+      "file": "cdp_bridge.py",
+      "line": 240,
+      "type": "print调试",
+      "desc": "L240: print(f\"页面标题: {result.get('data')}\")"
+    },
+    {
+      "file": "cdp_bridge.py",
+      "line": 244,
+      "type": "print调试",
+      "desc": "L244: print(f\"页面内容: {result.get('data', '')[:200]}\")"
+    },
+    {
+      "file": "cdp_bridge.py",
+      "line": 246,
+      "type": "print调试",
+      "desc": "L246: print(\"\\nCDP Bridge 测试完成!\")"
+    },
+    {
+      "file": "es.py",
+      "line": 39,
+      "type": "print调试",
+      "desc": "L39: print(\"Query failed. Is Everything running?\", file=sys.stderr)"
+    },
+    {
+      "file": "es.py",
+      "line": 50,
+      "type": "print调试",
+      "desc": "L50: print(path[:idx] if idx > 0 else path)"
+    },
+    {
+      "file": "es.py",
+      "line": 52,
+      "type": "print调试",
+      "desc": "L52: print(buf.value)"
+    },
+    {
+      "file": "ga.py",
+      "line": 33,
+      "type": "print调试",
+      "desc": "L33: print(\"code run output:\")"
+    },
+    {
+      "file": "ga.py",
+      "line": 49,
+      "type": "空except",
+      "desc": "L49: except: pass → 静默吞掉异常"
+    },
+    {
+      "file": "ga.py",
+      "line": 65,
+      "type": "print调试",
+      "desc": "L65: print(\"[Debug] Process killed due to timeout or stop signal.\")"
+    },
+    {
+      "file": "ga.py",
+      "line": 108,
+      "type": "硬编码地址",
+      "desc": "L108: s = socket.socket(); s.settimeout(2); s.connect(('127.0.0.1', 9222)); s.close()"
+    },
+    {
+      "file": "ga.py",
+      "line": 110,
+      "type": "print调试",
+      "desc": "L110: print(\"[CDP] 9222 端口不可用，尝试启动 Chrome...\")"
+    },
+    {
+      "file": "ga.py",
+      "line": 114,
+      "type": "print调试",
+      "desc": "L114: print(\"[CDP] Chrome 不存在\"); return None"
+    },
+    {
+      "file": "ga.py",
+      "line": 128,
+      "type": "硬编码地址",
+      "desc": "L128: s = socket.socket(); s.settimeout(2); s.connect(('127.0.0.1', 9222)); s.close()"
+    },
+    {
+      "file": "ga.py",
+      "line": 129,
+      "type": "print调试",
+      "desc": "L129: print(\"[CDP] Chrome CDP 已就绪\"); break"
+    },
+    {
+      "file": "ga.py",
+      "line": 132,
+      "type": "print调试",
+      "desc": "L132: print(\"[CDP] Chrome CDP 启动超时\"); return None"
+    },
+    {
+      "file": "ga.py",
+      "line": 136,
+      "type": "print调试",
+      "desc": "L136: print(\"[CDP] CDPDriver 初始化成功\")"
+    },
+    {
+      "file": "ga.py",
+      "line": 139,
+      "type": "print调试",
+      "desc": "L139: print(f\"[CDP] CDPDriver 初始化失败: {e}\"); return None"
+    },
+    {
+      "file": "ga.py",
+      "line": 151,
+      "type": "print调试",
+      "desc": "L151: print(f\"[Driver] TMWebDriver 就绪，{len(sess)} 个 session\")"
+    },
+    {
+      "file": "ga.py",
+      "line": 153,
+      "type": "print调试",
+      "desc": "L153: print(\"[Driver] TMWebDriver 无 session，回退到 CDP\")"
+    },
+    {
+      "file": "ga.py",
+      "line": 155,
+      "type": "print调试",
+      "desc": "L155: print(f\"[Driver] TMWebDriver 初始化失败: {e}\")"
+    },
+    {
+      "file": "ga.py",
+      "line": 161,
+      "type": "print调试",
+      "desc": "L161: print(\"[Driver] 已切换到 CDP 模式（离屏隐身 Chrome）\")"
+    },
+    {
+      "file": "ga.py",
+      "line": 163,
+      "type": "print调试",
+      "desc": "L163: print(\"[Driver] TMWebDriver 和 CDP 都不可用！\")"
+    },
+    {
+      "file": "ga.py",
+      "line": 281,
+      "type": "空except",
+      "desc": "L281: except: → 静默吞掉异常"
+    },
+    {
+      "file": "ga.py",
+      "line": 549,
+      "type": "print调试",
+      "desc": "L549: print(f\"[Info] Entered plan mode with plan file: {plan_path}\"); return plan_path"
+    },
+    {
+      "file": "ga.py",
+      "line": 553,
+      "type": "空except",
+      "desc": "L553: except: return None → 静默吞掉异常"
+    },
+    {
+      "file": "llmcore.py",
+      "line": 22,
+      "type": "print调试",
+      "desc": "L22: print(f'[Info] Load mykeys from {_mykey_path}')"
+    },
+    {
+      "file": "llmcore.py",
+      "line": 62,
+      "type": "print调试",
+      "desc": "L62: print(f\"[Cut] {_before} -> {sum(len(json.dumps(m, ensure_ascii=False)) for m in "
+    },
+    {
+      "file": "llmcore.py",
+      "line": 92,
+      "type": "print调试",
+      "desc": "L92: print(f'[Debug] Current context: {cost} chars, {len(history)} messages.')"
+    },
+    {
+      "file": "llmcore.py",
+      "line": 101,
+      "type": "print调试",
+      "desc": "L101: print(f'[Debug] Trimmed context, current: {cost} chars, {len(history)} messages."
+    },
+    {
+      "file": "llmcore.py",
+      "line": 129,
+      "type": "print调试",
+      "desc": "L129: print(f\"[SSE] JSON parse error: {e}, line: {data_str[:200]}\")"
+    },
+    {
+      "file": "llmcore.py",
+      "line": 181,
+      "type": "print调试",
+      "desc": "L181: print(f\"[WARN] {warn.strip()}\")"
+    },
+    {
+      "file": "llmcore.py",
+      "line": 303,
+      "type": "print调试",
+      "desc": "L303: print(f\"[Cache] input={entry['input']} cached={entry['cached']}\")"
+    },
+    {
+      "file": "llmcore.py",
+      "line": 308,
+      "type": "print调试",
+      "desc": "L308: print(f\"[Cache] input={entry['input']} cached={entry['cached']}\")"
+    },
+    {
+      "file": "llmcore.py",
+      "line": 314,
+      "type": "print调试",
+      "desc": "L314: print(f\"[Cache] input={entry['input']} creation={entry['cache_creation']} read={"
+    },
+    {
+      "file": "llmcore.py",
+      "line": 320,
+      "type": "print调试",
+      "desc": "L320: print(f\"[UsageLog] write failed: {e}\")"
+    },
+    {
+      "file": "llmcore.py",
+      "line": 379,
+      "type": "print调试",
+      "desc": "L379: print(f\"[LLM Retry] HTTP {r.status_code}, retry in {d:.1f}s ({attempt+1}/{sess.m"
+    },
+    {
+      "file": "llmcore.py",
+      "line": 393,
+      "type": "print调试",
+      "desc": "L393: print(f\"[LLM Retry] {type(e).__name__}, retry in {d:.1f}s ({attempt+1}/{sess.max"
+    },
+    {
+      "file": "llmcore.py",
+      "line": 753,
+      "type": "print调试",
+      "desc": "L753: print(\"Full prompt length:\", len(full_prompt), 'chars')"
+    },
+    {
+      "file": "llmcore.py",
+      "line": 841,
+      "type": "print调试",
+      "desc": "L841: print(f\"[Warn] {e}\"); tool_calls.append(MockToolCall('bad_json', {'msg': e}))"
+    },
+    {
+      "file": "llmcore.py",
+      "line": 931,
+      "type": "print调试",
+      "desc": "L931: print(f'[MixinSession] Using session ({self._sessions[idx].name})')"
+    },
+    {
+      "file": "llmcore.py",
+      "line": 944,
+      "type": "print调试",
+      "desc": "L944: print(f'[MixinSession] Partial failure, next call → s{self._cur_idx} ({self._ses"
+    },
+    {
+      "file": "llmcore.py",
+      "line": 952,
+      "type": "print调试",
+      "desc": "L952: print(f'[MixinSession] {last_chunk[:80]}, round {rnd} exhausted, retry in {delay"
+    },
+    {
+      "file": "llmcore_lmstudio.py",
+      "line": 10,
+      "type": "硬编码地址",
+      "desc": "L10: def __init__(self, model=\"qwen2.5-0.5b-instruct\", base_url=\"http://127.0.0.1:123"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 27,
+      "type": "硬编码地址",
+      "desc": "L27: (\"Clash API\",  \"http://127.0.0.1:7897/version\", True),"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 55,
+      "type": "硬编码地址",
+      "desc": "L55: ok = s.connect_ex(('127.0.0.1', port)) == 0"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 82,
+      "type": "硬编码地址",
+      "desc": "L82: 'http': 'http://127.0.0.1:7897',"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 83,
+      "type": "硬编码地址",
+      "desc": "L83: 'https': 'http://127.0.0.1:7897',"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 94,
+      "type": "硬编码地址",
+      "desc": "L94: if url.startswith('http://127.0.0.1'):"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 157,
+      "type": "print调试",
+      "desc": "L157: print(f\"\\n{'='*60}\")"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 158,
+      "type": "print调试",
+      "desc": "L158: print(f\"[CLOCK] {ts}\")"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 159,
+      "type": "print调试",
+      "desc": "L159: print(f\"{'='*60}\")"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 165,
+      "type": "print调试",
+      "desc": "L165: print(f\"  [GEAR]  Clash: {p.get('ProcessName','?')} (PID:{p.get('Id','?')})\")"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 167,
+      "type": "print调试",
+      "desc": "L167: print(f\"  [X] Clash: 进程未运行\")"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 170,
+      "type": "print调试",
+      "desc": "L170: print(f\"\\n  [SAT] 端口状态:\")"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 172,
+      "type": "print调试",
+      "desc": "L172: print(f\"    {port}: {'[OK]' if ok else '[FAIL]'}\")"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 178,
+      "type": "print调试",
+      "desc": "L178: print(f\"\\n  [WRENCH] 系统代理: {'开启' if enable=='1' else '关闭'} -> {server}\")"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 181,
+      "type": "print调试",
+      "desc": "L181: print(f\"\\n  [GLOBE] 连通性:\")"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 186,
+      "type": "print调试",
+      "desc": "L186: print(f\"    {icon} {c['name']}: {ms}\")"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 197,
+      "type": "print调试",
+      "desc": "L197: print(f\"\\n  [CHART] 总结: \", end=\"\")"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 199,
+      "type": "print调试",
+      "desc": "L199: print(\"[GREEN] 全部正常\")"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 201,
+      "type": "print调试",
+      "desc": "L201: print(\"[YELLOW] 直连正常，代理不通\")"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 203,
+      "type": "print调试",
+      "desc": "L203: print(\"[RED] 网络异常\")"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 205,
+      "type": "print调试",
+      "desc": "L205: print(\"[ORANGE] 部分异常\")"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 210,
+      "type": "print调试",
+      "desc": "L210: print(\"无日志数据，请先运行检测\")"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 220,
+      "type": "空except",
+      "desc": "L220: except: → 静默吞掉异常"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 224,
+      "type": "print调试",
+      "desc": "L224: print(\"日志为空\")"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 330,
+      "type": "print调试",
+      "desc": "L330: print(report)"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 331,
+      "type": "print调试",
+      "desc": "L331: print(f\"\\n报告已保存: {REPORT_FILE}\")"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 359,
+      "type": "print调试",
+      "desc": "L359: print(f\"[OK] 计划任务 [{task_name}] 注册成功\")"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 360,
+      "type": "print调试",
+      "desc": "L360: print(\"   执行时间: 每日 09:00 / 15:00 / 21:00\")"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 361,
+      "type": "print调试",
+      "desc": "L361: print(\"   日志位置:\", LOG_FILE)"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 363,
+      "type": "print调试",
+      "desc": "L363: print(f\"[FAIL] 注册失败: {r.stderr.strip()}\")"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 364,
+      "type": "print调试",
+      "desc": "L364: print(\"   可能需要管理员权限\")"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 377,
+      "type": "print调试",
+      "desc": "L377: print(f\"[OK] 计划任务 [{task_name}] 已注销\")"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 379,
+      "type": "print调试",
+      "desc": "L379: print(f\"[FAIL] 注销失败: {r.stderr.strip()}\")"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 387,
+      "type": "print调试",
+      "desc": "L387: print(\"持续检测模式（每5分钟一次），Ctrl+C 停止\")"
+    },
+    {
+      "file": "proxy_health_check.py",
+      "line": 394,
+      "type": "print调试",
+      "desc": "L394: print(\"\\n已停止\")"
+    },
+    {
+      "file": "proxy_health_report.py",
+      "line": 11,
+      "type": "print调试",
+      "desc": "L11: print(\"No log file found\")"
+    },
+    {
+      "file": "proxy_health_report.py",
+      "line": 21,
+      "type": "空except",
+      "desc": "L21: except: → 静默吞掉异常"
+    },
+    {
+      "file": "proxy_health_report.py",
+      "line": 25,
+      "type": "print调试",
+      "desc": "L25: print(\"No records found\")"
+    },
+    {
+      "file": "proxy_health_report.py",
+      "line": 35,
+      "type": "print调试",
+      "desc": "L35: print(\"No recent records in 7 days\")"
+    },
+    {
+      "file": "proxy_health_report.py",
+      "line": 90,
+      "type": "print调试",
+      "desc": "L90: print(f\"Report saved: {report_path}\")"
+    },
+    {
+      "file": "restore_patches.py",
+      "line": 24,
+      "type": "print调试",
+      "desc": "L24: print(f\"\\n{'='*50}\")"
+    },
+    {
+      "file": "restore_patches.py",
+      "line": 25,
+      "type": "print调试",
+      "desc": "L25: print(f\"📌 {desc}\")"
+    },
+    {
+      "file": "restore_patches.py",
+      "line": 26,
+      "type": "print调试",
+      "desc": "L26: print(f\"   git {' '.join(args)}\")"
+    },
+    {
+      "file": "restore_patches.py",
+      "line": 29,
+      "type": "print调试",
+      "desc": "L29: print(f\"   ✅ OK\")"
+    },
+    {
+      "file": "restore_patches.py",
+      "line": 32,
+      "type": "print调试",
+      "desc": "L32: print(f\"   ❌ FAILED: {err[:200]}\")"
+    },
+    {
+      "file": "restore_patches.py",
+      "line": 36,
+      "type": "print调试",
+      "desc": "L36: print(\"=\"*50)"
+    },
+    {
+      "file": "restore_patches.py",
+      "line": 37,
+      "type": "print调试",
+      "desc": "L37: print(\"📊 当前状态\")"
+    },
+    {
+      "file": "restore_patches.py",
+      "line": 39,
+      "type": "print调试",
+      "desc": "L39: print(f\"\\n分支:\\n{out}\")"
+    },
+    {
+      "file": "restore_patches.py",
+      "line": 41,
+      "type": "print调试",
+      "desc": "L41: print(f\"\\n提交历史:\\n{out}\")"
+    },
+    {
+      "file": "restore_patches.py",
+      "line": 43,
+      "type": "print调试",
+      "desc": "L43: print(f\"\\n工作区:\\n{out if out else '(clean)'}\")"
+    },
+    {
+      "file": "restore_patches.py",
+      "line": 47,
+      "type": "print调试",
+      "desc": "L47: print(f\"\\n📝 {PATCH_BRANCH} 上有 {count} 个提交未合入 {MAIN_BRANCH}:\")"
+    },
+    {
+      "file": "restore_patches.py",
+      "line": 49,
+      "type": "print调试",
+      "desc": "L49: print(f\"   {line}\")"
+    },
+    {
+      "file": "restore_patches.py",
+      "line": 51,
+      "type": "print调试",
+      "desc": "L51: print(f\"\\n✅ {PATCH_BRANCH} 的所有提交已合入 {MAIN_BRANCH}\")"
+    },
+    {
+      "file": "restore_patches.py",
+      "line": 60,
+      "type": "print调试",
+      "desc": "L60: print(f\"\\n{'='*50}\")"
+    },
+    {
+      "file": "restore_patches.py",
+      "line": 61,
+      "type": "print调试",
+      "desc": "L61: print(f\"📌 Cherry-pick {PATCH_BRANCH} 的提交\")"
+    },
+    {
+      "file": "restore_patches.py",
+      "line": 64,
+      "type": "print调试",
+      "desc": "L64: print(f\"   ℹ️ 没有需要 cherry-pick 的提交\")"
+    },
+    {
+      "file": "restore_patches.py",
+      "line": 67,
+      "type": "print调试",
+      "desc": "L67: print(f\"   共 {len(commits)} 个提交\")"
+    },
+    {
+      "file": "restore_patches.py",
+      "line": 71,
+      "type": "print调试",
+      "desc": "L71: print(f\"   ✅ {sha[:8]} OK\")"
+    },
+    {
+      "file": "restore_patches.py",
+      "line": 73,
+      "type": "print调试",
+      "desc": "L73: print(f\"   ⚠️ {sha[:8]} 冲突，请手动解决后 git cherry-pick --continue\")"
+    },
+    {
+      "file": "restore_patches.py",
+      "line": 79,
+      "type": "print调试",
+      "desc": "L79: print(f\"\\n{'='*50}\")"
+    },
+    {
+      "file": "restore_patches.py",
+      "line": 80,
+      "type": "print调试",
+      "desc": "L80: print(\"✅ GA 更新完成，用户补丁已恢复！\")"
+    },
+    {
+      "file": "restore_patches.py",
+      "line": 87,
+      "type": "print调试",
+      "desc": "L87: print(\"ℹ️ 没有需要 cherry-pick 的提交\")"
+    },
+    {
+      "file": "restore_patches.py",
+      "line": 93,
+      "type": "print调试",
+      "desc": "L93: print(f\"✅ {sha[:8]} OK\")"
+    },
+    {
+      "file": "restore_patches.py",
+      "line": 95,
+      "type": "print调试",
+      "desc": "L95: print(f\"⚠️ {sha[:8]} 冲突\")"
+    },
+    {
+      "file": "simphtml.py",
+      "line": 638,
+      "type": "空except",
+      "desc": "L638: except: pass → 静默吞掉异常"
+    },
+    {
+      "file": "simphtml.py",
+      "line": 659,
+      "type": "print调试",
+      "desc": "L659: print(e)"
+    },
+    {
+      "file": "simphtml.py",
+      "line": 725,
+      "type": "print调试",
+      "desc": "L725: print(f\"[cutlist]   '{sel}': {len(items)} items, avg {avg_len:.0f} chars, total "
+    },
+    {
+      "file": "simphtml.py",
+      "line": 741,
+      "type": "print调试",
+      "desc": "L741: print(f\"[get_html] Result: {len(html)} -> {len(ss)} chars after cutlist ({100-le"
+    },
+    {
+      "file": "simphtml.py",
+      "line": 778,
+      "type": "print调试",
+      "desc": "L778: print(f'{indent}[smart_truncate] <{tag}> total={total} budget={budget} selflen={"
+    },
+    {
+      "file": "simphtml.py",
+      "line": 781,
+      "type": "print调试",
+      "desc": "L781: print(f'{indent}  -> single child, recurse into <{kids[0][0].name}>')"
+    },
+    {
+      "file": "simphtml.py",
+      "line": 797,
+      "type": "print调试",
+      "desc": "L797: print(f'{indent}  -> tail-cut: removed {removed_count} children ({removed//1000}"
+    },
+    {
+      "file": "simphtml.py",
+      "line": 812,
+      "type": "print调试",
+      "desc": "L812: print(f'{indent}  -> <{c.name}> {l} -> {new_keep} (share={share})')"
+    },
+    {
+      "file": "simphtml.py",
+      "line": 829,
+      "type": "print调试",
+      "desc": "L829: print(f\"Executing: {script[:250]} ...\")"
+    },
+    {
+      "file": "simphtml.py",
+      "line": 838,
+      "type": "print调试",
+      "desc": "L838: print(f\"Error: {error_msg}\")"
+    },
+    {
+      "file": "TMWebDriver.py",
+      "line": 37,
+      "type": "硬编码地址",
+      "desc": "L37: def __init__(self, host: str = '127.0.0.1', port: int = 18765):"
+    },
+    {
+      "file": "TMWebDriver.py",
+      "line": 59,
+      "type": "print调试",
+      "desc": "L59: print(f\"Browser http connected: {session.url} (Session: {session_id})\")"
+    },
+    {
+      "file": "TMWebDriver.py",
+      "line": 98,
+      "type": "print调试",
+      "desc": "L98: print('[remote result]', (str(code)[:50] + ' RESULT:' +str(result)[:50]).replace"
+    },
+    {
+      "file": "TMWebDriver.py",
+      "line": 134,
+      "type": "print调试",
+      "desc": "L134: print(f\"Received tabs update: {current_tab_ids}\")"
+    },
+    {
+      "file": "TMWebDriver.py",
+      "line": 151,
+      "type": "print调试",
+      "desc": "L151: print(f\"Error handling message: {e}\")"
+    },
+    {
+      "file": "TMWebDriver.py",
+      "line": 155,
+      "type": "print调试",
+      "desc": "L155: print(f\"WS Connection closed: {self.address}\")"
+    },
+    {
+      "file": "TMWebDriver.py",
+      "line": 162,
+      "type": "print调试",
+      "desc": "L162: print(f\"WebSocket server running on ws://{self.host}:{self.port}\")"
+    },
+    {
+      "file": "TMWebDriver.py",
+      "line": 170,
+      "type": "print调试",
+      "desc": "L170: print(f\"New tab connected: {session.url} (Session: {session_id})\")"
+    },
+    {
+      "file": "TMWebDriver.py",
+      "line": 174,
+      "type": "print调试",
+      "desc": "L174: print(f\"Tab reconnected: {session.url} (Session: {session_id})\")"
+    },
+    {
+      "file": "TMWebDriver.py",
+      "line": 186,
+      "type": "print调试",
+      "desc": "L186: print('remote_execute_js')"
+    },
+    {
+      "file": "TMWebDriver.py",
+      "line": 200,
+      "type": "print调试",
+      "desc": "L200: print(f\"会话 {session_id} 未连接，自动切换到最新活动会话: {session.id}\")"
+    },
+    {
+      "file": "TMWebDriver.py",
+      "line": 278,
+      "type": "print调试",
+      "desc": "L278: print(f\"成功设置默认会话: {self.default_session_id}: {info['url']}\")"
+    },
+    {
+      "file": "TMWebDriver.py",
+      "line": 284,
+      "type": "硬编码地址",
+      "desc": "L284: driver = TMWebDriver(host='127.0.0.1', port=18765)"
+    },
+    {
+      "file": "TMWebDriver.py",
+      "line": 285,
+      "type": "print调试",
+      "desc": "L285: print(\"TMWebDriver master running. Press Ctrl+C to stop.\")"
+    },
+    {
+      "file": "TMWebDriver.py",
+      "line": 290,
+      "type": "print调试",
+      "desc": "L290: print(\"\\nShutting down...\")"
+    },
+    {
+      "file": "token_stats.py",
+      "line": 217,
+      "type": "print调试",
+      "desc": "L217: print(report)"
+    },
+    {
+      "file": "token_stats.py",
+      "line": 219,
+      "type": "print调试",
+      "desc": "L219: print(report.replace('¥', 'RMB'))"
+    },
+    {
+      "file": "token_stats.py",
+      "line": 224,
+      "type": "print调试",
+      "desc": "L224: print(f\"\\n[OK] 报告已保存: {save_path}\")"
+    },
+    {
+      "file": "upstream_sync.py",
+      "line": 171,
+      "type": "print调试",
+      "desc": "L171: print(\"🔄 正在 fetch 上游...\")"
+    },
+    {
+      "file": "upstream_sync.py",
+      "line": 173,
+      "type": "print调试",
+      "desc": "L173: print(\"❌ fetch 失败，检查网络或代理\")"
+    },
+    {
+      "file": "upstream_sync.py",
+      "line": 175,
+      "type": "print调试",
+      "desc": "L175: print(\"✅ fetch 成功\")"
+    },
+    {
+      "file": "upstream_sync.py",
+      "line": 179,
+      "type": "print调试",
+      "desc": "L179: print(\"✅ 无新提交，已是最新\")"
+    },
+    {
+      "file": "upstream_sync.py",
+      "line": 182,
+      "type": "print调试",
+      "desc": "L182: print(f\"📋 发现 {len(commits)} 个新提交，正在分类...\")"
+    },
+    {
+      "file": "upstream_sync.py",
+      "line": 189,
+      "type": "print调试",
+      "desc": "L189: print(f\"  {icon} {c['hash']} {c['subject'][:60]}\")"
+    },
+    {
+      "file": "upstream_sync.py",
+      "line": 199,
+      "type": "print调试",
+      "desc": "L199: print(f\"\\n📄 报告已保存: {report_path}\")"
+    },
+    {
+      "file": "upstream_sync.py",
+      "line": 201,
+      "type": "print调试",
+      "desc": "L201: print(\"\\n\" + report)"
+    },
+    {
+      "file": "chatapp_common.py",
+      "line": 229,
+      "type": "硬编码地址",
+      "desc": "L229: lock_sock.bind((\"127.0.0.1\", port))"
+    },
+    {
+      "file": "chatapp_common.py",
+      "line": 232,
+      "type": "print调试",
+      "desc": "L232: print(f\"[{label}] Another instance is already running, skipping...\")"
+    },
+    {
+      "file": "chatapp_common.py",
+      "line": 239,
+      "type": "print调试",
+      "desc": "L239: print(f\"[{label}] ERROR: please set {', '.join(missing)} in mykey.py or mykey.js"
+    },
+    {
+      "file": "chatapp_common.py",
+      "line": 242,
+      "type": "print调试",
+      "desc": "L242: print(f\"[{label}] ERROR: no usable LLM backend found in mykey.py or mykey.json\")"
+    },
+    {
+      "file": "chatapp_common.py",
+      "line": 251,
+      "type": "print调试",
+      "desc": "L251: print(f\"[NEW] {label} process starting, the above are history infos ...\")"
+    },
+    {
+      "file": "chatapp_common.py",
+      "line": 252,
+      "type": "print调试",
+      "desc": "L252: print(f\"[{label}] allow list: {allowed_label(allowed)}\")"
+    },
+    {
+      "file": "chatapp_common.py",
+      "line": 337,
+      "type": "print调试",
+      "desc": "L337: print(f\"[{self.label}] run_agent error: {e}\")"
+    },
+    {
+      "file": "conductor.py",
+      "line": 25,
+      "type": "硬编码地址",
+      "desc": "L25: HOST = \"127.0.0.1\""
+    },
+    {
+      "file": "conductor.py",
+      "line": 296,
+      "type": "print调试",
+      "desc": "L296: print(f\"Conductor task done\")"
+    },
+    {
+      "file": "continue_cmd.py",
+      "line": 171,
+      "type": "空except",
+      "desc": "L171: except Exception: → 静默吞掉异常"
+    },
+    {
+      "file": "continue_cmd.py",
+      "line": 269,
+      "type": "空except",
+      "desc": "L269: except Exception: return [] → 静默吞掉异常"
+    },
+    {
+      "file": "dcapp.py",
+      "line": 22,
+      "type": "print调试",
+      "desc": "L22: print(\"Please install discord.py to use Discord: pip install discord.py\")"
+    },
+    {
+      "file": "dcapp.py",
+      "line": 89,
+      "type": "print调试",
+      "desc": "L89: print(f\"[Discord] bot ready: {self.client.user} ({self.client.user.id})\")"
+    },
+    {
+      "file": "dcapp.py",
+      "line": 119,
+      "type": "print调试",
+      "desc": "L119: print(f\"[Discord] failed to load active channels: {e}\")"
+    },
+    {
+      "file": "dcapp.py",
+      "line": 130,
+      "type": "print调试",
+      "desc": "L130: print(f\"[Discord] failed to save active channels: {e}\")"
+    },
+    {
+      "file": "dcapp.py",
+      "line": 141,
+      "type": "print调试",
+      "desc": "L141: print(f\"[Discord] channel expired: {chat_id}\")"
+    },
+    {
+      "file": "dcapp.py",
+      "line": 162,
+      "type": "print调试",
+      "desc": "L162: print(f\"[Discord] deactivate abort failed for {chat_id}: {e}\")"
+    },
+    {
+      "file": "dcapp.py",
+      "line": 175,
+      "type": "print调试",
+      "desc": "L175: print(f\"[Discord] dropped agent cache entry: {old_chat_id}\")"
+    },
+    {
+      "file": "dcapp.py",
+      "line": 189,
+      "type": "print调试",
+      "desc": "L189: print(f\"[Discord] saved attachment: {local_path}\")"
+    },
+    {
+      "file": "dcapp.py",
+      "line": 191,
+      "type": "print调试",
+      "desc": "L191: print(f\"[Discord] failed to save attachment {att.filename}: {e}\")"
+    },
+    {
+      "file": "dcapp.py",
+      "line": 208,
+      "type": "print调试",
+      "desc": "L208: print(f\"[Discord] cannot resolve channel for {chat_id}: {e}\")"
+    },
+    {
+      "file": "dcapp.py",
+      "line": 214,
+      "type": "print调试",
+      "desc": "L214: print(f\"[Discord] send error: {e}\")"
+    },
+    {
+      "file": "dcapp.py",
+      "line": 233,
+      "type": "print调试",
+      "desc": "L233: print(f\"[Discord] failed to send file {fpath}: {e}\")"
+    },
+    {
+      "file": "dcapp.py",
+      "line": 317,
+      "type": "print调试",
+      "desc": "L317: print(f\"[{self.label}] run_agent error: {e}\")"
+    },
+    {
+      "file": "dcapp.py",
+      "line": 342,
+      "type": "print调试",
+      "desc": "L342: print(f\"[Discord] unauthorized user: {user_name} ({user_id})\")"
+    },
+    {
+      "file": "dcapp.py",
+      "line": 364,
+      "type": "print调试",
+      "desc": "L364: print(f\"[Discord] manually deactivated {chat_id} by {user_name} ({user_id})\")"
+    },
+    {
+      "file": "dcapp.py",
+      "line": 378,
+      "type": "print调试",
+      "desc": "L378: print(f\"[Discord] message from {user_name} ({user_id}, {'dm' if is_dm else 'guil"
+    },
+    {
+      "file": "dcapp.py",
+      "line": 388,
+      "type": "print调试",
+      "desc": "L388: print(\"[Discord] bot starting...\")"
+    },
+    {
+      "file": "dcapp.py",
+      "line": 395,
+      "type": "print调试",
+      "desc": "L395: print(f\"[Discord] error: {e}\")"
+    },
+    {
+      "file": "dcapp.py",
+      "line": 398,
+      "type": "print调试",
+      "desc": "L398: print(f\"[Discord] reconnect in {delay}s...\")"
+    },
+    {
+      "file": "desktop_bridge.py",
+      "line": 141,
+      "type": "print调试",
+      "desc": "L141: print(f\"get model profiles failed: {e}\", file=sys.stderr)"
+    },
+    {
+      "file": "desktop_bridge.py",
+      "line": 274,
+      "type": "print调试",
+      "desc": "L274: print(tb, file=sys.stderr)"
+    },
+    {
+      "file": "desktop_bridge.py",
+      "line": 613,
+      "type": "硬编码地址",
+      "desc": "L613: host = os.environ.get(\"BRIDGE_HOST\", \"127.0.0.1\")"
+    },
+    {
+      "file": "desktop_bridge.py",
+      "line": 615,
+      "type": "print调试",
+      "desc": "L615: print(f\"GenericAgent Web2 bridge: http://{host}:{port}  ws://{host}:{port}/ws\", "
+    },
+    {
+      "file": "dingtalkapp.py",
+      "line": 13,
+      "type": "print调试",
+      "desc": "L13: print(\"Please install dingtalk-stream to use DingTalk: pip install dingtalk-stre"
+    },
+    {
+      "file": "dingtalkapp.py",
+      "line": 50,
+      "type": "print调试",
+      "desc": "L50: print(f\"[DingTalk] token error after retry: {last_err}\")"
+    },
+    {
+      "file": "dingtalkapp.py",
+      "line": 79,
+      "type": "print调试",
+      "desc": "L79: print(f\"[DingTalk] send error: {e}\")"
+    },
+    {
+      "file": "dingtalkapp.py",
+      "line": 91,
+      "type": "print调试",
+      "desc": "L91: print(f\"[DingTalk] unauthorized user: {sender_id}\")"
+    },
+    {
+      "file": "dingtalkapp.py",
+      "line": 95,
+      "type": "print调试",
+      "desc": "L95: print(f\"[DingTalk] message from {sender_name} ({sender_id}): {content}\")"
+    },
+    {
+      "file": "dingtalkapp.py",
+      "line": 103,
+      "type": "print调试",
+      "desc": "L103: print(\"[DingTalk] handle_message error\")"
+    },
+    {
+      "file": "dingtalkapp.py",
+      "line": 109,
+      "type": "print调试",
+      "desc": "L109: print(\"[DingTalk] bot starting...\")"
+    },
+    {
+      "file": "dingtalkapp.py",
+      "line": 116,
+      "type": "print调试",
+      "desc": "L116: print(f\"[DingTalk] stream error: {e}\")"
+    },
+    {
+      "file": "dingtalkapp.py",
+      "line": 120,
+      "type": "print调试",
+      "desc": "L120: print(f\"[DingTalk] reconnect in {delay}s...\")"
+    },
+    {
+      "file": "dingtalkapp.py",
+      "line": 142,
+      "type": "print调试",
+      "desc": "L142: print(f\"[DingTalk] callback error: {e}\")"
+    },
+    {
+      "file": "export_cmd.py",
+      "line": 53,
+      "type": "print调试",
+      "desc": "L53: print(f\"[export_cmd] failed to read {log}: {e}\", file=sys.stderr)"
+    },
+    {
+      "file": "fsapp.py",
+      "line": 267,
+      "type": "print调试",
+      "desc": "L267: print(f\"发送失败: {r.code}, {r.msg}\")"
+    },
+    {
+      "file": "fsapp.py",
+      "line": 269,
+      "type": "print调试",
+      "desc": "L269: print(f\"[ERROR] _send_raw 网络异常: {e}\")"
+    },
+    {
+      "file": "fsapp.py",
+      "line": 284,
+      "type": "print调试",
+      "desc": "L284: print(f\"[ERROR] patch_card 失败: {r.code}, {r.msg}\")"
+    },
+    {
+      "file": "fsapp.py",
+      "line": 288,
+      "type": "print调试",
+      "desc": "L288: print(f\"[ERROR] _patch_card 网络异常: {e}\")"
+    },
+    {
+      "file": "fsapp.py",
+      "line": 313,
+      "type": "print调试",
+      "desc": "L313: print(f\"[ERROR] upload image failed: {response.code}, {response.msg}\")"
+    },
+    {
+      "file": "fsapp.py",
+      "line": 315,
+      "type": "print调试",
+      "desc": "L315: print(f\"[ERROR] upload image failed {file_path}: {e}\")"
+    },
+    {
+      "file": "fsapp.py",
+      "line": 331,
+      "type": "print调试",
+      "desc": "L331: print(f\"[ERROR] upload file failed: {response.code}, {response.msg}\")"
+    },
+    {
+      "file": "fsapp.py",
+      "line": 333,
+      "type": "print调试",
+      "desc": "L333: print(f\"[ERROR] upload file failed {file_path}: {e}\")"
+    },
+    {
+      "file": "fsapp.py",
+      "line": 344,
+      "type": "print调试",
+      "desc": "L344: print(f\"[ERROR] download image failed: {response.code}, {response.msg}\")"
+    },
+    {
+      "file": "fsapp.py",
+      "line": 346,
+      "type": "print调试",
+      "desc": "L346: print(f\"[ERROR] download image failed {image_key}: {e}\")"
+    },
+    {
+      "file": "fsapp.py",
+      "line": 359,
+      "type": "print调试",
+      "desc": "L359: print(f\"[ERROR] download {resource_type} failed: {response.code}, {response.msg}"
+    },
+    {
+      "file": "fsapp.py",
+      "line": 361,
+      "type": "print调试",
+      "desc": "L361: print(f\"[ERROR] download {resource_type} failed {file_key}: {e}\")"
+    },
+    {
+      "file": "fsapp.py",
+      "line": 580,
+      "type": "print调试",
+      "desc": "L580: print(f\"[fs hook] error: {e}\")"
+    },
+    {
+      "file": "fsapp.py",
+      "line": 589,
+      "type": "print调试",
+      "desc": "L589: print(f\"未授权用户: {open_id}\")"
+    },
+    {
+      "file": "fsapp.py",
+      "line": 598,
+      "type": "print调试",
+      "desc": "L598: print(f\"收到消息 [{open_id}] ({message.message_type}, {len(image_paths)} images): {u"
+    },
+    {
+      "file": "fsapp.py",
+      "line": 686,
+      "type": "print调试",
+      "desc": "L686: print(\"错误: 请在 mykey.py 或 mykey.json 中配置 fs_app_id 和 fs_app_secret\")"
+    },
+    {
+      "file": "fsapp.py",
+      "line": 690,
+      "type": "print调试",
+      "desc": "L690: print(\"=\" * 50 + \"\\n飞书 Agent 已启动（长连接模式）\\n\" + f\"App ID: {APP_ID}\\n等待消息...\\n\" + \"="
+    },
+    {
+      "file": "fsapp.py",
+      "line": 697,
+      "type": "print调试",
+      "desc": "L697: print(f\"[WARN] 飞书长连接断开或启动失败: {e}\")"
+    },
+    {
+      "file": "fsapp.py",
+      "line": 698,
+      "type": "print调试",
+      "desc": "L698: print(f\"[INFO] {retry_delay}s 后重连...\")"
+    },
+    {
+      "file": "fsapp.py",
+      "line": 704,
+      "type": "空except",
+      "desc": "L704: except Exception: → 静默吞掉异常"
+    },
+    {
+      "file": "genericagent_acp_bridge.py",
+      "line": 58,
+      "type": "print调试",
+      "desc": "L58: print(*args, file=sys.stderr, flush=True)"
+    },
+    {
+      "file": "qqapp.py",
+      "line": 13,
+      "type": "print调试",
+      "desc": "L13: print(\"Please install qq-botpy to use QQ module: pip install qq-botpy\")"
+    },
+    {
+      "file": "qqapp.py",
+      "line": 40,
+      "type": "空except",
+      "desc": "L40: except Exception: → 静默吞掉异常"
+    },
+    {
+      "file": "qqapp.py",
+      "line": 51,
+      "type": "print调试",
+      "desc": "L51: print(f\"[QQ] bot ready: {getattr(getattr(self, 'robot', None), 'name', 'QQBot')}"
+    },
+    {
+      "file": "qqapp.py",
+      "line": 93,
+      "type": "print调试",
+      "desc": "L93: print(f\"[QQ] unauthorized user: {user_id}\")"
+    },
+    {
+      "file": "qqapp.py",
+      "line": 95,
+      "type": "print调试",
+      "desc": "L95: print(f\"[QQ] message from {user_id} ({'group' if is_group else 'c2c'}): {content"
+    },
+    {
+      "file": "qqapp.py",
+      "line": 101,
+      "type": "print调试",
+      "desc": "L101: print(\"[QQ] handle_message error\")"
+    },
+    {
+      "file": "qqapp.py",
+      "line": 110,
+      "type": "print调试",
+      "desc": "L110: print(f\"[QQ] bot starting... {time.strftime('%m-%d %H:%M')}\")"
+    },
+    {
+      "file": "qqapp.py",
+      "line": 113,
+      "type": "print调试",
+      "desc": "L113: print(f\"[QQ] bot error: {e}\")"
+    },
+    {
+      "file": "qqapp.py",
+      "line": 116,
+      "type": "print调试",
+      "desc": "L116: print(f\"[QQ] reconnect in {delay}s...\")"
+    },
+    {
+      "file": "qtapp.py",
+      "line": 449,
+      "type": "空except",
+      "desc": "L449: except Exception: → 静默吞掉异常"
+    },
+    {
+      "file": "qtapp.py",
+      "line": 710,
+      "type": "空except",
+      "desc": "L710: except: → 静默吞掉异常"
+    },
+    {
+      "file": "qtapp.py",
+      "line": 794,
+      "type": "空except",
+      "desc": "L794: except: → 静默吞掉异常"
+    },
+    {
+      "file": "qtapp.py",
+      "line": 1874,
+      "type": "print调试",
+      "desc": "L1874: print(f\"[HealthCheck] Backend #{idx} {type(backend).__name__}/{backend.model}: {"
+    },
+    {
+      "file": "qtapp.py",
+      "line": 1876,
+      "type": "print调试",
+      "desc": "L1876: print(f\"[HealthCheck] Backend #{idx} {type(backend).__name__}/{backend.model}: E"
+    },
+    {
+      "file": "qtapp.py",
+      "line": 1923,
+      "type": "print调试",
+      "desc": "L1923: print(f\"[Attach] 文件过大，已跳过: {name} ({len(raw)} bytes)\")"
+    },
+    {
+      "file": "qtapp.py",
+      "line": 1927,
+      "type": "print调试",
+      "desc": "L1927: print(f\"[Attach] Failed to read {path}: {e}\")"
+    },
+    {
+      "file": "qtapp.py",
+      "line": 2078,
+      "type": "print调试",
+      "desc": "L2078: print(f\"[Queue] 跳过异常项: {item}\")"
+    },
+    {
+      "file": "qtapp.py",
+      "line": 2447,
+      "type": "print调试",
+      "desc": "L2447: print(f\"[GenericAgent] 启动成功\")"
+    },
+    {
+      "file": "qtapp.py",
+      "line": 2448,
+      "type": "print调试",
+      "desc": "L2448: print(f\"  屏幕分辨率: {scr.width()}x{scr.height()}\")"
+    },
+    {
+      "file": "qtapp.py",
+      "line": 2449,
+      "type": "print调试",
+      "desc": "L2449: print(f\"  悬浮按钮: ({button.x()}, {button.y()})\")"
+    },
+    {
+      "file": "qtapp.py",
+      "line": 2450,
+      "type": "print调试",
+      "desc": "L2450: print(f\"  聊天面板: ({panel.x()}, {panel.y()})\")"
+    },
+    {
+      "file": "qtapp.py",
+      "line": 2451,
+      "type": "print调试",
+      "desc": "L2451: print(f\"  关闭面板后可点击右下角发光按钮重新打开\")"
+    },
+    {
+      "file": "stapp.py",
+      "line": 82,
+      "type": "硬编码地址",
+      "desc": "L82: try: urlopen(f'http://127.0.0.1:41983/?{q}', timeout=2)"
+    },
+    {
+      "file": "tgapp.py",
+      "line": 13,
+      "type": "print调试",
+      "desc": "L13: print(\"Please ask the agent install python-telegram-bot to use telegram module.\""
+    },
+    {
+      "file": "tgapp.py",
+      "line": 184,
+      "type": "空except",
+      "desc": "L184: except Exception: → 静默吞掉异常"
+    },
+    {
+      "file": "tgapp.py",
+      "line": 190,
+      "type": "空except",
+      "desc": "L190: except Exception: → 静默吞掉异常"
+    },
+    {
+      "file": "tgapp.py",
+      "line": 345,
+      "type": "print调试",
+      "desc": "L345: print(f\"[TG ask_user menu cleanup] {type(exc).__name__}: {exc}\", flush=True)"
+    },
+    {
+      "file": "tgapp.py",
+      "line": 354,
+      "type": "print调试",
+      "desc": "L354: print(f\"[TG ask_user menu edit] {type(exc).__name__}: {exc}\", flush=True)"
+    },
+    {
+      "file": "tgapp.py",
+      "line": 368,
+      "type": "print调试",
+      "desc": "L368: print(f\"[TG ask_user menu error] {type(exc).__name__}: {exc}\", flush=True)"
+    },
+    {
+      "file": "tgapp.py",
+      "line": 550,
+      "type": "print调试",
+      "desc": "L550: print(f\"[TG draft fallback] {type(exc).__name__}: {exc}\", flush=True)"
+    },
+    {
+      "file": "tgapp.py",
+      "line": 626,
+      "type": "print调试",
+      "desc": "L626: print(f\"[TG stale overflow delete error] {type(exc).__name__}: {exc}\", flush=Tru"
+    },
+    {
+      "file": "tgapp.py",
+      "line": 790,
+      "type": "print调试",
+      "desc": "L790: print(f\"[TG stream retry_after] {type(exc).__name__}: {exc}\", flush=True)"
+    },
+    {
+      "file": "tgapp.py",
+      "line": 794,
+      "type": "print调试",
+      "desc": "L794: print(f\"[TG stream error] {type(exc).__name__}: {exc}\", flush=True)"
+    },
+    {
+      "file": "tgapp.py",
+      "line": 800,
+      "type": "print调试",
+      "desc": "L800: print(f\"[TG stream error notice retry_after] {type(retry_exc).__name__}: {retry_"
+    },
+    {
+      "file": "tgapp.py",
+      "line": 821,
+      "type": "print调试",
+      "desc": "L821: print(f\"[TG command markdown fallback] {type(exc).__name__}: {exc}\", flush=True)"
+    },
+    {
+      "file": "tgapp.py",
+      "line": 946,
+      "type": "print调试",
+      "desc": "L946: print('[Telegram] ERROR: tg_allowed_users in mykey.py is empty or missing. Set i"
+    },
+    {
+      "file": "tgapp.py",
+      "line": 954,
+      "type": "print调试",
+      "desc": "L954: print('proxy:', proxy)"
+    },
+    {
+      "file": "tgapp.py",
+      "line": 956,
+      "type": "print调试",
+      "desc": "L956: print('proxy: <disabled>')"
+    },
+    {
+      "file": "tgapp.py",
+      "line": 959,
+      "type": "print调试",
+      "desc": "L959: print(f\"[{time.strftime('%m-%d %H:%M')}] TG error: {context.error}\", flush=True)"
+    },
+    {
+      "file": "tgapp.py",
+      "line": 963,
+      "type": "print调试",
+      "desc": "L963: print(f\"TG bot starting... {time.strftime('%m-%d %H:%M')}\")"
+    },
+    {
+      "file": "tgapp.py",
+      "line": 979,
+      "type": "print调试",
+      "desc": "L979: print(f\"[{time.strftime('%m-%d %H:%M')}] polling crashed: {e}\", flush=True)"
+    },
+    {
+      "file": "tuiapp.py",
+      "line": 42,
+      "type": "print调试",
+      "desc": "L42: print(\"Textual is required. Install with: pip install textual\", file=sys.stderr)"
+    },
+    {
+      "file": "tuiapp.py",
+      "line": 44,
+      "type": "print调试",
+      "desc": "L44: print(f\"Missing dependency: {exc.name}\", file=sys.stderr)"
+    },
+    {
+      "file": "tuiapp.py",
+      "line": 261,
+      "type": "空except",
+      "desc": "L261: except Exception: → 静默吞掉异常"
+    },
+    {
+      "file": "tuiapp_v2.py",
+      "line": 40,
+      "type": "print调试",
+      "desc": "L40: print(f\"Missing dependency: {exc.name}. Install Textual: pip install textual\","
+    },
+    {
+      "file": "tuiapp_v2.py",
+      "line": 221,
+      "type": "空except",
+      "desc": "L221: except Exception: → 静默吞掉异常"
+    },
+    {
+      "file": "tuiapp_v2.py",
+      "line": 326,
+      "type": "空except",
+      "desc": "L326: except Exception: → 静默吞掉异常"
+    },
+    {
+      "file": "tuiapp_v2.py",
+      "line": 330,
+      "type": "空except",
+      "desc": "L330: except Exception: → 静默吞掉异常"
+    },
+    {
+      "file": "tuiapp_v2.py",
+      "line": 340,
+      "type": "空except",
+      "desc": "L340: except Exception: → 静默吞掉异常"
+    },
+    {
+      "file": "tuiapp_v2.py",
+      "line": 401,
+      "type": "空except",
+      "desc": "L401: except Exception: → 静默吞掉异常"
+    },
+    {
+      "file": "tuiapp_v2.py",
+      "line": 914,
+      "type": "空except",
+      "desc": "L914: except Exception: → 静默吞掉异常"
+    },
+    {
+      "file": "tuiapp_v2.py",
+      "line": 1077,
+      "type": "空except",
+      "desc": "L1077: except Exception: pass → 静默吞掉异常"
+    },
+    {
+      "file": "tuiapp_v2.py",
+      "line": 1309,
+      "type": "空except",
+      "desc": "L1309: except Exception: → 静默吞掉异常"
+    },
+    {
+      "file": "tuiapp_v2.py",
+      "line": 1377,
+      "type": "空except",
+      "desc": "L1377: except Exception: → 静默吞掉异常"
+    },
+    {
+      "file": "tuiapp_v2.py",
+      "line": 1694,
+      "type": "空except",
+      "desc": "L1694: except Exception: → 静默吞掉异常"
+    },
+    {
+      "file": "tuiapp_v2.py",
+      "line": 1758,
+      "type": "空except",
+      "desc": "L1758: except Exception: → 静默吞掉异常"
+    },
+    {
+      "file": "tuiapp_v2.py",
+      "line": 1870,
+      "type": "空except",
+      "desc": "L1870: except Exception: pass → 静默吞掉异常"
+    },
+    {
+      "file": "tuiapp_v2.py",
+      "line": 1885,
+      "type": "空except",
+      "desc": "L1885: except Exception: → 静默吞掉异常"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 80,
+      "type": "print调试",
+      "desc": "L80: print(f'[QR登录] ID: {qr_id}')"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 89,
+      "type": "空except",
+      "desc": "L89: except Exception: → 静默吞掉异常"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 91,
+      "type": "print调试",
+      "desc": "L91: print(f'[QR登录] 二维码已保存: {img}')"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 92,
+      "type": "print调试",
+      "desc": "L92: print(f'[QR登录] 扫码链接: {url}')"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 103,
+      "type": "print调试",
+      "desc": "L103: print(f'[QR登录] 轮询异常: {e}', file=sys.__stdout__)"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 110,
+      "type": "print调试",
+      "desc": "L110: print(f'[QR登录] 成功! bot_id={self.bot_id}')"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 129,
+      "type": "print调试",
+      "desc": "L129: print(f'[getUpdates] 网络异常: {type(e).__name__}: {e}', file=sys.__stdout__)"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 132,
+      "type": "print调试",
+      "desc": "L132: print(f'[getUpdates] 未知异常: {type(e).__name__}: {e}', file=sys.__stdout__)"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 135,
+      "type": "print调试",
+      "desc": "L135: print(f'[getUpdates] err: {resp.get(\"errcode\")} {resp.get(\"errmsg\",\"\")}')"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 138,
+      "type": "print调试",
+      "desc": "L138: print('[getUpdates] session 过期，触发重新登录...')"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 141,
+      "type": "print调试",
+      "desc": "L141: print(f'[getUpdates] 重新登录成功! bot_id={self.bot_id}')"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 145,
+      "type": "print调试",
+      "desc": "L145: print(f'[getUpdates] 重新登录失败: {e}', file=sys.__stdout__)"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 191,
+      "type": "print调试",
+      "desc": "L191: print(f'[WX] CDN upload retry {attempt}: {e}', file=sys.__stdout__)"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 271,
+      "type": "print调试",
+      "desc": "L271: print(f'[Bot] 监听中... (bot_id={self.bot_id})')"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 287,
+      "type": "print调试",
+      "desc": "L287: print(f'[Bot] 连接恢复，连续失败 {consec_fail} 次后成功')"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 293,
+      "type": "print调试",
+      "desc": "L293: print(f'[Bot] 异常(连续第{consec_fail}次): {type(e).__name__}: {e}，{retry_delay}s后重试',"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 296,
+      "type": "print调试",
+      "desc": "L296: print(f'[Bot] 连续失败{consec_fail}次，重建 Session...')"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 299,
+      "type": "空except",
+      "desc": "L299: except Exception: → 静默吞掉异常"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 332,
+      "type": "print调试",
+      "desc": "L332: print(f'[WX] media dl err ({key}): {e}', file=sys.__stdout__)"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 538,
+      "type": "print调试",
+      "desc": "L538: print(f'[WX] 收到: {text[:80]}', file=sys.__stdout__)"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 618,
+      "type": "print调试",
+      "desc": "L618: print(f'[WX] 天气快速通道: {_city_name} send ok', file=sys.__stdout__)"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 620,
+      "type": "print调试",
+      "desc": "L620: print(f'[WX] 天气快速通道失败: {_we}', file=sys.__stdout__)"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 662,
+      "type": "print调试",
+      "desc": "L662: print(f'[WX] send ok len={len(s)} dt={time.time()-t0:.1f}s', file=sys.__stdout__"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 665,
+      "type": "print调试",
+      "desc": "L665: print(f'[WX] send err len={len(s)} dt={time.time()-t0:.1f}s {type(e).__name__}: "
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 682,
+      "type": "print调试",
+      "desc": "L682: print(f'[WX] turns={len(done)}/{len(done)+1} sent={sent} sending={len(done)-sent"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 690,
+      "type": "print调试",
+      "desc": "L690: print(f'[WX] final skip (already sent {sent})', file=sys.__stdout__)"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 712,
+      "type": "print调试",
+      "desc": "L712: print(f'[WX] sent media: {fpath}', file=sys.__stdout__)"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 716,
+      "type": "print调试",
+      "desc": "L716: print(f'[WX] _handle 未捕获异常: {type(e).__name__}: {e}', file=sys.__stdout__)"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 742,
+      "type": "print调试",
+      "desc": "L742: print(f'[WeChat] Found another instance (PID {_other_pid}): {_line[:120]}')"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 746,
+      "type": "print调试",
+      "desc": "L746: print(f'[WeChat] Process check skipped: {_e}')"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 748,
+      "type": "print调试",
+      "desc": "L748: print('[WeChat] Another instance running, exiting.')"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 752,
+      "type": "print调试",
+      "desc": "L752: print(f'[NEW] Process starting {time.strftime(\"%m-%d %H:%M\")}')"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 763,
+      "type": "print调试",
+      "desc": "L763: print('[Bot] agent.run() 启动', file=sys.__stdout__)"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 766,
+      "type": "print调试",
+      "desc": "L766: print(f'[Bot] agent.run() 异常退出: {e}，5s后重启', file=sys.__stdout__)"
+    },
+    {
+      "file": "wechatapp.py",
+      "line": 769,
+      "type": "print调试",
+      "desc": "L769: print(f'WeChat Bot 已启动 (bot_id={bot.bot_id})', file=sys.__stdout__)"
+    },
+    {
+      "file": "wecomapp.py",
+      "line": 28,
+      "type": "print调试",
+      "desc": "L28: print(\"Please install wecom_aibot_sdk: pip install wecom_aibot_sdk\")"
+    },
+    {
+      "file": "wecomapp.py",
+      "line": 48,
+      "type": "print调试",
+      "desc": "L48: print(*a, **kw)"
+    },
+    {
+      "file": "wecomapp.py",
+      "line": 92,
+      "type": "print调试",
+      "desc": "L92: print(f\"[WeCom] unauthorized: {sender_id}\")"
+    },
+    {
+      "file": "wecomapp.py",
+      "line": 134,
+      "type": "print调试",
+      "desc": "L134: print(f\"[WeCom] send_media error: {e}\")"
+    },
+    {
+      "file": "wecomapp.py",
+      "line": 181,
+      "type": "print调试",
+      "desc": "L181: print(f\"[WeCom hook] {e}\")"
+    },
+    {
+      "file": "wecomapp.py",
+      "line": 251,
+      "type": "print调试",
+      "desc": "L251: print(f\"[WeCom] on_{key} error: {e}\")"
+    },
+    {
+      "file": "wecomapp.py",
+      "line": 266,
+      "type": "print调试",
+      "desc": "L266: print(f\"[WeCom] welcome error: {e}\")"
+    },
+    {
+      "file": "adb_ui.py",
+      "line": 18,
+      "type": "print调试",
+      "desc": "L18: print(f\"[u2 fallback] {e}\")"
+    },
+    {
+      "file": "adb_ui.py",
+      "line": 75,
+      "type": "print调试",
+      "desc": "L75: print(f\"[{flag}] {display_text}  {coord}\")"
+    },
+    {
+      "file": "adb_ui.py",
+      "line": 76,
+      "type": "print调试",
+      "desc": "L76: print(f\"\\ntotal: {len(nodes)} nodes\")"
+    },
+    {
+      "file": "adb_ui.py",
+      "line": 81,
+      "type": "print调试",
+      "desc": "L81: print(f\"tap({x},{y}) ok\")"
+    },
+    {
+      "file": "keychain.py",
+      "line": 33,
+      "type": "print调试",
+      "desc": "L33: print(f\"[keychain] WARNING: failed to load {_PATH}: {e}\")"
+    },
+    {
+      "file": "keychain.py",
+      "line": 34,
+      "type": "print调试",
+      "desc": "L34: print(f\"[keychain] Starting with empty keychain. Old file kept as .bak\")"
+    },
+    {
+      "file": "ljqCtrl.py",
+      "line": 20,
+      "type": "空except",
+      "desc": "L20: except: pass → 静默吞掉异常"
+    },
+    {
+      "file": "ljqCtrl.py",
+      "line": 29,
+      "type": "print调试",
+      "desc": "L29: print('Screen width & height:', swidth, sheight)"
+    },
+    {
+      "file": "ljqCtrl.py",
+      "line": 30,
+      "type": "print调试",
+      "desc": "L30: print('dpi_scale:', dpi_scale)"
+    },
+    {
+      "file": "ljqCtrl.py",
+      "line": 105,
+      "type": "print调试",
+      "desc": "L105: print(f'Max match: {max_val:.4f} at ({oj}, {oi}) cost: {time.process_time() - ti"
+    },
+    {
+      "file": "ljqCtrl.py",
+      "line": 115,
+      "type": "print调试",
+      "desc": "L115: print('completed %.3f' % time.process_time())"
+    },
+    {
+      "file": "ocr_utils.py",
+      "line": 96,
+      "type": "print调试",
+      "desc": "L96: print(f\"识别结果: {r['text']}\")"
+    },
+    {
+      "file": "ocr_utils.py",
+      "line": 98,
+      "type": "print调试",
+      "desc": "L98: print(f\"  行: {line}\")"
+    },
+    {
+      "file": "ocr_utils.py",
+      "line": 101,
+      "type": "print调试",
+      "desc": "L101: print(f\"  [{d['conf']:.3f}] {d['text']}\")"
+    },
+    {
+      "file": "procmem_scanner.py",
+      "line": 118,
+      "type": "print调试",
+      "desc": "L118: print(json.dumps(res, indent=2) if args.llm else f\"Matches: {len(res)}\")"
+    },
+    {
+      "file": "procmem_scanner.py",
+      "line": 120,
+      "type": "print调试",
+      "desc": "L120: print(f\"Error: {e}\")"
+    },
+    {
+      "file": "ui_detect.py",
+      "line": 21,
+      "type": "print调试",
+      "desc": "L21: print(\"警告: rapidocr未安装，跳过OCR功能\")"
+    },
+    {
+      "file": "ui_detect.py",
+      "line": 92,
+      "type": "print调试",
+      "desc": "L92: print(\"用法: python ui_detect.py <图片路径> <模型路径> [输出路径]\")"
+    },
+    {
+      "file": "ui_detect.py",
+      "line": 93,
+      "type": "print调试",
+      "desc": "L93: print(\"示例: python ui_detect.py screenshot.png weights/icon_detect/model.pt outpu"
+    },
+    {
+      "file": "ui_detect.py",
+      "line": 100,
+      "type": "print调试",
+      "desc": "L100: print(f\"检测图片: {image_path}\")"
+    },
+    {
+      "file": "ui_detect.py",
+      "line": 101,
+      "type": "print调试",
+      "desc": "L101: print(f\"使用模型: {model_path}\")"
+    },
+    {
+      "file": "ui_detect.py",
+      "line": 104,
+      "type": "print调试",
+      "desc": "L104: print(\"\\n[1/2] YOLO检测UI元素...\")"
+    },
+    {
+      "file": "ui_detect.py",
+      "line": 106,
+      "type": "print调试",
+      "desc": "L106: print(f\"检测到 {len(detections)} 个UI元素\")"
+    },
+    {
+      "file": "ui_detect.py",
+      "line": 108,
+      "type": "print调试",
+      "desc": "L108: print(f\"  {i}. bbox={det['bbox']}, conf={det['confidence']:.3f}\")"
+    },
+    {
+      "file": "ui_detect.py",
+      "line": 113,
+      "type": "print调试",
+      "desc": "L113: print(\"\\n[2/2] OCR识别文本...\")"
+    },
+    {
+      "file": "ui_detect.py",
+      "line": 115,
+      "type": "print调试",
+      "desc": "L115: print(f\"识别到 {len(ocr_results)} 个文本区域\")"
+    },
+    {
+      "file": "ui_detect.py",
+      "line": 117,
+      "type": "print调试",
+      "desc": "L117: print(f\"  {i}. text='{ocr['text']}', conf={ocr['confidence']:.3f}\")"
+    },
+    {
+      "file": "ui_detect.py",
+      "line": 120,
+      "type": "print调试",
+      "desc": "L120: print(f\"\\n保存结果到: {output_path}\")"
+    },
+    {
+      "file": "ui_detect.py",
+      "line": 132,
+      "type": "print调试",
+      "desc": "L132: print(f\"JSON结果: {json_path}\")"
+    },
+    {
+      "file": "vision_api.py",
+      "line": 63,
+      "type": "print调试",
+      "desc": "L63: print(f\"  📐 缩放: {w}×{h} → {new_w}×{new_h}\")"
+    },
+    {
+      "file": "vision_api.py",
+      "line": 71,
+      "type": "print调试",
+      "desc": "L71: print(f\"  📦 Base64: {len(buf.getvalue())/1024:.1f}KB\")"
+    },
+    {
+      "file": "vision_api.template.py",
+      "line": 63,
+      "type": "print调试",
+      "desc": "L63: print(f\"  📐 缩放: {w}×{h} → {new_w}×{new_h}\")"
+    },
+    {
+      "file": "vision_api.template.py",
+      "line": 71,
+      "type": "print调试",
+      "desc": "L71: print(f\"  📦 Base64: {len(buf.getvalue())/1024:.1f}KB\")"
+    },
+    {
+      "file": "cli.py",
+      "line": 36,
+      "type": "print调试",
+      "desc": "L36: print(f\"🚀 {' '.join(full_cmd)}\")"
+    },
+    {
+      "file": "cli.py",
+      "line": 101,
+      "type": "print调试",
+      "desc": "L101: print()"
+    },
+    {
+      "file": "cli.py",
+      "line": 105,
+      "type": "print调试",
+      "desc": "L105: print(f\"  {'命令':20s}  {'说明'}\")"
+    },
+    {
+      "file": "cli.py",
+      "line": 106,
+      "type": "print调试",
+      "desc": "L106: print(f\"  {'━'*20}  {'━'*40}\")"
+    },
+    {
+      "file": "cli.py",
+      "line": 108,
+      "type": "print调试",
+      "desc": "L108: print(f\"  {name:20s}  {info.get('help', info['desc'][:40])}\")"
+    },
+    {
+      "file": "cli.py",
+      "line": 109,
+      "type": "print调试",
+      "desc": "L109: print()"
+    },
+    {
+      "file": "cli.py",
+      "line": 111,
+      "type": "print调试",
+      "desc": "L111: print(f\"  {name:20s}  {info.get('help', info['desc'][:40])}\")"
+    },
+    {
+      "file": "cli.py",
+      "line": 112,
+      "type": "print调试",
+      "desc": "L112: print()"
+    },
+    {
+      "file": "cli.py",
+      "line": 121,
+      "type": "print调试",
+      "desc": "L121: print(f\"🟢 运行中: {len(running)} 个进程\")"
+    },
+    {
+      "file": "cli.py",
+      "line": 123,
+      "type": "print调试",
+      "desc": "L123: print(f\"   PID {p.info['pid']} — {' '.join(p.info['cmdline'][:3])}\")"
+    },
+    {
+      "file": "cli.py",
+      "line": 125,
+      "type": "print调试",
+      "desc": "L125: print(\"⚫ GenericAgent 进程未运行\")"
+    },
+    {
+      "file": "cli.py",
+      "line": 131,
+      "type": "print调试",
+      "desc": "L131: print(\"🔄 git pull...\")"
+    },
+    {
+      "file": "cli.py",
+      "line": 133,
+      "type": "print调试",
+      "desc": "L133: print(r.stdout)"
+    },
+    {
+      "file": "cli.py",
+      "line": 135,
+      "type": "print调试",
+      "desc": "L135: print(r.stderr)"
+    },
+    {
+      "file": "cli.py",
+      "line": 136,
+      "type": "print调试",
+      "desc": "L136: print(\"📦 pip install...\")"
+    },
+    {
+      "file": "cli.py",
+      "line": 139,
+      "type": "print调试",
+      "desc": "L139: print(r2.stdout[-500:] if r2.stdout else \"\")"
+    },
+    {
+      "file": "cli.py",
+      "line": 141,
+      "type": "print调试",
+      "desc": "L141: print(r2.stderr[-500:])"
+    },
+    {
+      "file": "cli.py",
+      "line": 166,
+      "type": "print调试",
+      "desc": "L166: print(\"GenericAgent v0.1.0\")"
+    },
+    {
+      "file": "cli.py",
+      "line": 173,
+      "type": "print调试",
+      "desc": "L173: print(\"\\n--- 命令列表 ---\")"
+    },
+    {
+      "file": "cli.py",
+      "line": 190,
+      "type": "print调试",
+      "desc": "L190: print(f\"❌ 未知命令: {cmd}\")"
+    },
+    {
+      "file": "cli.py",
+      "line": 191,
+      "type": "print调试",
+      "desc": "L191: print(f\"   使用 'ga list' 查看可用命令\")"
+    },
+    {
+      "file": "cli.py",
+      "line": 198,
+      "type": "print调试",
+      "desc": "L198: print(f\"❌ 命令 {cmd} 没有配置启动命令\")"
+    }
+  ]
+}
