@@ -185,7 +185,7 @@ class WxBotClient:
         if tok: h['Authorization'] = f'Bearer {tok}'
         # 分离 connect timeout 和 read timeout，避免代理长连接被远端关闭
         t = (min(timeout, 10), timeout) if isinstance(timeout, (int, float)) else timeout
-        r = self._session.post(f'{API}/{ep}', data=data, headers=h, timeout=t)
+        r = self._session.post(f'{API}/{ep}', data=data, headers=h, timeout=t, proxies=_get_proxies())
         r.raise_for_status()
         return r.json()
 
@@ -360,6 +360,9 @@ class WxBotClient:
         return resp.get('msgs') or []
 
     def send_text(self, to_user_id, text, context_token=''):
+        # ★ 修复: "admin" → 真实微信用户ID（从token文件加载）
+        if to_user_id == 'admin' and getattr(self, '_admin_notify_uid', None):
+            to_user_id = self._admin_notify_uid
         msg = {'from_user_id': '', 'to_user_id': to_user_id,
                'client_id': f'pyclient-{uuid.uuid4().hex[:16]}',
                'message_type': MSG_BOT, 'message_state': STATE_FINISH,
@@ -618,13 +621,24 @@ def _dl_media(items):
             break  # one media per item
     return paths
 
-try:
-    agent = GeneraticAgent()
-    agent.verbose = False
-except Exception as e:
-    print(f'[WX] GeneraticAgent init failed: {e}', file=sys.__stdout__)
-    import traceback; traceback.print_exc(file=sys.__stdout__)
-    agent = None
+# ★ 懒加载：只在 bot 主循环运行时初始化，导入时禁止初始化（避免 daily_health_check 等场景卡死）
+agent = None
+
+def _ensure_agent():
+    """惰性初始化 GeneraticAgent"""
+    global agent
+    if agent is not None:
+        return agent
+    try:
+        print('[WX] 初始化 GeneraticAgent...', file=sys.__stdout__)
+        agent = GeneraticAgent()
+        agent.verbose = False
+        print(f'[WX] GeneraticAgent 初始化完成', file=sys.__stdout__)
+    except Exception as e:
+        print(f'[WX] GeneraticAgent init failed: {e}', file=sys.__stdout__)
+        import traceback; traceback.print_exc(file=sys.__stdout__)
+        agent = None
+    return agent
 
 _TAG_PATS = [r'<' + t + r'>.*?</' + t + r'>' for t in ('thinking', 'tool_use', 'details', 'think', 'reasoning', 'analysis', 'internal')]
 _TAG_PATS.append(r'<file_content>.*?</file_content>')
@@ -713,6 +727,17 @@ def _fmt_wx(t, already_has_unicode_nl=False):
     t = re.sub(r'(?<!\w)(提示|说明|备注|Note)\b', r'💡 \1', t, flags=re.I)
     return re.sub(r'\n{3,}', '\n\n', t).strip()
 
+
+# ═══ 预编译正则（避免每次_clean调用重复编译） ═══
+_RE_COMPILE = lambda p, f=0: re.compile(p, f)
+_CLEAN_RES = [
+    _RE_COMPILE(r'<summary>.*?</summary>', re.DOTALL),
+    _RE_COMPILE(r'^\s*LLM Running \(Turn \d+\) \.{3}\s*$', re.M),
+    _RE_COMPILE(r'^\s*(调用工具\w+|读取文件\s+\S+|写入文件\s+\S+|执行脚本\s+\S+).*$', re.M),
+    _RE_COMPILE(r'^\s*🔧\s*\w+\(.*$', re.M),
+]
+_THINK_KWS = r'^\s*思考|^\s*分析|^\s*推理|^\s*考虑|^\s*注意|^\s*让我|^\s*我想|^\s*我认|^\s*建议|^\s*方案|^\s*步骤'
+
 def _clean(t, device='mobile'):
     # 使用预编译正则批量过滤（避免每次重复编译）
     for _re in _CLEAN_RES:
@@ -738,8 +763,8 @@ def _clean(t, device='mobile'):
         # 非空行：全局去重（首次保留，后续重复跳过）
         if s in seen:
             continue
-        filtered.append(line)
-    t = '\n'.join(filtered)
+        deduped.append(line)
+    t = '\n'.join(deduped)
 
     # === Phase 4: 删除代码行 ===
     code_patterns = [
@@ -794,6 +819,7 @@ def _progress_hint(turn_idx, total_turns):
     return ''
 
 def on_message(bot, msg):
+    _ensure_agent()  # ★ 懒加载：消息处理前才初始化 GeneraticAgent
     text = bot.extract_text(msg).strip()
     uid = msg.get('from_user_id', '')
     ctx = msg.get('context_token', '')
@@ -1063,7 +1089,7 @@ def on_message(bot, msg):
 
 def _ensure_cdp():
     """确保 Chrome CDP 9222 可用。不可用时自动启动 headless 隐身 Chrome。"""
-    import socket as _sk
+    import socket as _sk, subprocess as _sp
     sock = _sk.socket(_sk.AF_INET, _sk.SOCK_STREAM)
     if sock.connect_ex(('127.0.0.1', 9222)) == 0:
         sock.close(); print('[CDP] 已可用', file=sys.__stdout__); return
@@ -1071,10 +1097,10 @@ def _ensure_cdp():
     print('[CDP] 未检测到，启动 Chrome headless 隐身模式...', file=sys.__stdout__)
     chrome_exe = r'C:\Program Files\Google\Chrome\Application\chrome.exe'
     cdp_profile = os.path.join(os.environ.get('TEMP', ''), 'chrome_cdp_profile')
-    subprocess.Popen([chrome_exe, '--remote-debugging-port=9222', f'--user-data-dir={cdp_profile}',
+    _sp.Popen([chrome_exe, '--remote-debugging-port=9222', f'--user-data-dir={cdp_profile}',
                       '--no-first-run', '--disable-gpu', '--headless=new', '--incognito'],
-                     stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                     creationflags=subprocess.CREATE_NO_WINDOW)
+                     stdout=_sp.PIPE, stderr=_sp.PIPE,
+                     creationflags=_sp.CREATE_NO_WINDOW)
     time.sleep(8)
     sock2 = _sk.socket(_sk.AF_INET, _sk.SOCK_STREAM)
     ok = sock2.connect_ex(('127.0.0.1', 9222)) == 0
@@ -1211,6 +1237,7 @@ if __name__ == '__main__':
     def _agent_wrapper():
         while True:
             try:
+                _ensure_agent()  # ★ 主循环也懒加载
                 print('[Bot] agent.run() 启动', file=sys.__stdout__)
                 agent.run()
             except Exception as e:
