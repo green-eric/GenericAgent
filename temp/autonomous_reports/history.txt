@@ -1,3 +1,5 @@
+R310 | 2026-05-30 | 规划 | V17.0新批次TODO | 7条:未提交变更+Fold4异常+低IC因子+权重不稳定+Acceleration评估+V2.0跟进+文档同步
+R304 | 2026-05-29 | 规划 | 规划模式新批次TODO | 识别daily_health_check归档+V2.0 WIP+Acceleration未激活，6条TODO待评审
 R303 | 2026-05-29 | 调研 | 实盘交易接口调研 | QMT篮子委托最适合ScoreSys，聚宽备选，优矿天软不推荐
 R302 | 2026-05-29 | 维护 | 沪深300基准对比修复 | benchmark默认code改为sh000300，超额从-12.18%改善到-5.60%，基准数据已正确
 R301 | 2026-05-29 | 回测 | V16.8回测引擎验证 | drawdown+benchmark模式通过,完整区间+45.66%/夏普1.332/回撤9.59%,超额-13.14%,V16.8显著弱于V15.9需排查参数差异
@@ -75,3 +77,5 @@ R9 | 2026-05-05 | 能力扩展 | Redis+Streamlit股票监控面板原型 | 数�
 R10 | 2026-05-05 | 个性化 | 浏览器书签与历史记录分析 | Chrome为主力浏览器，百度+DeepSeek为核心工具，关注A股投资研究R25 | 2026-05-06 | 规划 | 任务规划模式，产出6条新TODO（subagent调度SOP/实时流稳定性/ScoreSys记忆审查/SOP整理/pytest用例/项目完整性检查）
 R26 | 2026-05-06 | 环境 | BullishForMonitoring实时流稳定性探测 | SSE数据流异常(仅connected无行情/新闻)，根因：SSE_BROADCAST转发链路缺失
 R270 | 2026-05-25 | 规划 | 新批次TODO产出与subagent评审 | 产出6条TODO，subagent评审确认BfM SSE已修复(删除1条)，新增2条，最终7条待执行
+R309 | 2026-05-29 | 规划 | 规划模式新批次TODO | 识别daily_health_check归档+V2.0 WIP+Acceleration未激活，6条TODO待评审
+R305 | 2026-05-30 | 规划 | V17.0新批次TODO | 7条:未提交变更+Fold4异常+低IC因子+权重不稳定+Acceleration评估+V2.0跟进+文档同步
