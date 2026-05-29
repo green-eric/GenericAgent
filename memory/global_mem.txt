@@ -484,3 +484,71 @@
 - benchmark验证: 超额+7.47%, 胜率60%, 最大超额回撤6.19%
 - layered验证: 5层IC单调性90%(L1=+0.0052→L5=-0.0007)
 - commit: 82c3109
+
+## [R301 SkewnessScorer收益偏度因子开发] (2026-05-29)
+- 新增SkewnessScorer类: 三阶中心矩计算收益率偏度, 正偏度(右侧肥尾)→高分
+- 公式: skewness = E[(r-μ)³]/σ³, 评分: 50+skewness*50, 范围[0,100]
+- 边界: hist_df为空/None/不足20日→50, std<1e-10→50
+- 注册: CORE_SCORERS+ALL_SCORERS, factor_key=return_skewness, direction=positive
+- config权重: return_skewness=0.03 (long_term默认权重)
+- 修复: DataFrame布尔值错误(if hist_df→if hist_df is None or hist_df.empty)
+- 修复: 类定义在注册之后导致NameError(移至CORE_SCORERS.update之前)
+- scorer.py: 添加return_skewness_score委托方法
+- README: 因子总数28→29, 版本历史添加V16.8
+- commits: 89c8f78(code), bd7c4e6(docs)
+
+## [R302 V16.8完整回测验证-backtest+drawdown+benchmark三模式] (2026-05-29)
+- backtest: 总收益+46.18%, 年化+22.57%, 夏普1.352, 最大回撤10.60%, 胜率57.4%, 47期
+- drawdown: 最大回撤9.93%, 第35期开始→第38期谷底→第40期恢复, 持续5期
+- benchmark: 基准全市场均价+67.70%, 策略+47.27%, 超额-12.18%, 信息比率-0.096
+- 基准降级: akshare不可用→DB全市场均价(480交易日)
+- 与V15.9对比: V15.9使用long_term季度调仓(夏普2.251/回撤3.22%), V16.8为short_term 10天调仓
+- 原因: 高频调仓换手率高+因子衰减+基准本身涨幅大
+- TODO #1(V16.8回测验证)和#2(SkewnessScorer开发)均标记完成
+- 报告: autonomous_reports/R302_V16.8回测验证报告.md
+- SkewnessScorer TODO也标记完成(权重0.03已集成)
+
+## [R303 param_sweep参数扫描工具+subprocess编码教训] (2026-05-29)
+- 工具: D:\Project\ScoreSys\param_sweep.py (串行/并行回测参数扫描器)
+- 最优参数(rb=10,top=10,min=50): sharpe=2.258, max_drawdown=1.5%, ann_return=21.7%
+- 扫描: 36组合(3×4×3), 3个月数据(2024-01~03), 串行~15min
+- **subprocess编码坑**: Windows下subprocess.run(text=True)默认GBK编码→UnicodeDecodeError(0xa1等中文字节)
+  - 修复: capture_output=True返回bytes→手动decode('utf-8')→失败降级decode('gbk',errors='replace')
+  - 正则解析输出同样需处理bytes→str转换
+- **正则匹配坑**: backtest.py输出为中文(夏普比率/最大回撤/年化收益/胜率/总收益), 正则必须匹配中文关键词
+  - 修复: patterns同时支持中英文如 r'(?:夏普比率|Sharpe)[^\d]*?([-\d.]+)'
+- **快速扫描策略**: 3个月数据足够参数筛选, 全量验证再用长周期
+- 结果文件: D:\Project\ScoreSys\param_sweep_results\sweep_20260529_055353.jsonl
+
+## [代码审查-20260529] (R304)
+- **类型注解全覆盖**: calculator.py 15/15(100%), fetcher.py 11/11(100%)
+  - 修复: _ttm_sum, _latest_val, _get_yoy, _safe_sum_ttm, _calc_xxx系列等
+  - 全部补全参数类型和返回类型(Optional[float]/Optional[bool]等)
+- **异常处理优化**:
+  - ic_factor.py: bare except → except Exception (spearman计算)
+  - param_sweep.py: bare except → except Exception (decode降级) + except(ValueError,TypeError) (float转换)
+  - calculator.py: 注释优化 "不是property" → "非property"
+- **硬编码扫描**: 39个文件无硬编码密码/密钥
+- **Dead code扫描**: 跨文件分析后无明显dead code(私有函数多为内部调用)
+- **Git commit**: 8175630 (4 files changed, 195 insertions, 20 deletions)
+- **经验教训**:
+  - bare except会捕获KeyboardInterrupt/SystemExit，应改用except Exception
+  - 类型注解覆盖率统计需用完整def行匹配，单行正则易误报
+
+## [基准对比修复-20260529] (R41)
+- **根因**: `_fetch_benchmark()` 默认参数 `benchmark_code='000300'`，akshare需带sh/sz前缀
+  - `'000300'` → akshare抛异常 → 降级到DB全市场均价代理 → 基准严重失真
+  - 之前超额-12.18%是代理基准问题，非策略本身问题
+- **修复**: `benchmark_code='000300'` → `benchmark_code='sh000300'`（1行修改）
+- **验证**: 完整周期(2024~2025)策略+26.52% vs 基准+34.02%，超额-5.60%（基准已正确）
+- **经验教训**:
+  - akshare指数代码必须带sh/sz前缀（sh000300/sz399300），纯数字会抛异常
+  - benchmark降级到DB全市场均价会严重失真，不能作为沪深300替代
+- **Git commit**: 29fe8db (backtest.py 1行修改)
+
+## [实盘交易接口调研-20260529] (R42)
+- **调研范围**: QMT/PTrade/聚宽/优矿/天软 5个平台
+- **推荐方案**: QMT (miniQMT) — 篮子委托最适合ScoreSys多股调仓，低延迟直连，零额外成本
+- **备选方案**: 聚宽JoinQuant — 零门槛，适合模拟盘验证
+- **核心结论**: QMT篮子委托可一次性下单10~20只股票减少滑点；ScoreSys信号(JSON)→解析→xtquant篮子委托，对接难度低
+- **报告路径**: D:\GenericAgent\temp\autonomous_reports\R42_trading_api_research.md

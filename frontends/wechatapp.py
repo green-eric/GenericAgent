@@ -1003,8 +1003,10 @@ def on_message(bot, msg):
                 except Exception as e:
                     print(f'[WX] send err {type(e).__name__}: {e}', file=sys.__stdout__)
                     return False
+            # fix nonlocal: initialize before use
+            mi = 0; sent = 0; last_send = 0
             def _send(show):
-                nonlocal mi, last_send
+                nonlocal mi, sent, last_send
                 now = time.time()
                 if mi >= 9 or not show.strip(): return False
                 if mi and now - last_send < 2: return None
