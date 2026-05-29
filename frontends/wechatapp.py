@@ -738,6 +738,10 @@ _CLEAN_RES = [
 ]
 _THINK_KWS = r'^\s*思考|^\s*分析|^\s*推理|^\s*考虑|^\s*注意|^\s*让我|^\s*我想|^\s*我认|^\s*建议|^\s*方案|^\s*步骤'
 
+def _strip_md(t, device='mobile'):
+    """兼容旧调用，转调 _fmt_wx。"""
+    return _fmt_wx(t)
+
 def _clean(t, device='mobile'):
     # 使用预编译正则批量过滤（避免每次重复编译）
     for _re in _CLEAN_RES:
