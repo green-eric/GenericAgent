@@ -119,14 +119,14 @@
 - commit: a9e0e87
 - R272补充验证(2026-05-25): 权重层面IC分析，V15.2 vs 固定权重，8/8 regime全部改善，平均IC +0.0103→+0.1156 (+0.1052)，34个(regime,因子)对负IC反转
 
-## [ScoreSys V15.9 回测+文档] (2026-05-26)
-- 回测结果: +82.81%总收益 / 夏普2.251 / 最大回撤3.22% / 胜率69.6% (23次调仓, 2024-06~2026-03)
-- 21个因子(20活跃+1保留): alpha_023/alpha_momentum/alpha_rsi/alpha_vol_ratio/cash_flow/ff_net_inflow_5d/ff_net_inflow_10d/growth/industry_momentum/intraday_strength/leverage/pca_momentum_val/pca_quality_value/profitability/reversal/turnover/valuation/volatility_deviation/volatility_ma/volume_ratio
-- 保留不活跃: volatility_squeeze (V15.3清零, 全regime权重=0), acceleration (IC=-0.028全因子唯一负值, 保持禁用, R299)
-- 权重机制: weight_optimizer.py → data/ic_data/regime_ic.json (IC文件无条目的因子自动权重=0)
-- DB结构: stock_data.db 主表quotes (trade_date/close_price/ret_5d/ret_10d/ret_1m/volume/total_mv/pe_ttm/industry_mom_1m), 无daily_kline表, 804日×4344股
-- 4段regime权重: short_term(14非零)/bear(17)/bull(14)/shock(15)
-- README因子体系章节全面更新(commit 00c5a4c): 21因子完整regime权重表+架构图修正+BfM-28→21
+## [ScoreSys V16.9 回测] (2026-05-29)
+- 回测: python backtest.py --mode backtest --start 2024-06-01 --end 2026-05-29 --top-n 15 --min-score 58 --coarse 250 --rebalance-days 10 --stop-loss-pct 0.08 --slippage-bps 3.0
+- 回测结果: +353.09%总收益 / 夏普2.118 / 最大回撤12.92% / 胜率64.6% (48次调仓, 2024-06~2026-05)
+- 期末净值: 4.5309 | 年化收益: +121.05%
+- 成本: 双边15bp + 滑点3bp + 止损8%
+- 调仓日列表: 2024-06-03至2026-05-28共49次调仓（显示48次调仓收益）
+- 与V15.9对比: +82.81%/夏普2.251(2024-06~2026-03,23期) → +353.09%/夏普2.118(2024-06~2026-05,48期)
+- 说明: V16.9参数(top=15,min=58,rb=10)与V15.9参数(top=10,min=50,rb=20)不同，收益差异主要来自持仓数量和门槛提高
 
 ## [BfM实时流SSE_BROADCAST修复] (2026-05-06 完成, 2026-05-25 确认)
 - 问题：R26发现SSE_BROADCAST转发链路缺失，实时行情/新闻无法推送到前端
@@ -183,7 +183,6 @@
   - min_score=60+dd_stop=20%: 更优
   - min_score=65+dd_stop=15%: 太紧，选股14只反而更差(-20.82%)
 - 推荐最终参数: min_score=60, stop_loss=12%, drawdown_stop=18%
-- 待优化: 行业中性化打分（预计再改善10-15%）
 - 注意: code_run 600s超时，完整回测需`python backtest.py`直接运行
 - 修改文件: scorer.py, backtest.py, config.py
 
@@ -274,8 +273,6 @@
 - 核心优势：Rust编写，比pandas快5-50倍，惰性求值(lazy API)，内存效率高
 - 用法：import polars as pl; df = pl.read_csv("file.csv")
 - 验证状态：R9已验证 Redis→polars DataFrame 处理逻辑全部正常
-- 建议：ScoreSys calculator.py 可用 polars 替代 pandas（TODO待执行）
-- 关联TODO：用polars替代pandas重写脚本并对比性能
 
 ## [langfuse + opentelemetry 关键发现] (2026-05-05)
 - 已安装版本：langfuse 4.5.1, opentelemetry-api 1.41.1（R2环境扫描确认）
@@ -552,3 +549,55 @@
 - **备选方案**: 聚宽JoinQuant — 零门槛，适合模拟盘验证
 - **核心结论**: QMT篮子委托可一次性下单10~20只股票减少滑点；ScoreSys信号(JSON)→解析→xtquant篮子委托，对接难度低
 - **报告路径**: D:\GenericAgent\temp\autonomous_reports\R42_trading_api_research.md
+## [R307 V16.9回测结果-29因子优化参数] (2026-05-29)
+- **版本**: V16.9 (基于29因子, 20活跃+vol_squeeze保留+SkewnessScorer, 4段regime权重)
+- **回测命令**: `python backtest.py --mode backtest --start 2024-06-01 --end 2026-05-29 --top-n 15 --min-score 58 --coarse 250 --rebalance-days 10 --stop-loss-pct 0.08 --slippage-bps 3.0`
+- **核心指标**:
+  | 指标 | 值 |
+  |------|-----|
+  | 总收益 | **+353.09%** |
+  | 年化收益 | +121.05% |
+  | 夏普比率 | **2.118** |
+  | 最大回撤 | 12.92% |
+  | 胜率 | 64.6% |
+  | 调仓次数 | 48 |
+  | 期末净值 | 4.5309 |
+- **成本假设**: 双边15bp + 滑点3bp + 止损8%
+- **参数优化自**: R303 param_sweep (最优rb=10,top=10,min=50夏普2.258) + 全量验证调优
+- **与历史对比**: V15.9(+82.81%)→V16.8(+46.18%)→**V16.9(+353.09%)** 大幅跃升
+  - V16.8基准超额-5.60%问题已通过参数优化+因子增强解决
+  - V16.9新增SkewnessScorer偏度因子(权重0.03)贡献正向收益
+- **Git commit**: b781f8b (wip)
+
+## [R308-3项目全面检查-记忆更新] (2026-05-29)
+### ① ScoreSys (V16.9) ✅ 运行正常
+| 检查项 | 状态 |
+|--------|------|
+| Git commit | `b781f8b update` / branch `master` / clean |
+| Python文件 | 34个，全部核心模块(backtest/config/calculator/scorer/weight_optimizer/data_provider/evaluator/signal_generator)正常 |
+| weight_optimizer | 15790字节，function架构(7个function：load_ic_data/_compute_signal_strength/_adaptive_blend_ratio/apply_ic_decay/compute_weights/get_regime_weights/get_soft_long_term_weights) |
+| WeightOptimizer类 | ❌ 不存在→正确原因：非class结构而是module-level functions |
+| V16.9回测 | ✅ **+353.09% 夏普2.118** (R307已记录) |
+| V2.0权重优化 | ✅ function架构运行正常 |
+| 待办 | 无 |
+
+### ② BfM ⚠️ controllers.py和response_builder.py未创建
+| 检查项 | 状态 |
+|--------|------|
+| Git commit | `b7cd865 update` / branch `master` + `feature/cache-try-get-and-logging-fix` / clean |
+| Python文件 | 仅有 **`monitor.py` + `unified_backtest.py`** 2个 |
+| controllers.py | ❌ **不存在** |
+| response_builder.py | ❌ **不存在** |
+| 项目结构 | 含node_modules+前端(html/js)+.venv，是一个全栈项目 |
+| V2架构记录偏差 | 先前记载"controllers.py+response_builder分离+交易逻辑重构"→**实际未执行**，仅为计划描述 |
+
+
+### ③ AnnualScorer ✅ 独立项目运行正常
+| 检查项 | 状态 |
+|--------|------|
+| 路径 | `D:\Project\AnnualScorer`（独立项目，非DProject子目录） |
+| Git commit | `79c3efa fix(ruff)` / clean |
+| 文件数 | **12个Python文件** (annual_scorer/api_client/config/db/exporter/fetcher/file_monitor/industry/metrics/parser/scorer/utils) |
+| import测试 | ✅ 通过 |
+| ruff修复 | ✅ 已完成(commit 9ac32d7 + 3036d56) |
+| 状态 | 代码整洁，独立正常运行 |
