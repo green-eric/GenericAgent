@@ -1,3 +1,4 @@
+R312 | 2026-05-30 | 回测分析 | Fold4异常 | Q4市场风格切换+bear regime权重错配+IC稀释三重根因
 R311 | 2026-05-30 | 代码提交 | ScoreSys未提交变更 | 8个commit清理完毕，仓库已clean
 R310 | 2026-05-30 | 规划 | V17.0新批次TODO | 7条:未提交变更+Fold4异常+低IC因子+权重不稳定+Acceleration评估+V2.0跟进+文档同步
 R304 | 2026-05-29 | 规划 | 规划模式新批次TODO | 识别daily_health_check归档+V2.0 WIP+Acceleration未激活，6条TODO待评审
