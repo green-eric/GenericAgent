@@ -1,3 +1,43 @@
+R357 | 2026-06-04 | 规划 | 第八轮TODO规划完成 | 6条新TODO(#14-#19): P0 5日持有期回测+极端权重治理, P1精简因子池IC回测+alphalens集成, P2信号质量回溯+gfn多样性量化 | 产出: R357_第八轮TODO规划.md, TODO.txt已更新
+R356 | 2026-06-04 | 收尾 | 第七轮自主行动完成 | P0#8✅P0#9✅P1#10✅P1#12✅ P2#11❌alphalens Py3.12不兼容 P2#13❌需管理员 | 产出: R355_signal_backtest_report.md, signal_backtest_v2.py, TODO.txt已更新
+R355 | 2026-06-04 | 产出 | P1#12选股信号历史回溯验证 | 17日回测1日持有期全部负收益(-10.35%), 根因:crash_slow regime占82%+信号衰减+因子分数05-19跳变, 建议延长至5日持有期
+R354 | 2026-06-04 | 产出 | long_term模式clustering因子权重对比, 29vs32因子, clustering做归一化+不稳定因子剔除, 3个被剔因子权重异常大(534/463/148)
+R353 | 2026-06-04 | 验证 | P0#9 auto_weight_adjuster.py已存在且运行正常，IC衰减检测+自动降权闭环完整
+R352 | 2026-06-03 | 规划 | 第七轮TODO产出6条(P0×2+P1×2+P2×2) | 基于历史批判性回顾+高价值线索提炼, 删除低价值#14, 入选#8/#9/#10/#12/#11/#13
+R351 | 2026-06-03 | 产出 | 微信推送V2增强 | IC衰减预警+因子贡献度+市场regime, 发现盈利/反转因子严重衰减, Top股全由动量驱动, 脚本live_signal_pusher_v2.py已就绪
+R350 | 2026-06-03 | 产出 | WQ101因子冗余分析+聚类去重 | 20只×71有效因子,141对高相关(|r|>0.7),层次聚类71→23个精简因子池,去重率68%
+R349 | 2026-06-03 | 产出 | P1#2 ScoreSys止损效果量化验证 | 50只×3月回测, 止损10%反更差(收益-15.68% vs +6.85%, 回撤23.78% vs 9.25%), 原因:止损触发空仓错失反弹+连锁降仓
+R348 | 2026-06-03 | 产出 | P0#1 alpha-gfn因子质量诊断 | 30ep训练+100采样, |IC|均值0.0097, TopIC=0.0161, 无|IC|>0.02因子, 核心瓶颈:训练不充分(30ep不够), 建议增至100-500ep+多样性奖励+增大hidden_dim
+R347 | 2026-06-03 | 规划 | 第六轮TODO产出与评审 | 7条TODO(#1alpha-gfn诊断P0/#2止损验证P1/#3AlphaPurify实测P2/#4WQ101冗余P1/#5推送优化P2/#6报告瘦身P2/#7模拟盘闭环P1), subagent不可用降级自评审, 调整3条优先级
+R346 | 2026-06-03 | P2 | alpha-gfn训练脚本修复 | step()无限循环bug修复+训练循环重写, 2ep+5采样25s通过, TopIC=0.0137
+R345 | 2026-06-03 | 产出 | 止损逻辑代码审查, stop_loss_pct=10%默认值, max(ret,-sl)截断正确, 回测数据量大无法完成, 建议小规模回测
+R344 | 2026-06-03 | 产出 | regime_ic.json用60d滚动IC校准, 44因子更新, 11异常值裁剪, 校准后11regime全部0衰减
+R343 | 2026-06-03 | 规划 | 第五轮TODO产出与评审 | 7条TODO(#1config权重修复P0/#2auto_weight切生产P0/#3IC校准P1/#4止损验证P1/#5QMT对接P1/#6alpha-gfn P2/#7报告清理P2), subagent评审卡死主agent接管
+R342 | 2026-06-02 | TODO #3 IC衰减诊断: 28/32因子预警(24严重+4警告), 动量类因子衰减最大(1204%), IC符号反转, 建议重新校准regime_ic.json
+R341 | 2026-06-02 | TODO #2 BfM集成验证: 延迟8.6ms/丢包率0%, 全部验收通过 ✅
+R340 | 2026-06-02 | 产出 | ScoreSys paper_trading.py跑通验证 | 4组参数全部成功, top1_r2夏普2.79/回撤-56.9%, top5_r2夏普2.40/回撤-28.1%
+R339 | 2026-06-02 | 规划 | TODO第四轮规划+subagent评审 | 5条TODO,#3降P2,#5升P1,#2/#4补验收标准
+R338 | 2026-06-02 | 评审 | TODO第四轮评审+调整 | #4删除替换,#5升P1,#3降P2
+R337 | 2026-06-02 | 产出 | 因子挖掘WQ101 v3 | 82/82因子OK, pipeline截面rank后处理, adapter新增get_cross_section_names(), 耗时19.2s
+R336 | 2026-06-02 | 诊断 | IC衰减诊断→自动修复方案 | momentum在crash_sharp下IC衰减50%确认，现有手动权重配置已部分修复，缺少自动降权闭环，建议新建auto_weight_adjuster.py
+R335 | 2026-06-02 | 回测 | ScoreSys V18.4回测验证+调仓频率优化 | r=5/top5(+1203%/夏普2.68/回撤26.37%), r=10/top5(+445%/夏普2.15/回撤8.64%), r=2/top1(+6412%/夏普4.34/回撤28.15%), V18.4显著优于V16.8
+R334 | 2026-06-01 | 产出 | CDP Bridge Chrome148 WS403修复 | WS Origin头被Chrome148拒绝，suppress_origin=True+session自动恢复，8/8测试通过
+R333 | 2026-06-01 | 产出 | factor_mining_pipeline.py实现 | 33候选因子→IC检验→权重分配闭环，可扩展至191+ WorldQuant因子
+R332 | 2026-06-01 | 产出 | ic_decay_watchdog.py实现+IC衰减快照 | dry-run/once均通过，发现momentum因子crash_sharp衰减50%
+R331 | 2026-06-01 | 巡检 | 环境健康+IC衰减快照 | 全绿通过，IC发现1个核心因子衰减告警(crash_sharp/momentum 50%)
+R330 | 2026-06-01 | 产出 | Bot NSSM服务安装准备 | NSSM下载+3个服务脚本就绪，需管理员权限执行安装
+R328 | 2026-06-01 | 产出 | 实盘信号WeChat推送 | wechat_push_wxbot.py实现+验证成功，15只信号推送到微信
+R327 | 2026-06-01 | 诊断 | wechatapp.py login_qr 缺少 proxies 参数导致 bot 无法自动重登
+R326 | 2026-05-31 | 规划 | 新批次TODO产出与subagent评审 | 6条候选→最终5条: P0信号回溯(含止损验证)+P0因子贡献度+P1 WeChat推送+P1数据新鲜度告警+P2 IC看板
+
+R325 | 2026-05-31 | 自身演进 | GA能力树盘点 | 21SOP+9工具/量化95%记忆90%浏览器40%/综合78分/P0修浏览器+P1因子移植
+R324 | 2026-05-31 | 冲浪 | 小众量化工具挖掘 | 找到AlphaPurify(Polars极速回测)+alpha-gfn(AI生成因子)+TradingView-Screener+alphalens
+R323 | 2026-05-31 | 环境 | PC文件/书签偏好探测 | ScoreSys(86py)+BfM(835py)主力项目/Python3.12+Node26/akshare/Notepad++/微信用户
+R322 | 2026-05-31 | 记忆 | 过时记录审查 | 删除11个过时条目(131行), L2从678→547行, V18+/nuwa/dasheng等关键条目保留
+R321 | 2026-05-30 | IC多窗口+WalkForward | ic_multi 4窗口IC偏负(-0.019~-0.061)/walk_forward 5折平均夏普3.202/权重相关系数0.216/Fold4夏普0.537
+R320 | 2026-05-30 | P1 #5 | V17.3滚动窗口IC实现 | rolling_ic.py新增+weight_optimizer集成+缓存bug修复+4regime验证通过+文档记忆全闭环
+R319 | 2026-05-30 | P0#2验证 | bear权重架构缺陷 | backtest.py不传regime+bear权重从未生效+REGIME_TO_SHORT_TERM缺bear键
+R318 | 2026-05-30 | P1 | IC衰减监控 | 11regime×29因子, crash_sharp/momentum衰减50%警告, commit 1d97f73
 R317 | 2026-05-30 | 文档同步 | README/CHANGELOG | WalkForward修复+回测引擎增强+18因子+性能数据更新
 R316 | 2026-05-30 | V2.0跟进 | weight_optimizer | soft混合诊断完成+滚动窗口IC待实现+因子聚类待验证
 R315 | 2026-05-30 | 因子验证 | AccelerationScorer | 文件不存在需先实现+现有动量因子已覆盖
@@ -86,3 +126,6 @@ R26 | 2026-05-06 | 环境 | BullishForMonitoring实时流稳定性探测 | SSE�
 R270 | 2026-05-25 | 规划 | 新批次TODO产出与subagent评审 | 产出6条TODO，subagent评审确认BfM SSE已修复(删除1条)，新增2条，最终7条待执行
 R309 | 2026-05-29 | 规划 | 规划模式新批次TODO | 识别daily_health_check归档+V2.0 WIP+Acceleration未激活，6条TODO待评审
 R305 | 2026-05-30 | 规划 | V17.0新批次TODO | 7条:未提交变更+Fold4异常+低IC因子+权重不稳定+Acceleration评估+V2.0跟进+文档同步
+产出 | P0信号回溯+因子分解 | signal_backtrace.py + factor_decomposition.py 已验证
+
+R329 | 2026-06-01 | 产出 | Bot NSSM服务安装准备 | NSSM下载+脚本就绪，需管理员权限执行安装

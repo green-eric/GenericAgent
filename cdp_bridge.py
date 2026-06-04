@@ -23,7 +23,7 @@ def cdp_http(path):
 
 def cdp_ws_call(ws_url, method, params=None, timeout=30):
     """通过 CDP WebSocket 发送命令并等待结果"""
-    ws = websocket.create_connection(ws_url, timeout=timeout)
+    ws = websocket.create_connection(ws_url, timeout=timeout, suppress_origin=True)
     try:
         cmd = {"id": 1, "method": method}
         if params: cmd["params"] = params
@@ -138,7 +138,7 @@ class CDPDriver:
         return result
     
     def execute_js(self, expression, timeout=30):
-        """在当前默认 session 上执行 JS"""
+        """在当前默认 session 上执行 JS，自动处理 session 失效"""
         if not self._sessions:
             return {"data": None, "error": "没有可用的标签页"}
         sid = self.default_session_id
@@ -146,7 +146,13 @@ class CDPDriver:
             self._refresh_sessions()
         if sid not in self._sessions:
             return {"data": None, "error": f"session {sid} 不存在"}
-        return self._sessions[sid].execute_js(expression, timeout=timeout)
+        result = self._sessions[sid].execute_js(expression, timeout=timeout)
+        # 自动处理 "No such target" — 刷新 sessions 后重试一次
+        if result.get("error") and "No such target" in str(result["error"]):
+            self._refresh_sessions()
+            if self.default_session_id and self.default_session_id in self._sessions:
+                result = self._sessions[self.default_session_id].execute_js(expression, timeout=timeout)
+        return result
     
     def get_session_dict(self):
         """返回当前 session 的 dict（兼容 TMWebDriver）"""
@@ -157,14 +163,23 @@ class CDPDriver:
         return {}
     
     def navigate(self, url, timeout=30):
-        """在当前默认 session 上导航"""
+        """在当前默认 session 上导航，自动等待页面加载并处理 session 变更"""
         if not self._sessions:
             return None
         sid = self.default_session_id
         if sid in self._sessions:
             result = self._sessions[sid].navigate(url, timeout=timeout)
-            time.sleep(1)
-            self._refresh_sessions()
+            # 等待页面加载并监测 session 变更 (最多5秒)
+            import time as _time
+            for _ in range(10):
+                _time.sleep(0.5)
+                self._refresh_sessions()
+                # 检查旧 session 是否还在（URL 可能已更新）
+                if sid in self._sessions and self._sessions[sid].url != "chrome://newtab/":
+                    break
+                # 检查是否有新 session（旧 session 可能已被替换）
+                if sid not in self._sessions and self.default_session_id and self.default_session_id in self._sessions:
+                    break
             return result
         return None
 
