@@ -8,6 +8,11 @@ _LOG_GLOB = os.path.join(_LOG_DIR, 'model_responses_*.txt')
 _BLOCK_RE = re.compile(r'^=== (Prompt|Response) ===.*?\n(.*?)(?=^=== (?:Prompt|Response) ===|\Z)',
                        re.DOTALL | re.MULTILINE)
 _SUMMARY_RE = re.compile(r'<summary>\s*(.*?)\s*</summary>', re.DOTALL)
+_ROUND_HEADER_RE = re.compile(rb'^=== (Prompt|Response) ===', re.MULTILINE)
+_ROUNDS_CACHE_PATH = os.path.join(os.path.expanduser('~'), '.genericagent', 'continue_rounds_cache.json')
+_ROUNDS_CACHE_VERSION = 1
+_rounds_cache = None
+_rounds_cache_dirty = False
 
 def _rel_time(mtime):
     d = int(time.time() - mtime)
@@ -38,6 +43,20 @@ def _first_user(pairs):
         for line in p.splitlines():
             s = line.strip()
             if s and not s.startswith('###'): return s
+    return ''
+
+
+def _last_user(text):
+    """Last real user prompt. Scans `=== Prompt ===` blocks directly (no
+    Prompt/Response pairing, so response-less/aborted sessions still preview),
+    newest-first, returning the first one `_user_text` accepts (it drops
+    tool_result continuations + all _INJECT_MARKERS). Better preview anchor than
+    the first prompt — reflects what the session was most recently about."""
+    for label, body in reversed(_BLOCK_RE.findall(text or '')):
+        if label == 'Prompt':
+            t = _user_text(body)
+            if t:
+                return t
     return ''
 
 
@@ -98,21 +117,205 @@ def _parse_native_history(pairs):
         history.append({'role': 'assistant', 'content': blocks})
     return history
 
+_PREVIEW_WIN = 32 * 1024
+
+# Content-grep budget for `/continue` search box: read at most this many bytes
+# per session (head window) so 17MB files don't stall the UI. Empirically the
+# user-typed prompt + first model reply + early summaries live in the first MB,
+# which is what users actually want to recall sessions by.
+_GREP_WIN = 1 * 1024 * 1024
+
+
+def file_contains_all(path, terms, max_bytes=_GREP_WIN):
+    """True iff every lowercase term in `terms` appears in the first
+    `max_bytes` of `path` (case-insensitive). Empty `terms` returns True so
+    callers can short-circuit. Reads as bytes + .lower() to avoid utf-8 cost
+    and stays within a fixed memory envelope regardless of file size.
+    """
+    if not terms:
+        return True
+    try:
+        with open(path, 'rb') as fh:
+            buf = fh.read(max_bytes)
+    except OSError:
+        return False
+    if not buf:
+        return False
+    hay = buf.lower()
+    for t in terms:
+        if t and t.encode('utf-8', errors='ignore') not in hay:
+            return False
+    return True
+
+
+def search_sessions(query, sessions, max_bytes=_GREP_WIN):
+    """Filter `sessions` ([(path, mtime, preview, n), ...]) by content grep.
+
+    `query` is whitespace-split into AND terms (case-insensitive). Each
+    session is kept iff its path/preview already match OR the first
+    `max_bytes` of its file contain every term. Order is preserved.
+    Empty/whitespace query returns the list as-is.
+    """
+    q = (query or '').strip().lower()
+    if not q:
+        return list(sessions or [])
+    terms = [t for t in q.split() if t]
+    if not terms:
+        return list(sessions or [])
+    out = []
+    for item in sessions or []:
+        path = item[0] if len(item) > 0 else ''
+        preview = item[2] if len(item) > 2 else ''
+        meta = (os.path.basename(path) + '\n' + (preview or '')).lower()
+        if all(t in meta for t in terms):
+            out.append(item)
+            continue
+        if file_contains_all(path, terms, max_bytes=max_bytes):
+            out.append(item)
+    return out
+
+
+def _preview_from_file(path):
+    """Cheap preview: last <summary> in tail window, else first user line in head window."""
+    try:
+        sz = os.path.getsize(path)
+        with open(path, 'rb') as fh:
+            if sz <= _PREVIEW_WIN * 2:
+                head = tail = fh.read()
+            else:
+                head = fh.read(_PREVIEW_WIN)
+                fh.seek(-_PREVIEW_WIN, 2); tail = fh.read()
+    except OSError: return ''
+    tail_s = tail.decode('utf-8', errors='replace')
+    # Use only the latest <summary>, and reject it if dirty. Models sometimes emit
+    # an unclosed <summary>, so the non-greedy DOTALL match pairs it with a far-away
+    # </summary> and swallows === block headers / JSON across rounds. Treat such a
+    # match as invalid and fall through to the last user prompt (don't dig older ones).
+    cands = _SUMMARY_RE.findall(tail_s)
+    if cands:
+        s = ' '.join(cands[-1].split())
+        if s and '=== ' not in s and '"role"' not in s and len(s) <= 200:
+            return s
+    # Summary invalid/absent -> last real user prompt (JSON-aware, skips anchors;
+    # scans Prompt blocks directly so response-less sessions still preview).
+    lu = _last_user(tail_s) or _last_user(head.decode('utf-8', errors='replace'))
+    if lu:
+        return ' '.join(lu.split())[:120]
+    return ''
+
+
+def _rounds_cache_key(path):
+    return os.path.normcase(os.path.abspath(path))
+
+
+def _load_rounds_cache():
+    """Load lazy mtime/size keyed round-count cache for /continue.
+
+    Cache is intentionally triggered only by list_sessions(): no TUI startup cost,
+    no logging-path coupling.  Missing/stale entries are recomputed on demand.
+    """
+    global _rounds_cache
+    if _rounds_cache is not None:
+        return _rounds_cache
+    _rounds_cache = {}
+    try:
+        with open(_ROUNDS_CACHE_PATH, encoding='utf-8') as fh:
+            data = json.load(fh)
+        if isinstance(data, dict) and data.get('version') == _ROUNDS_CACHE_VERSION:
+            items = data.get('items')
+            if isinstance(items, dict):
+                _rounds_cache = items
+    except Exception:
+        _rounds_cache = {}
+    return _rounds_cache
+
+
+def _save_rounds_cache(valid_keys=None):
+    global _rounds_cache_dirty
+    if not _rounds_cache_dirty or _rounds_cache is None:
+        return
+    try:
+        if valid_keys is not None:
+            keep = set(valid_keys)
+            for k in list(_rounds_cache.keys()):
+                if k not in keep:
+                    _rounds_cache.pop(k, None)
+        os.makedirs(os.path.dirname(_ROUNDS_CACHE_PATH), exist_ok=True)
+        tmp = _ROUNDS_CACHE_PATH + '.tmp'
+        data = {'version': _ROUNDS_CACHE_VERSION, 'items': _rounds_cache}
+        with open(tmp, 'w', encoding='utf-8') as fh:
+            json.dump(data, fh, ensure_ascii=False, separators=(',', ':'))
+        os.replace(tmp, _ROUNDS_CACHE_PATH)
+        _rounds_cache_dirty = False
+    except Exception:
+        # Cache is a performance hint only; never break /continue on cache I/O.
+        pass
+
+
+def _count_complete_rounds_from_file(path):
+    """Count completed Prompt→Response pairs using only block headers.
+
+    Counting Prompt headers alone overcounts an in-flight/incomplete last round.
+    Header-pair counting matched `_pairs()` on sampled real logs while avoiding
+    expensive UTF-8 decode / body regex parsing.
+    """
+    try:
+        with open(path, 'rb') as fh:
+            data = fh.read()
+    except OSError:
+        return 0
+    pending = False
+    rounds = 0
+    for m in _ROUND_HEADER_RE.finditer(data):
+        if m.group(1) == b'Prompt':
+            pending = True
+        elif pending:
+            rounds += 1
+            pending = False
+    return rounds
+
+
+def _rounds_for_file(path, st):
+    global _rounds_cache_dirty
+    cache = _load_rounds_cache()
+    key = _rounds_cache_key(path)
+    size = int(getattr(st, 'st_size', 0))
+    mtime_ns = int(getattr(st, 'st_mtime_ns', int(getattr(st, 'st_mtime', 0) * 1_000_000_000)))
+    ent = cache.get(key)
+    if isinstance(ent, dict) and ent.get('size') == size and ent.get('mtime_ns') == mtime_ns:
+        try:
+            return int(ent.get('rounds', 0)), key
+        except Exception:
+            pass
+    n = _count_complete_rounds_from_file(path)
+    cache[key] = {'size': size, 'mtime_ns': mtime_ns, 'rounds': int(n)}
+    _rounds_cache_dirty = True
+    return n, key
+
+
 def list_sessions(exclude_pid=None):
-    """Newest-first list of (path, mtime, first_user_text, n_rounds)."""
+    """Newest-first list of (path, mtime, preview_text, n_rounds). Preview uses head/tail window only."""
     files = glob.glob(_LOG_GLOB)
     if exclude_pid is not None:
         tag = f'model_responses_{exclude_pid}.txt'
         files = [f for f in files if not f.endswith(tag)]
     out = []
+    valid_keys = []
     for f in files:
         try:
-            with open(f, encoding='utf-8', errors='replace') as fh:
-                content = fh.read()
-        except Exception: continue
-        pairs = _pairs(content)
-        if not pairs: continue
-        out.append((f, os.path.getmtime(f), _preview_text(pairs), len(pairs)))
+            st = os.stat(f)
+            mtime, sz = st.st_mtime, st.st_size
+        except OSError:
+            continue
+        if sz < 32:
+            continue
+        preview = _preview_from_file(f)
+        if not preview:
+            continue
+        rounds, key = _rounds_for_file(f, st)
+        valid_keys.append(key)
+        out.append((f, mtime, preview, rounds))
+    _save_rounds_cache(valid_keys)
     out.sort(key=lambda x: x[1], reverse=True)
     return out
 _MD_ESCAPE_RE = re.compile(r'([\\`*_\[\]])')
@@ -233,20 +436,36 @@ def handle(agent, query, display_queue):
     return query
 
 
+_INJECT_MARKERS = ('### [WORKING MEMORY]', '[SYSTEM TIPS]', '[SYSTEM]', '[System]',
+                   '[DANGER]', '### [总结提炼经验]')
+
+
 def _user_text(prompt_body):
-    """User-typed text from a prompt JSON; '' if this is an agent auto-continuation."""
+    """User-typed text from a prompt JSON; '' if this is an agent auto-continuation.
+
+    A Prompt is auto-continue when *either* (a) it carries any tool_result block
+    (so it's the next round of an in-flight LLM call), or (b) its text blocks all
+    match known injection prefixes ([WORKING MEMORY], [SYSTEM TIPS], [System]
+    regenerate prompts, [DANGER] guards, etc.). Real first-prompts only contain
+    one plain text block with no injection markers.
+    """
     try: msg = json.loads(prompt_body)
     except Exception: return ''
     if not isinstance(msg, dict): return ''
-    for blk in msg.get('content', []) or []:
+    blocks = msg.get('content', []) or []
+    if any(isinstance(b, dict) and b.get('type') == 'tool_result' for b in blocks):
+        return ''
+    for blk in blocks:
         if isinstance(blk, dict) and blk.get('type') == 'text':
             t = (blk.get('text') or '').strip()
-            if t and not t.startswith('### [WORKING MEMORY]'): return t
+            if t and not any(mk in t for mk in _INJECT_MARKERS): return t
     return ''
 
 
 def _assistant_text(response_body):
-    """Joined text from a response blocks repr; '' on parse failure."""
+    """Joined plain text from a response blocks repr; '' on parse failure.
+    Used by /export to grab the model's prose only, without tool noise.
+    """
     try: blocks = ast.literal_eval(response_body)
     except Exception: return ''
     if not isinstance(blocks, list): return ''
@@ -255,33 +474,105 @@ def _assistant_text(response_body):
                      and isinstance(b.get('text'), str) and b['text'].strip())
 
 
-_TURN_MARK = '**LLM Running (Turn {}) ...**\n\n'
+def _format_tool_use(block):
+    """Match agent_loop.py:72 verbose tool-call header."""
+    name = block.get('name', '?')
+    args = block.get('input', {})
+    try: pretty = json.dumps(args, indent=2, ensure_ascii=False).replace('\\n', '\n')
+    except Exception: pretty = str(args)
+    return f"🛠️ Tool: `{name}`  📥 args:\n````text\n{pretty}\n````\n"
+
+
+def _format_tool_result(content):
+    """Match agent_loop.py:79-81 five-backtick fence around tool output."""
+    if isinstance(content, list):
+        parts = []
+        for b in content:
+            if isinstance(b, dict) and b.get('type') == 'text':
+                parts.append(b.get('text', '') or '')
+            elif isinstance(b, str):
+                parts.append(b)
+        body = '\n'.join(parts)
+    else:
+        body = '' if content is None else str(content)
+    return f"`````\n{body}\n`````\n"
+
+
+def _tool_results_from_prompt(prompt_body):
+    """Return {tool_use_id: formatted_fence} from a Prompt JSON's content blocks."""
+    try: msg = json.loads(prompt_body)
+    except Exception: return {}
+    if not isinstance(msg, dict): return {}
+    out = {}
+    for blk in msg.get('content', []) or []:
+        if isinstance(blk, dict) and blk.get('type') == 'tool_result':
+            tid = blk.get('tool_use_id') or ''
+            if tid: out[tid] = _format_tool_result(blk.get('content'))
+    return out
+
+
+def _format_response_segment(response_body, tool_results):
+    """Rebuild one LLM call's transcript slice: text blocks + tool_use headers +
+    matching tool_result fences. Mirrors agent_loop verbose output so fold_turns
+    sees the same string shape as live mode.
+    """
+    try: blocks = ast.literal_eval(response_body)
+    except Exception: return ''
+    if not isinstance(blocks, list): return ''
+    texts, tool_parts = [], []
+    for b in blocks:
+        if not isinstance(b, dict): continue
+        t = b.get('type')
+        if t == 'text':
+            s = b.get('text', '')
+            if isinstance(s, str) and s.strip(): texts.append(s)
+        elif t == 'tool_use':
+            tool_parts.append(_format_tool_use(b))
+            tid = b.get('id') or ''
+            if tid and tid in tool_results: tool_parts.append(tool_results[tid])
+    return '\n\n'.join(p for p in ['\n\n'.join(texts), '\n'.join(tool_parts)] if p)
 
 
 def extract_ui_messages(path):
     """Parse a model_responses log into [{role, content}, ...] for UI replay.
 
-    Auto-continuation turns are folded into one assistant bubble with Turn markers,
-    matching live chat rendering via fold_turns().
+    Each user-initiated round becomes one user bubble plus one assistant bubble.
+    Auto-continuation LLM calls are concatenated into the same assistant bubble,
+    separated by ``**LLM Running (Turn N) ...**`` markers. Tool calls and their
+    results are rendered into the assistant content using the same string format
+    that agent_loop yields live, so fold_turns can fold them identically.
     """
     try:
         with open(path, encoding='utf-8', errors='replace') as f: content = f.read()
     except Exception: return []
+    pairs = _pairs(content)
+    if not pairs: return []
+    # tool_results live in the *next* Prompt's content; index look-ahead.
+    next_tr = [{} for _ in pairs]
+    for i in range(len(pairs) - 1):
+        next_tr[i] = _tool_results_from_prompt(pairs[i + 1][0])
 
-    rounds = []  # [(user_text, [turn_text, ...]), ...]
-    for prompt, response in _pairs(content):
+    out, assistant, round_turn = [], None, 0
+    for i, (prompt, response) in enumerate(pairs):
         user = _user_text(prompt)
-        if user or not rounds: rounds.append((user, []))
-        rounds[-1][1].append(_assistant_text(response))
-
-    out = []
-    for user, turns in rounds:
-        if not user or not any(turns): continue
-        body = '\n\n'.join(t if i == 0 else _TURN_MARK.format(i + 1) + t
-                           for i, t in enumerate(turns))
-        out += [{'role': 'user', 'content': user},
-                {'role': 'assistant', 'content': body}]
-    return out
+        seg = _format_response_segment(response, next_tr[i])
+        if user:
+            if assistant is not None: out.append(assistant)
+            out.append({'role': 'user', 'content': user})
+            # Turn 1 marker too — agent_loop yields one per LLM call, including the
+            # first, so fold_turns treats every non-last call uniformly as a fold.
+            assistant = {'role': 'assistant',
+                         'content': f"\n\n**LLM Running (Turn 1) ...**\n\n{seg}"}
+            round_turn = 1
+        else:
+            if assistant is None:
+                assistant = {'role': 'assistant', 'content': ''}
+                round_turn = 1
+            round_turn += 1
+            marker = f"\n\n**LLM Running (Turn {round_turn}) ...**\n\n"
+            assistant['content'] = (assistant['content'] or '') + marker + seg
+    if assistant is not None: out.append(assistant)
+    return [m for m in out if (m.get('content') or '').strip()]
 
 
 def handle_frontend_command(agent, query, exclude_pid=None):
