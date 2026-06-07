@@ -1,0 +1,397 @@
+{
+  "analysis_date": "2026-06-07T18:51:01.080477",
+  "data_range": "2024-01-02 ~ 2026-05-15",
+  "n_stocks_days": 2266148,
+  "n_trading_days": 525,
+  "ic_matrix": {
+    "price_vs_ma5": {
+      "5": {
+        "ic_mean": -0.0367,
+        "ic_std": 0.1572,
+        "ic_ir": -0.2336,
+        "sig_rate": 0.8346,
+        "n_days": 520,
+        "n_stocks_avg": 4316.0
+      },
+      "10": {
+        "ic_mean": -0.036,
+        "ic_std": 0.1575,
+        "ic_ir": -0.2288,
+        "sig_rate": 0.835,
+        "n_days": 515,
+        "n_stocks_avg": 4317.0
+      },
+      "20": {
+        "ic_mean": -0.0368,
+        "ic_std": 0.1562,
+        "ic_ir": -0.2355,
+        "sig_rate": 0.8376,
+        "n_days": 505,
+        "n_stocks_avg": 4318.0
+      },
+      "60": {
+        "ic_mean": -0.0396,
+        "ic_std": 0.1509,
+        "ic_ir": -0.2626,
+        "sig_rate": 0.8344,
+        "n_days": 465,
+        "n_stocks_avg": 4321.0
+      }
+    },
+    "price_vs_ma10": {
+      "5": {
+        "ic_mean": -0.0483,
+        "ic_std": 0.1631,
+        "ic_ir": -0.2963,
+        "sig_rate": 0.8404,
+        "n_days": 520,
+        "n_stocks_avg": 4316.0
+      },
+      "10": {
+        "ic_mean": -0.0473,
+        "ic_std": 0.163,
+        "ic_ir": -0.2904,
+        "sig_rate": 0.8388,
+        "n_days": 515,
+        "n_stocks_avg": 4316.0
+      },
+      "20": {
+        "ic_mean": -0.0479,
+        "ic_std": 0.1628,
+        "ic_ir": -0.2945,
+        "sig_rate": 0.8416,
+        "n_days": 505,
+        "n_stocks_avg": 4317.0
+      },
+      "60": {
+        "ic_mean": -0.0498,
+        "ic_std": 0.156,
+        "ic_ir": -0.3192,
+        "sig_rate": 0.8366,
+        "n_days": 465,
+        "n_stocks_avg": 4321.0
+      }
+    },
+    "price_vs_ma20": {
+      "5": {
+        "ic_mean": -0.0545,
+        "ic_std": 0.1623,
+        "ic_ir": -0.3358,
+        "sig_rate": 0.8288,
+        "n_days": 520,
+        "n_stocks_avg": 4314.0
+      },
+      "10": {
+        "ic_mean": -0.0542,
+        "ic_std": 0.1624,
+        "ic_ir": -0.334,
+        "sig_rate": 0.8272,
+        "n_days": 515,
+        "n_stocks_avg": 4315.0
+      },
+      "20": {
+        "ic_mean": -0.0552,
+        "ic_std": 0.1628,
+        "ic_ir": -0.3388,
+        "sig_rate": 0.8297,
+        "n_days": 505,
+        "n_stocks_avg": 4316.0
+      },
+      "60": {
+        "ic_mean": -0.0556,
+        "ic_std": 0.1566,
+        "ic_ir": -0.3553,
+        "sig_rate": 0.8237,
+        "n_days": 465,
+        "n_stocks_avg": 4319.0
+      }
+    },
+    "ma5_vs_ma20": {
+      "5": {
+        "ic_mean": -0.0453,
+        "ic_std": 0.1525,
+        "ic_ir": -0.2971,
+        "sig_rate": 0.8365,
+        "n_days": 520,
+        "n_stocks_avg": 4314.0
+      },
+      "10": {
+        "ic_mean": -0.0454,
+        "ic_std": 0.1525,
+        "ic_ir": -0.2978,
+        "sig_rate": 0.835,
+        "n_days": 515,
+        "n_stocks_avg": 4315.0
+      },
+      "20": {
+        "ic_mean": -0.0464,
+        "ic_std": 0.1524,
+        "ic_ir": -0.3046,
+        "sig_rate": 0.8356,
+        "n_days": 505,
+        "n_stocks_avg": 4316.0
+      },
+      "60": {
+        "ic_mean": -0.0461,
+        "ic_std": 0.1486,
+        "ic_ir": -0.3099,
+        "sig_rate": 0.8387,
+        "n_days": 465,
+        "n_stocks_avg": 4319.0
+      }
+    },
+    "short_mom": {
+      "5": {
+        "ic_mean": -0.0444,
+        "ic_std": 0.1611,
+        "ic_ir": -0.2757,
+        "sig_rate": 0.8635,
+        "n_days": 520,
+        "n_stocks_avg": 4316.0
+      },
+      "10": {
+        "ic_mean": -0.0434,
+        "ic_std": 0.1612,
+        "ic_ir": -0.2689,
+        "sig_rate": 0.8621,
+        "n_days": 515,
+        "n_stocks_avg": 4317.0
+      },
+      "20": {
+        "ic_mean": -0.0436,
+        "ic_std": 0.1609,
+        "ic_ir": -0.2708,
+        "sig_rate": 0.8653,
+        "n_days": 505,
+        "n_stocks_avg": 4318.0
+      },
+      "60": {
+        "ic_mean": -0.0461,
+        "ic_std": 0.1554,
+        "ic_ir": -0.2967,
+        "sig_rate": 0.8602,
+        "n_days": 465,
+        "n_stocks_avg": 4321.0
+      }
+    },
+    "mid_mom": {
+      "5": {
+        "ic_mean": -0.0539,
+        "ic_std": 0.1572,
+        "ic_ir": -0.3431,
+        "sig_rate": 0.8481,
+        "n_days": 520,
+        "n_stocks_avg": 4314.0
+      },
+      "10": {
+        "ic_mean": -0.0536,
+        "ic_std": 0.1563,
+        "ic_ir": -0.343,
+        "sig_rate": 0.8466,
+        "n_days": 515,
+        "n_stocks_avg": 4315.0
+      },
+      "20": {
+        "ic_mean": -0.0555,
+        "ic_std": 0.1555,
+        "ic_ir": -0.3569,
+        "sig_rate": 0.8475,
+        "n_days": 505,
+        "n_stocks_avg": 4315.0
+      },
+      "60": {
+        "ic_mean": -0.0551,
+        "ic_std": 0.1494,
+        "ic_ir": -0.3689,
+        "sig_rate": 0.8473,
+        "n_days": 465,
+        "n_stocks_avg": 4319.0
+      }
+    },
+    "ind_mom": {
+      "5": {
+        "ic_mean": -0.0204,
+        "ic_std": 0.1511,
+        "ic_ir": -0.1349,
+        "sig_rate": 0.8212,
+        "n_days": 520,
+        "n_stocks_avg": 4317.0
+      },
+      "10": {
+        "ic_mean": -0.0202,
+        "ic_std": 0.1506,
+        "ic_ir": -0.1342,
+        "sig_rate": 0.8194,
+        "n_days": 515,
+        "n_stocks_avg": 4317.0
+      },
+      "20": {
+        "ic_mean": -0.0205,
+        "ic_std": 0.1501,
+        "ic_ir": -0.1369,
+        "sig_rate": 0.8178,
+        "n_days": 505,
+        "n_stocks_avg": 4318.0
+      },
+      "60": {
+        "ic_mean": -0.0213,
+        "ic_std": 0.1475,
+        "ic_ir": -0.1446,
+        "sig_rate": 0.8194,
+        "n_days": 465,
+        "n_stocks_avg": 4322.0
+      }
+    },
+    "industry_mom_1m": {
+      "5": {
+        "ic_mean": -0.0204,
+        "ic_std": 0.1511,
+        "ic_ir": -0.1349,
+        "sig_rate": 0.8212,
+        "n_days": 520,
+        "n_stocks_avg": 4317.0
+      },
+      "10": {
+        "ic_mean": -0.0202,
+        "ic_std": 0.1506,
+        "ic_ir": -0.1342,
+        "sig_rate": 0.8194,
+        "n_days": 515,
+        "n_stocks_avg": 4317.0
+      },
+      "20": {
+        "ic_mean": -0.0205,
+        "ic_std": 0.1501,
+        "ic_ir": -0.1369,
+        "sig_rate": 0.8178,
+        "n_days": 505,
+        "n_stocks_avg": 4318.0
+      },
+      "60": {
+        "ic_mean": -0.0213,
+        "ic_std": 0.1475,
+        "ic_ir": -0.1446,
+        "sig_rate": 0.8194,
+        "n_days": 465,
+        "n_stocks_avg": 4322.0
+      }
+    },
+    "industry_mom_3m": {
+      "5": {
+        "ic_mean": -0.0165,
+        "ic_std": 0.1533,
+        "ic_ir": -0.1074,
+        "sig_rate": 0.8423,
+        "n_days": 520,
+        "n_stocks_avg": 4317.0
+      },
+      "10": {
+        "ic_mean": -0.0156,
+        "ic_std": 0.1534,
+        "ic_ir": -0.1017,
+        "sig_rate": 0.8427,
+        "n_days": 515,
+        "n_stocks_avg": 4317.0
+      },
+      "20": {
+        "ic_mean": -0.0147,
+        "ic_std": 0.1546,
+        "ic_ir": -0.095,
+        "sig_rate": 0.8396,
+        "n_days": 505,
+        "n_stocks_avg": 4318.0
+      },
+      "60": {
+        "ic_mean": -0.013,
+        "ic_std": 0.1569,
+        "ic_ir": -0.0827,
+        "sig_rate": 0.8473,
+        "n_days": 465,
+        "n_stocks_avg": 4322.0
+      }
+    }
+  },
+  "best_windows": {
+    "price_vs_ma5": {
+      "window_days": 60,
+      "ic_mean": -0.0396,
+      "ic_std": 0.1509,
+      "ic_ir": -0.2626,
+      "sig_rate": 0.8344,
+      "n_days": 465,
+      "n_stocks_avg": 4321.0
+    },
+    "price_vs_ma10": {
+      "window_days": 60,
+      "ic_mean": -0.0498,
+      "ic_std": 0.156,
+      "ic_ir": -0.3192,
+      "sig_rate": 0.8366,
+      "n_days": 465,
+      "n_stocks_avg": 4321.0
+    },
+    "price_vs_ma20": {
+      "window_days": 60,
+      "ic_mean": -0.0556,
+      "ic_std": 0.1566,
+      "ic_ir": -0.3553,
+      "sig_rate": 0.8237,
+      "n_days": 465,
+      "n_stocks_avg": 4319.0
+    },
+    "ma5_vs_ma20": {
+      "window_days": 20,
+      "ic_mean": -0.0464,
+      "ic_std": 0.1524,
+      "ic_ir": -0.3046,
+      "sig_rate": 0.8356,
+      "n_days": 505,
+      "n_stocks_avg": 4316.0
+    },
+    "short_mom": {
+      "window_days": 60,
+      "ic_mean": -0.0461,
+      "ic_std": 0.1554,
+      "ic_ir": -0.2967,
+      "sig_rate": 0.8602,
+      "n_days": 465,
+      "n_stocks_avg": 4321.0
+    },
+    "mid_mom": {
+      "window_days": 20,
+      "ic_mean": -0.0555,
+      "ic_std": 0.1555,
+      "ic_ir": -0.3569,
+      "sig_rate": 0.8475,
+      "n_days": 505,
+      "n_stocks_avg": 4315.0
+    },
+    "ind_mom": {
+      "window_days": 60,
+      "ic_mean": -0.0213,
+      "ic_std": 0.1475,
+      "ic_ir": -0.1446,
+      "sig_rate": 0.8194,
+      "n_days": 465,
+      "n_stocks_avg": 4322.0
+    },
+    "industry_mom_1m": {
+      "window_days": 60,
+      "ic_mean": -0.0213,
+      "ic_std": 0.1475,
+      "ic_ir": -0.1446,
+      "sig_rate": 0.8194,
+      "n_days": 465,
+      "n_stocks_avg": 4322.0
+    },
+    "industry_mom_3m": {
+      "window_days": 5,
+      "ic_mean": -0.0165,
+      "ic_std": 0.1533,
+      "ic_ir": -0.1074,
+      "sig_rate": 0.8423,
+      "n_days": 520,
+      "n_stocks_avg": 4317.0
+    }
+  }
+}

@@ -1,0 +1,8 @@
+R397 | 2026-06-07 | 产出 | 执行落地五步法工具化 | executor.py(plan_check/retrospective/weekly_report) + Batch5回溯验证 | 发现100%TODO缺验证前提+MVP
+R390 | architecture | 日频+事件+年度三层量化体系 | Q-Quant架构草案+4套融合方案+分阶段路线图
+R389 | IC验证 | 9个alpha因子在HS300上IC≈0 | 大盘股因子效果微弱,需扩至全市场
+R388 | BfM分析 | 统一回测框架+8维评分 | 可作为ScoreSys回测重构基座
+R387 | AnnualScorer探测 | 年度财报4维评分系统 | 与ScoreSys日频互补,填补年度维度空白
+
+R376 | 2026-06-07 | 产出 | TODO Batch 3 规划 | 6条TODO→subagent评审3次失败→主agent接管→5条通过(合并D5入D1)→D1/D2/D3/D4/D6进入执行队列
+R380 | 2026-06-07 | 产出 | TODO Batch 4 规划 | 元系统升级方向:6条→评审后3条通过(M3/M1/M4)+1条降级(M2)+1条否决(M5)+1条合并(M6)→与去重后的Batch1-3共7条待执行
