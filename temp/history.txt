@@ -1,3 +1,11 @@
+R415 | 2026-06-10 | 产出 | N4重复检测器完成 | duplicate_detector.py+44份报告扫描(4对重复) | 4/5新TODO完成
+R414 | 2026-06-10 | 产出 | 失败模式修复完成 | mini_dev_checklist.py+sop_template.py修复 | 3/5新TODO完成
+R413 | 2026-06-10 | 产出 | N3费曼V2补全+TODO③坑点扩展 | dasheng_identity_rules_v2+verify_sop_v2+manifest20篇 | 2/5新TODO完成
+R412 | 2026-06-10 | 产出 | SOP坑点统计扩展完成 | sop_pitfalls_enriched.json(51条排序+trigger_count) | TODO③已合并入M4
+R411 | 2026-06-10 | 产出 | helper函数补全完成 | helper.py新增list_tasks()/report_stats()/get_next_todo() | TODO②标记完成
+R410 | 2026-06-10 | 产出 | 费曼V2·autonomous_operation_sop完成 | feynman_autonomous_operation_sop_v2.md(V1升级:反例+误解+直觉) | TODO①标记完成
+R409 | 2026-06-10 | 产出 | 规划模式: C1标记完成+5条新TODO产出 | TODO.txt更新 | 失败模式:工具开发粒度过大/subagent评审3次失败/重复探索/报告花哨内容薄
+R407 | 2026-06-10 | 产出 | 自主行动规划:可用TODO耗尽审计+5条新TODO提案 | R407报告+TODO.txt更新 | N1因子精简+regime识别(价值9)/N2评分灰度化(价值8)/N3费曼V2补全(价值7)/N4重复检测器(价值6)/N5五步法集成(价值5)
 R397 | 2026-06-07 | 产出 | 执行落地五步法工具化 | executor.py(plan_check/retrospective/weekly_report) + Batch5回溯验证 | 发现100%TODO缺验证前提+MVP
 R390 | architecture | 日频+事件+年度三层量化体系 | Q-Quant架构草案+4套融合方案+分阶段路线图
 R389 | IC验证 | 9个alpha因子在HS300上IC≈0 | 大盘股因子效果微弱,需扩至全市场

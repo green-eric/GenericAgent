@@ -62,12 +62,37 @@
 - 注意: enhance(放大+高对比度) 对清晰文字有害，默认关闭
 - 注意: RDP 断开后 ImageGrab 全黑，用 ocr_window(hwnd) 代替 ocr_screen
 
+## [自主行动 R403~R406 产出] (2026-06-08)
+- **R403 三角决策实战**: Taleb+Munger+Dasheng三角框架分析ScoreSys 4344只股票评分质量 | 极端评级59.6%+veto2.7%+低置信39.4% | A+D级未来收益显著差异 | 泡沫信号18.6% | 报告: R403_triangle_decision_audit.md
+- **R404 费曼文章区分度攻坚**: 挑区分度最低2篇(output_format+plan_sop)补写反例+常见误解 | 区分度7→9(+2) | 关键:反例比边界讨论更有记忆点("不该做什么"比"什么时候不该用"记忆更强)
+- **R405 Batch 7规划**: 38份产出盘点 | 19完成/4待执行(2冻结区阻塞) | 下轮优先:知识库更新+费曼V3改写+因子验证
+- **R406 知识库自动更新机制**: knowledge_updater.py(MD5变更检测+过期检查) | 17篇费曼文章扫描 | 0篇过期,V2覆盖率70% | 首次建立manifest.json清单管理 | 3篇缺V2:autonomous_operation_sop/dasheng_identity_rules/verify_sop
+- **知识库现状**: 17篇费曼文章(10篇V1+7篇V2), 阈值30天过期, MD5精确检测变更
+
 ## [autonomous_operation_helper 坑点] (2026-06-02)
 - `set_todo()` 返回的是TODO内容字符串，不是文件路径 → 需用 file_read/file_patch 直接操作 TODO.txt
 - `complete_task(title, history_line, report_path)` 正常可用，会写history+移报告
 - TODO.txt 路径: `D:\GenericAgent\temp\TODO.txt`
+- ⚠️ complete_task 用 shutil.move 移报告，若目标已存在会覆盖 → 先检查是否已存在
+- ⚠️ `temp/` 下文件被 .gitignore 忽略 → git add 需加 `-f` 参数强制stage
 
-## [D:\Project项目自我优化策略] (2026-05-19 验证完成)
+## [stock_data.db 量化数据] (2026-06-07 验证完成)
+- **路径**: `D:\GenericAgent\temp\data\stock_data.db` (1718MB)
+- **表结构**:
+  - `quotes` — 321万行, 2023-02~2026-05, 列: symbol/trade_date/open/high/low/close/volume/amount
+  - `quotes_ic` — 245万行, 2024-03~2026-04, 列: symbol/trade_date/close_price/industry_mom_1m/3m/ma_5/10/20/ret_5d/10d/20d/60d/volume_ratio
+  - `scores` — 4344行, 列: symbol/trade_date/score/letter/rank_score/score_basis
+  - `financials` — 财务数据, 22列
+  - `stocks` — 股票列表
+  - `_score_cache` — 评分缓存
+- **用法**: 只读查询 `sqlite3.connect(f"file:{path}?mode=ro", uri=True)`
+- **注意**: `D:\GenericAgent\stock_data.db` 和 `D:\GenericAgent\temp\stock_data.db` 是空文件(0MB)，数据只在 `temp\data\` 下
+
+## [D:\Project项目冻结声明] (2026-06-06 更新)
+> ⛔ **冻结**：以下项目(AnnualScorer/BfM/ScoreSys)已停止调整/优化/测试，禁止改动。历史优化策略保留备查。
+> ✅ **可外部实验**：冻结区外可自由编写原型脚本（如factor_window_optimizer.py），用stock_data.db只读查询验证想法，验证通过后再提解冻集成。
+
+## [D:\Project项目自我优化策略] (2026-05-19 验证完成) [已冻结/历史参考]
 - **AnnualScorer**: 行业映射缓存+API批处理+结果持久化 | 风险:大文件内存压力
 - **BfM**: 事件队列优化+监控频率调整+日志轮转 | 风险:Node.js内存泄漏
 - **ScoreSys**: 增量数据加载+并行计算优化+缓存机制 | 风险:38个Python复杂依赖
@@ -406,6 +431,7 @@
 - **BfM集成**: ScoreSys信号→BfM SSE_BROADCAST (待验证, TODO #2)
 - **日检脚本**: `temp/daily_health_check.py` — DB连接→行情时效→评分时效→评分分布
 - **微信推送**: `temp/wechat_push_wxbot.py --top 15` — 读取最新评分→WxBotClient.send_text()
+- **IC周报推送**: `temp/ic_weekly_push.py` — 每周日9:00推送IC衰减周报(send_push用requests.post直调,绕过wechatapp UTF-16崩溃坑),定时任务\ScoreSys_ICWeeklyPush
 - **IC衰减报告**: R336_ic_decay_diagnosis.md, R337_deep_issue_investigation.md
 
 
@@ -546,3 +572,96 @@
 - **修复1**: `cdp_bridge.py` 中 `cdp_ws_call()` → `websocket.create_connection(ws_url, suppress_origin=True)` — 去掉 Origin 头后 Chrome 148 正常握手
 - **修复2**: `CDPDriver.execute_js()` 遇 "No such target" 时自动刷新 sessions 重试；`navigate()` 轮询等待 session 变更完成
 - **验证**: 8/8 全量测试通过，`simphml.get_html()` + `CDPDriver.execute_js()` 端到端正常
+
+## 因子挖掘进度 (R361更新)
+- V4训练完成: IC=0.0152 (target=0.02未达标), 3000ep训练后仍不够
+- V5训练失败: too few stocks (数据加载问题)
+- 因子IC分析(7大类×7期):
+  ⭐ valuation: IC=+0.050, IR=+0.80 (最稳定核心因子)
+  ⭐ industry_momentum: IC=+0.088 (最高但衰减中)
+  ⚠️ momentum: IC从+0.105衰减至-0.000 (衰减严重)
+  🔄 growth: IC从-0.002转+0.190 (反转最强信号)
+  ✅ turnover: IC=+0.026, IR=+0.43 (稳定辅助因子)
+- alphalens 0.4.6已装Py3.13, stacked数据格式不匹配(alpha-gfn只有OHLCV)
+- factor_deep_analysis.py + result.json 已产出
+
+## [R360因子深度诊断] (2026-06-06 R362)
+- 22个因子分层回报Layer1-5均在-1%~+0.66%，单因子5日收益弱
+- 分层逻辑无bug：IC正→高分位高回报，IC负→高分位低回报
+- reversal因子异常：IC=-0.0458但分层单调递增，需检查定义
+
+## [WQ101因子冗余分析] (2026-06-06 R363)
+- 82因子分4组(动量/成交量/波动率/反转)，成交量组冗余最严重(9对|r|>0.8)
+- 推荐4个代表因子: alpha053/027/065/060，可缩减至~10个
+- alpha009↔alpha012 r=+0.9986, alpha033↔alpha037 r=+0.9963
+
+## [记忆系统健康审计] (2026-06-06 R366)
+- 核心memory: 41文件196KB (22个SOP + 19个非SOP)
+- 🔴 删除4个: goal_mode_sop(乱码), incubator_sop(实验性过时), morphling_sop(实验性过时), ic_backtest_from_raw_sop(R360已替代)
+- ⚠️ 合并: wxbot_push_sop + wechat_bot_perf_sop → wechat_push_sop
+- ⚠️ 整理: .py文件移入utils/子目录, SOP/py重复保留SOP
+- 整理后: 41→35个文件
+
+## [数据质量校验] (2026-06-06 R365)
+- factor_comb_backtest: 仅2年(2018-19)，4%天数top=bottom(分层bug)，spread均值0.04%/日≈0
+- wq101: 仅20行×82因子，缺失110个值，统计不可靠
+- ic_real_2025: 仅4天数据，IC_IR无统计意义
+- 核心问题: 数据量和质量都不够，因子挖掘结论可信度低
+
+## [因子组合优化器诊断] (2026-06-06 R364)
+- ⭐ IC随窗口增长(5d→20d +933%)非衰减！评估窗口应改为20d
+- ⭐ 单因子top/bottom组合501日spread仅0.04%/日≈0区分度
+- alpha_023: IC5d仅+0.006但IC20d=+0.095(最强)，典型长周期因子
+- 建议：用IC20d加权多因子打分，选top20%/bottom20%做组合回测
+
+## [ScoreSys 实盘信号质量验证] (2026-06-05 R373)
+- 4天信号回测(06-02~06-05), 143条有效信号, T+1平均-0.19%/胜率46.2%
+- 整体负收益! buy信号唯一正收益+0.81%, watch信号最差-0.59%/41.7%
+- A级信号(n=14)反跑输A+(n=129): A级-1.33% vs A+-0.06%
+- 全部4天均为crash_slow regime, 无法跨regime对比
+- 高评分≠高收益: 晋控煤业76.39分但T+1=-9.27%
+- 建议: 积累30天+数据, 分regime回测, crash_slow下降低动量权重
+- 报告: D:\GenericAgent\temp\autonomous_reports\R373_实盘信号质量闭环验证报告.md
+
+## [ScoreSys Regime分布统计] (2026-06-05 R374)
+- 3个regime: crash_slow(72.4%), trending(16.5%), crash_sharp(11.0%)
+- ⚠️ crash_slow连续10天(05-27~06-05), 可能regime检测过于迟钝
+- 切换频率16%正常, 信号与DB regime 100%一致
+- 建议: 连续2天确认才切换regime, crash_slow持续10+天降低仓位至30%
+- 报告: D:\GenericAgent\temp\autonomous_reports\R374_实盘regime分布统计与失效检测报告.md
+
+## [ScoreSys IC衰减预警可视化] (2026-06-05 R375)
+- HTML周报生成脚本: D:\GenericAgent\temp\ic_weekly_report.py
+- 8周数据(78660 scores), 9因子×5持有期IC计算完成
+- T+1 IC排名: 估值(-0.0436)最强, 换手率(0.0335), 反转(0.0264), 成长性(0.0199), 现金流(0.0153)
+- ⚠️ 盈利性(-0.0003)和杠杆率(-0.0091)IC≈0, 接近失效
+- 报告: D:\GenericAgent\temp\autonomous_reports\R375_IC衰减预警周报_2026-06-05.html
+- 后续: 可配合APScheduler每周日自动生成+微信推送
+
+## [自主行动第十一批·续 TODO规划] (2026-06-05 R376)
+- 第十一批全部完成: #26-#31 (R370-R375)
+- 新一批TODO #32-#38 已产出并评审
+- P0: #32盈利性/杠杆失效诊断+#33 crash_slow信号增强+#34 IC衰减自适应权重
+- P1: #35 IC周报微信推送+#36 信号质量月报自动化
+- P2: #37 ScoreSys代码健康度扫描+#38 因子挖掘pipeline扩展
+- 评审报告: D:\GenericAgent\temp\autonomous_reports\R376_TODO评审报告_第十一批续.md
+- 下次自主行动从 #32 开始执行
+
+## [自主行动第十二批 P0+因子诊断] (2026-06-05 R380)
+- #32盈利性/杠杆失效诊断: R377, 杠杆率趋势性衰减(10d IC从+0.087→-0.071),盈利性不稳定
+- #33 crash_slow信号增强: R378, 4种方案(收紧阈值60→75/连续2天确认/动态仓位/量价确认)
+- #34 IC衰减自适应权重: R379, 3种方案(A:IC加权 B:IC-衰减联合 C:动态持有期)
+- #35 IC周报推送脚本: ic_weekly_push.py已写好,消息格式验证通过,待优化数据加载速度
+- 下次从 #36 月报自动化开始
+
+## [自主行动第十三次 ScoreSys P0-P2全扫] (2026-06-05 R381-R383)
+### 已完成 (7条)
+- #32 盈利性/杠杆失效诊断: R377, 杠杆率趋势性衰减
+- #33 crash_slow信号增强: R378, 4种方案
+- #34 IC衰减自适应权重: R379, 3种方案
+- #35 IC周报推送脚本: ic_weekly_push.py,消息格式验证通过
+- #36 信号质量月报: signal_quality_report.py,3天143条buy+1.01%胜率57.9%
+- #37 代码健康度扫描: R382,61处except+pass吞错误/backtest.py __init__1960行
+- #38 因子挖掘pipeline扩展: R383,行业资金流向/北向资金3个新因子来源
+### 待办
+- [x] #35 已闭环 (R384): send_push修复+定时任务\ScoreSys_ICWeeklyPush(周日9:00)已创建

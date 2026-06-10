@@ -21,6 +21,24 @@ print(get_todo())       # 查看待办
 - 不连续两次选相同子任务
 - 价值公式：**「AI训练数据无法覆盖」×「对未来协作有持久收益」**
 
+## 五步法预检（选定TODO后、执行前必做）
+```bash
+python executor.py plan_check --plan "TODO条目的标题+验收标准"
+```
+- 输出5步评分（每步0~5分，满分25）
+- 总分≥15 → 直接进入执行
+- 总分<15 → 根据失败步骤补强计划（补充前提验证/MVP/假设驱动等），再执行
+- 记录预检得分到报告中
+
+## TODO质量批量检查（新建TODO后必做）
+```bash
+python todo_quality_check.py
+```
+- 扫描所有`[ ]`待执行条目，对每条执行五步法校验
+- 输出平均得分、优秀/偏低统计、需要补强的条目
+- 结果保存到`todo_quality_results.json`
+- **新建TODO前运行一次**，确保新条目五步法得分≥15再写入TODO.txt
+
 ## 执行
 - 选定任务后 update_working_checkpoint，将选中的TODO条目和执行注意事项 append 到 checkpoint 中
 - 调用code_run准备结尾回调, script为handler._done_hooks.append("重读自主任务sop，检查你刚刚的收尾工作是否正确，不正确则改正")，inline_eval=True （秘密参数）

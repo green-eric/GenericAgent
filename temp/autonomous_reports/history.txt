@@ -1,131 +1,42 @@
-R357 | 2026-06-04 | 规划 | 第八轮TODO规划完成 | 6条新TODO(#14-#19): P0 5日持有期回测+极端权重治理, P1精简因子池IC回测+alphalens集成, P2信号质量回溯+gfn多样性量化 | 产出: R357_第八轮TODO规划.md, TODO.txt已更新
-R356 | 2026-06-04 | 收尾 | 第七轮自主行动完成 | P0#8✅P0#9✅P1#10✅P1#12✅ P2#11❌alphalens Py3.12不兼容 P2#13❌需管理员 | 产出: R355_signal_backtest_report.md, signal_backtest_v2.py, TODO.txt已更新
-R355 | 2026-06-04 | 产出 | P1#12选股信号历史回溯验证 | 17日回测1日持有期全部负收益(-10.35%), 根因:crash_slow regime占82%+信号衰减+因子分数05-19跳变, 建议延长至5日持有期
-R354 | 2026-06-04 | 产出 | long_term模式clustering因子权重对比, 29vs32因子, clustering做归一化+不稳定因子剔除, 3个被剔因子权重异常大(534/463/148)
-R353 | 2026-06-04 | 验证 | P0#9 auto_weight_adjuster.py已存在且运行正常，IC衰减检测+自动降权闭环完整
-R352 | 2026-06-03 | 规划 | 第七轮TODO产出6条(P0×2+P1×2+P2×2) | 基于历史批判性回顾+高价值线索提炼, 删除低价值#14, 入选#8/#9/#10/#12/#11/#13
-R351 | 2026-06-03 | 产出 | 微信推送V2增强 | IC衰减预警+因子贡献度+市场regime, 发现盈利/反转因子严重衰减, Top股全由动量驱动, 脚本live_signal_pusher_v2.py已就绪
-R350 | 2026-06-03 | 产出 | WQ101因子冗余分析+聚类去重 | 20只×71有效因子,141对高相关(|r|>0.7),层次聚类71→23个精简因子池,去重率68%
-R349 | 2026-06-03 | 产出 | P1#2 ScoreSys止损效果量化验证 | 50只×3月回测, 止损10%反更差(收益-15.68% vs +6.85%, 回撤23.78% vs 9.25%), 原因:止损触发空仓错失反弹+连锁降仓
-R348 | 2026-06-03 | 产出 | P0#1 alpha-gfn因子质量诊断 | 30ep训练+100采样, |IC|均值0.0097, TopIC=0.0161, 无|IC|>0.02因子, 核心瓶颈:训练不充分(30ep不够), 建议增至100-500ep+多样性奖励+增大hidden_dim
-R347 | 2026-06-03 | 规划 | 第六轮TODO产出与评审 | 7条TODO(#1alpha-gfn诊断P0/#2止损验证P1/#3AlphaPurify实测P2/#4WQ101冗余P1/#5推送优化P2/#6报告瘦身P2/#7模拟盘闭环P1), subagent不可用降级自评审, 调整3条优先级
-R346 | 2026-06-03 | P2 | alpha-gfn训练脚本修复 | step()无限循环bug修复+训练循环重写, 2ep+5采样25s通过, TopIC=0.0137
-R345 | 2026-06-03 | 产出 | 止损逻辑代码审查, stop_loss_pct=10%默认值, max(ret,-sl)截断正确, 回测数据量大无法完成, 建议小规模回测
-R344 | 2026-06-03 | 产出 | regime_ic.json用60d滚动IC校准, 44因子更新, 11异常值裁剪, 校准后11regime全部0衰减
-R343 | 2026-06-03 | 规划 | 第五轮TODO产出与评审 | 7条TODO(#1config权重修复P0/#2auto_weight切生产P0/#3IC校准P1/#4止损验证P1/#5QMT对接P1/#6alpha-gfn P2/#7报告清理P2), subagent评审卡死主agent接管
-R342 | 2026-06-02 | TODO #3 IC衰减诊断: 28/32因子预警(24严重+4警告), 动量类因子衰减最大(1204%), IC符号反转, 建议重新校准regime_ic.json
-R341 | 2026-06-02 | TODO #2 BfM集成验证: 延迟8.6ms/丢包率0%, 全部验收通过 ✅
-R340 | 2026-06-02 | 产出 | ScoreSys paper_trading.py跑通验证 | 4组参数全部成功, top1_r2夏普2.79/回撤-56.9%, top5_r2夏普2.40/回撤-28.1%
-R339 | 2026-06-02 | 规划 | TODO第四轮规划+subagent评审 | 5条TODO,#3降P2,#5升P1,#2/#4补验收标准
-R338 | 2026-06-02 | 评审 | TODO第四轮评审+调整 | #4删除替换,#5升P1,#3降P2
-R337 | 2026-06-02 | 产出 | 因子挖掘WQ101 v3 | 82/82因子OK, pipeline截面rank后处理, adapter新增get_cross_section_names(), 耗时19.2s
-R336 | 2026-06-02 | 诊断 | IC衰减诊断→自动修复方案 | momentum在crash_sharp下IC衰减50%确认，现有手动权重配置已部分修复，缺少自动降权闭环，建议新建auto_weight_adjuster.py
-R335 | 2026-06-02 | 回测 | ScoreSys V18.4回测验证+调仓频率优化 | r=5/top5(+1203%/夏普2.68/回撤26.37%), r=10/top5(+445%/夏普2.15/回撤8.64%), r=2/top1(+6412%/夏普4.34/回撤28.15%), V18.4显著优于V16.8
-R334 | 2026-06-01 | 产出 | CDP Bridge Chrome148 WS403修复 | WS Origin头被Chrome148拒绝，suppress_origin=True+session自动恢复，8/8测试通过
-R333 | 2026-06-01 | 产出 | factor_mining_pipeline.py实现 | 33候选因子→IC检验→权重分配闭环，可扩展至191+ WorldQuant因子
-R332 | 2026-06-01 | 产出 | ic_decay_watchdog.py实现+IC衰减快照 | dry-run/once均通过，发现momentum因子crash_sharp衰减50%
-R331 | 2026-06-01 | 巡检 | 环境健康+IC衰减快照 | 全绿通过，IC发现1个核心因子衰减告警(crash_sharp/momentum 50%)
-R330 | 2026-06-01 | 产出 | Bot NSSM服务安装准备 | NSSM下载+3个服务脚本就绪，需管理员权限执行安装
-R328 | 2026-06-01 | 产出 | 实盘信号WeChat推送 | wechat_push_wxbot.py实现+验证成功，15只信号推送到微信
-R327 | 2026-06-01 | 诊断 | wechatapp.py login_qr 缺少 proxies 参数导致 bot 无法自动重登
-R326 | 2026-05-31 | 规划 | 新批次TODO产出与subagent评审 | 6条候选→最终5条: P0信号回溯(含止损验证)+P0因子贡献度+P1 WeChat推送+P1数据新鲜度告警+P2 IC看板
+R408 | 2026-06-10 | 产出 | 三角决策实战完成 | Taleb+Munger+Dasheng三模型联用分析N5选题决策 | 三模型一致推荐N5优先
+R407 | 2026-06-10 | 产出 | memory审计完成 | 178文件/22MB/106个>10KB | 主要占用:L4_raw_sessions(18MB)+rag_index(2.8MB)
+R406 | 2026-06-10 | 产出 | N5完成 | todo_quality_check.py+SOP集成 | 5/5新TODO全部完成
+R405 | 2026-06-08 | 产出 | knowledge_updater.py+manifest.json+update_plan.json | 17篇费曼文章扫描 | 0篇过期,3篇缺V2 | MD5变更检测+过期检查
+R404 | 2026-06-08 | 产出 | 挑区分度最低2篇补反例+常见误解 | feynman_rescore.py | output_format+3,plan_sop+2 | 区分度7→9 | 关键:反例比边界讨论更有记忆点
+R403 | 2026-06-08 | 产出 | Taleb+Munger+Dasheng三角框架分析ScoreSys | triangle_decision_audit.py | 4344只股票 | 极端评级59.6%+veto2.7%+低置信39.4% | A+D级未来收益显著差异,泡沫信号18.6% | 3条改进建议:灰度评分/泡沫标记/行业排名
+R402 | 2026-06-08 | 产出 | 因子IC衰减因果推断 | ic_decay_causal.py+分年度IC+regime分析 | 242万行×9因子 | IC极低(|IC|<0.015)+2024→2026反转+熊市IC更强 | 3条策略建议:移除均线/动态regime/因子精简
+R401 | 2026-06-08 | 产出 | 情绪决策盲区量化自检 | emotion_audit.py+热力图 | 7种情绪×34份报告 | 自信118次(25.7%)最强,正向53.4% | 规划焦虑偏高,沮丧惯性需防
+R399 | 2026-06-07 | 产出 | 费曼文章区分度改写 | 7篇V2(avg区分7→10)+评分器R400修复(12关键词)+全量评分表 | 平均分34.3→36.1/40(+1.8)
+R398 | 2026-06-07 | 产出 | 因子窗口选择原型R398 | factor_window_optimizer.py + IC矩阵9因子×4窗口 | 所有IC为负(反转特性)+最优窗口差异明显(5d/20d/60d)+统一vs最优提升1~17%
+R397 | 2026-06-07 | 产出 | 执行落地五步法工具化 | executor.py(plan_check/retrospective/weekly_report) + Batch5回溯验证 | 发现100%TODO缺验证前提+MVP
+R396 | 2026-06-07 | 产出 | triangle_decision_project_unfreeze.md | 三模型联用决策: 冻结维持+区外验证, 触发条件=Sharpe>1.5+Batch6完成+≥2周
 
-R325 | 2026-05-31 | 自身演进 | GA能力树盘点 | 21SOP+9工具/量化95%记忆90%浏览器40%/综合78分/P0修浏览器+P1因子移植
-R324 | 2026-05-31 | 冲浪 | 小众量化工具挖掘 | 找到AlphaPurify(Polars极速回测)+alpha-gfn(AI生成因子)+TradingView-Screener+alphalens
-R323 | 2026-05-31 | 环境 | PC文件/书签偏好探测 | ScoreSys(86py)+BfM(835py)主力项目/Python3.12+Node26/akshare/Notepad++/微信用户
-R322 | 2026-05-31 | 记忆 | 过时记录审查 | 删除11个过时条目(131行), L2从678→547行, V18+/nuwa/dasheng等关键条目保留
-R321 | 2026-05-30 | IC多窗口+WalkForward | ic_multi 4窗口IC偏负(-0.019~-0.061)/walk_forward 5折平均夏普3.202/权重相关系数0.216/Fold4夏普0.537
-R320 | 2026-05-30 | P1 #5 | V17.3滚动窗口IC实现 | rolling_ic.py新增+weight_optimizer集成+缓存bug修复+4regime验证通过+文档记忆全闭环
-R319 | 2026-05-30 | P0#2验证 | bear权重架构缺陷 | backtest.py不传regime+bear权重从未生效+REGIME_TO_SHORT_TERM缺bear键
-R318 | 2026-05-30 | P1 | IC衰减监控 | 11regime×29因子, crash_sharp/momentum衰减50%警告, commit 1d97f73
-R317 | 2026-05-30 | 文档同步 | README/CHANGELOG | WalkForward修复+回测引擎增强+18因子+性能数据更新
-R316 | 2026-05-30 | V2.0跟进 | weight_optimizer | soft混合诊断完成+滚动窗口IC待实现+因子聚类待验证
-R315 | 2026-05-30 | 因子验证 | AccelerationScorer | 文件不存在需先实现+现有动量因子已覆盖
-R314 | 2026-05-30 | 权重优化 | 不稳定 | 相关系数0.504→目标>0.7+4方案(正则化/因子聚类/IC平滑/窗口一致)
-R313 | 2026-05-30 | 因子分析 | 低IC因子 | 6因子降权方案+profitability bear归零+释放权重分配给top5
-R312 | 2026-05-30 | 回测分析 | Fold4异常 | Q4市场风格切换+bear regime权重错配+IC稀释三重根因
-R311 | 2026-05-30 | 代码提交 | ScoreSys未提交变更 | 8个commit清理完毕，仓库已clean
-R310 | 2026-05-30 | 规划 | V17.0新批次TODO | 7条:未提交变更+Fold4异常+低IC因子+权重不稳定+Acceleration评估+V2.0跟进+文档同步
-R304 | 2026-05-29 | 规划 | 规划模式新批次TODO | 识别daily_health_check归档+V2.0 WIP+Acceleration未激活，6条TODO待评审
-R303 | 2026-05-29 | 调研 | 实盘交易接口调研 | QMT篮子委托最适合ScoreSys，聚宽备选，优矿天软不推荐
-R302 | 2026-05-29 | 维护 | 沪深300基准对比修复 | benchmark默认code改为sh000300，超额从-12.18%改善到-5.60%，基准数据已正确
-R301 | 2026-05-29 | 回测 | V16.8回测引擎验证 | drawdown+benchmark模式通过,完整区间+45.66%/夏普1.332/回撤9.59%,超额-13.14%,V16.8显著弱于V15.9需排查参数差异
-R300 | 2026-05-29 | 维护 | ScoreSys changelog整理 | CHANGELOG.md创建完成,commit278bcd7,V15.2→V16.8版本时间线
-R299 | 2026-05-28 | 诊断 | AccelerationScorer IC分析 | IC=-0.028(负+弱)全因子唯一负值,保持禁用不启用权重
-R298 | 2026-05-28 | 回测 | V16.8回测引擎验证 | backtest+drawdown模式通过,benchmark基准数据akshare兼容性问题待修,commit09ec5a0
-R297 | 2026-05-28 | 规划 | TODO产出 | 4条新TODO+subagent评审完成
-R296 | 2026-05-28 | 方案 | ScoreSys回测引擎增强 | 4模块:分层回测+换手率+最大回撤+基准对比,待用户审批后实施
-R295 | 2026-05-28 | 调研 | 动量加速度+偏度因子 | AccelerationScorer已实现但未启用权重,SkewnessScorer需全新开发,互补性分析完成
-R294 | 2026-05-28 | 探测 | 数据源健康度 | 腾讯/新浪/Tushare直连OK,AkShare双失败,DB1.5GB健康
-R293 | 2026-05-28 | 规划 | 新批次TODO | 7条→4条(删1合1降1改1)，subagent评审通过
-R287 | 2026-05-28 | 维护 | 环境健康检查 | 日检通过+信号69h未更新(代理离线)+ScoreSys变更已提交R292
-R286 | 2026-05-28 | 诊断 | BfM SSE稳定性 | clash-verge主进程从5-27起持续缺失,port7897连续3天不可用,问题从间歇崩溃恶化为持续离线;BfM代码已有重连能力,根因在代理层非BfM层
-R285 | 2026-05-26 | 分析 | BfM SSE服务端架构完善，TODO#4根因是clash-verge代理崩溃
-R284 | 2026-05-26 | 分析 | BfM SSE稳定性 | clash-verge崩溃需用户处理，BfM端自动重连待批准
-R283 | 2026-05-26 | 产出 | TODO清理 | #2#3标记完成，#4留给用户
-R282 | 2026-05-26 | 配置 | 信号自动推送 | daily_health_check.py配Windows计划任务每日18:00运行+--push推送，手动触发测试通过
-R281 | 2026-05-26 | 调研 | GitHub量化因子库 | 6个因子库(WorldQuant101/Alpha191/Qlib/AKShare/FactorHub/Tushare)，ScoreSys 9因子覆盖度87.8%，推荐移植P0波动率+流动性因子
-R280 | 2026-05-26 | 分析 | 因子IC衰减半衰期 | 9因子跨regime IC统计+稳定性排名+权重调整建议，profitability在choppy regime IC=-0.3674需降至0
-R279 | 2026-05-26 | 部署 | 日检脚本 | daily_health_check.py验证通过+部署到ScoreSys/+git commit 23797d1
-R278 | 2026-05-26 | 分析 | PCA因子合成 | PC1=质量+价值(53%), PC2=动量vs估值(20%), 合成因子IC绝对值低75%但稳定性提升4倍
-R277 | 2026-05-25 | 工程 | fusion_picker_v2代码审查 | 可运行, 综合7/10, P0:默认DB路径错误+stocks表不存在, P1:硬编码阈值+regime=crash_sharp需确认
-R276 | 2026-05-25 | 分析 | ScoreSys因子IC衰减分析 | 9因子1-5d IC衰减:反转/盈利性/估值IC增强(+200%~318%),换手率衰减58%,动量/成长性IC为负需检查方向,10d+数据不足
-R275 | 2026-05-25 | 产出 | V15.2实盘模拟信号生成 | 流水线验证通过,404信号(23重点),V15.2权重稳定运行
-R274 | 2026-05-25 | 产出 | proxy_health代理稳定性9天综合分析 | clash-verge自5-23起每日崩溃，port7897可用率38%，Google完全不可达
-R273 | 2026-05-25 | 产出 | ScoreSys min_score参数扫描 | 20-60结果一致+13.75%/0.811，70骤降至+3.45%，根因：评分最高69.6存在天花板效应
-R272 | 2026-05-25 | 代码 | ScoreSys V15.2权重IC验证 | 8/8 regime全部改善，平均IC +0.0103→+0.1156 (+0.1052)，负IC因子反转策略有效
-R271 | 2026-05-25 | 规划 | 新批次TODO产出与subagent评审 | 产出6条TODO，subagent确认BfM SSE已修复(删除1条)，新增2条，最终7条待执行
-R263 | 2026-05-25 | 环境 | scikit-learn/statsmodels在ScoreSys中的应用探测 | scipy.spearmanr与手写_spearman完全一致(差异0)，可替换；OLS/Ridge/Lasso/PCA/Kendall tau均可用
-R262 | 2026-05-25 | 代码 | 微信Bot空except修复 | 修复5个空except为except Exception+注释，git commit 6cca6c1
-R48 | 2026-05-24 | 规划 | R48+新批次TODO产出 | 7条新TODO已写入TODO.txt，subagent评审完成
-R47 | 2026-05-18 | 产出 | file_monitor.py集成到项目工作流 | 完成基础统计分析并生成报告
-R46 | 2026-05-18 | 产出 | ScoreSys回测结果深度分析 | 完成基础统计分析并生成报告
-R45 | 2026-05-18 | Token使用量统计分析 | 完成基础统计分析并生成报告
-R42 | 2026-05-06 | 记忆 | L3 SOP时效性审查 | 31个文件全部通过，无过时引用，报告R44已写入
-R41 | 2026-05-06 | 产出 | BfM EventBus压力测试 | 6种配置全部0%丢失，发布率28k-83k/s远超目标1000/s，报告R41已写入
-R40 | 2026-05-06 | 记忆 | L3 SOP文件时效性审查 | 审查15个SOP+18个关键路径，31个文件全部通过，无过时引用，报告R40已写入
-R39 | 2026-05-06 | 环境 | D:/Tools Firefox隐私工具探测 | Firefox 150.0.1已安装，firefox-privacy工具齐全(user.js 77行/setup.bat/EXTENSIONS.md)，cleanup含PATH清理脚本，报告R39已写入
-R38 | 2026-05-06 | 产出 | GA Token使用量统计分析 | 3天3441次API调用，费用¥12.87(2.5折)，报告R38已写入
-R37 | 2026-05-06 | 规划 | 任务规划 | 产出6条新TODO+历史批判分析，识别5个失败模式
-R36 | 2026-05-06 | 产出 | 任务规划 | 历史分析后产出5条高价值TODO(数据补录/IC修复/BfM合并/polars重写/记忆审查)，删除2条低价值
-R35 | 2026-05-06 | 产出 | BfM SSE端到端验证 | 行情数据411条/30秒正常推送，pipeline_summary正常，全链路验证通过
-R34 | 2026-05-06 | 产出 | AnnualScorer覆盖缺口补全 | 36个测试，utils.py 44%→95%，总覆盖90%→93%，282全过
-R33 | 2026-05-06 | 产出 | BfM SSE_BROADCAST集成测试 | 9个测试覆盖全链路(market_data/news/pipeline→Consumer→SSE_BROADCAST)，全部通过
-R32 | 2026-05-06 | 规划 | 新批次TODO | 批判分析history，产出6条新TODO(BfM集成测试/AnnualScorer/目录探测/SSE验证/记忆审查)
-R31 | 2026-05-06 | 产出 | subagent调度SOP | 新增场景3(调度模式)：决策框架+input构造+结果解析+错误处理
-R30 | 2026-05-06 | 记忆 | ScoreSys记忆时效性审查 | 2项过时记录已修正，R18/R19/R20诊断建议全部已实施
-R29 | 2026-05-06 | 环境 | 项目TODO/CHANGELOG完整性检查 | 3个真实项目均有git+README，缺CHANGELOG和TODO，2个IDE目录可忽略
-R28 | 2026-05-06 | 产出 | ScoreSys pytest测试用例 | 新增28个测试(行业中性化/金融豁免/边界值)，修复4个已有测试，66全部通过
-R27 | 2026-05-06 | 记忆 | 整理BfM实时流SOP | 同步EventBus修复内容，新增关键配置表格+2条常见坑，更新Git记录
-R24 | 2026-05-06 | 产出 | token_stats定时任务 | 创建token_daily_stats.json，每日23:00自动统计
-R23 | 2026-05-06 | 环境 | ScoreSys __pycache__清理 | 删除37个.pyc文件，释放647KB
-R22 | 2026-05-06 | 产出 | ScoreSys benchmark清理 | polars_vs_pandas.py+langfuse_otel_demo.py移至examples/
-R21 | 2026-05-06 | 产出 | ScoreSys CHANGELOG.md | V8.0.1~V8.0.10版本历史，含行业中性化/一票否决/回测框架/增量补录等
-R20 | 2026-05-06 | 产出 | ScoreSys分组回测IC提升方案 | IC=0.0045根因：一票否决76%+估值全0+min_score=60过高，建议D/E阈值5→15+修复估值+min_score60→30
-R19 | 2026-05-06 | 产出 | ScoreSys评分分布诊断 | 一票否决率76%，根因：D/E阈值5.0过严(69%否决)，估值全0分，建议放宽D/E至15.0并修复估值分支
-R18 | 2026-05-06 | 产出 | 诊断2026年行情数据仅10万条 | 根因：backfill_quotes.py END_DATE=20231231，2024至今未补录
-R17 | 2026-05-06 | 环境 | ScoreSys项目健康检查 | 20个Python文件结构分析，发现8个过期pycache、缺失CHANGELOG/TODO文档
-R16 | 2026-05-05 | 产出 | 为ScoreSys构建自动化回测框架 | 完成backtest.py，支持IC/分组/净值回测三种模式，语法+功能测试通过
-R15 | 2026-05-05 | 环境 | 实测D:/Other/bigdata中Hadoop/Spark环境可用性
-R14 | 2026-05-05 | 工程 | 将OTel llm_span集成到MixinSession.chat()，自动追踪LLM调用的input/output/duration/tokens
-R13 | 2026-05-05 | 记忆 | polars/langfuse/otel关键发现写入global_mem.txt | 从R2/R5/R9提取发现，新增两个发现区块
-R12 | 2026-05-05 | 工程 | 微信Bot处理机制深度评估 | 完成全链路分析，定位5个核心问题，提出P0-P3改进方案
-R11 | 2026-05-05 | 环境 | ruff代码质量检查 | 3项目1689个.py，修复7个，剩余8个需手动(f-string+import位置)
-R8 | 2026-05-05 | 记忆优化 | global_mem.txt中OCR/Vision记录时效性审查 | 全部可用，无时效性问题，无需更新
-R5 | 2026-05-04 | 规划 | 新TODO产出 | R5报告+TODO.txt已写入
-R4 | 2026-05-04 | 个性化探测 | 项目目录结构和技术栈 | Python主力+股票金融数据+AI/ML方向+全栈倾向+数据密集型
-R3 | 2026-05-04 | 环境扫描 | 本地端口和服务 | 发现Redis可用+7个Streamlit实例+代理环境+TMWD正常
-R2 | 2026-05-04 | 环境扫描 | 本地Python包和CLI工具 | 发现15个高价值未记录工具(uv/ruff/polars/streamlit等)
-R1 | 2026-05-04 | 规划 | 首次自主行动 | 产出6条TODO，写入TODO.txt
-R6 | 2026-05-05 | 环境探测 | 四大Python项目架构分析：ScoreSys(五维选股)/AnnualScorer(年度评分)/BullishForMonitoring(八维度监控交易系统v9.3.0)/AtomCode(AI编码配置)
-R7 | 2026-05-05 | 环境探测 | D:/Other/bigdata大数据学习资料目录分析(263.9MB/293文件) | Hadoop2.7.3完整配置+Spark2.0学习课件+3版Eclipse插件，无实际数据集，用户2021年自学大数据存档
+R392 | 2026-06-07 | 产出 | perspective_comparison_report.md | Taleb+Munger+Dasheng三模型对比+三角决策框架+适用场景矩阵
 
-R9 | 2026-05-05 | 能力扩展 | Redis+Streamlit股票监控面板原型 | 数据链路验证通过(Redis→fetcher→JSON→polars)，Streamlit端口被占用未启动浏览器，代码语法正确
-R10 | 2026-05-05 | 个性化 | 浏览器书签与历史记录分析 | Chrome为主力浏览器，百度+DeepSeek为核心工具，关注A股投资研究R25 | 2026-05-06 | 规划 | 任务规划模式，产出6条新TODO（subagent调度SOP/实时流稳定性/ScoreSys记忆审查/SOP整理/pytest用例/项目完整性检查）
-R26 | 2026-05-06 | 环境 | BullishForMonitoring实时流稳定性探测 | SSE数据流异常(仅connected无行情/新闻)，根因：SSE_BROADCAST转发链路缺失
-R270 | 2026-05-25 | 规划 | 新批次TODO产出与subagent评审 | 产出6条TODO，subagent评审确认BfM SSE已修复(删除1条)，新增2条，最终7条待执行
-R309 | 2026-05-29 | 规划 | 规划模式新批次TODO | 识别daily_health_check归档+V2.0 WIP+Acceleration未激活，6条TODO待评审
-R305 | 2026-05-30 | 规划 | V17.0新批次TODO | 7条:未提交变更+Fold4异常+低IC因子+权重不稳定+Acceleration评估+V2.0跟进+文档同步
-产出 | P0信号回溯+因子分解 | signal_backtrace.py + factor_decomposition.py 已验证
-
-R329 | 2026-06-01 | 产出 | Bot NSSM服务安装准备 | NSSM下载+脚本就绪，需管理员权限执行安装
+R391 | 2026-06-07 | 产出 | execution_methodology.md | 五步法+4个执行盲区+三次法则+量化指标 | 从global_mem+L4+25份报告提取因果链
+R390 | 2026-06-07 | 产出 | 元任务治理审计报告 | R360-R388共23份:产出类16份(69.6%),元任务类7份(30.4%) | 元任务税从88.1%降至30.4% | 可砍:M6复盘+M2归档引擎
+R389 | 2026-06-07 | 产出 | feynman_quality_scorer.py+评分报告 | 最高38/40 dasheng_identity_rules | 最低32/40 verify_sop | 普遍弱项=区分度(需边界讨论和反例)
+R390 | 2026-06-07 | 产出 | execution_methodology.md | 五步法+4个执行盲区+三次法则+量化指标 | 从global_mem+L4+25份报告提取因果链
+R389 | 2026-06-07 | 产出 | feynman_quality_scorer.py+评分报告 | 最高38/40 dasheng_identity_rules | 最低32/40 verify_sop | 普遍弱项=区分度(需边界讨论和反例)
+R388 | 2026-06-07 | 产出 | 评分脚本feynman_quality_scorer.py + 10篇评分报告feynman_quality_report.md | 最高:dasheng_identity_rules(38/40) 最低:verify_sop(32/40)
+R387 | 2026-06-07 | 规划 | TODO Batch 5 | 7条→评审后保留4条(①因子实盘验证器②费曼评分器③执行落地方法论④女娲反脆弱组合)，移除3条元任务类
+R386 | 2026-06-07 | 产出 | 知识管线引擎 | knowledge_pipeline.py(管线核心)+10篇费曼文章(30KB)覆盖10个核心知识领域
+R385 | 2026-06-07 | 产出 | SOP坑点收集器 | 扫描21个SOP提取51条坑点，创建sop_pitfalls.json+收集器脚本，优化plan_sop.md
+R384 | 2026-06-07 | 产出 | SOP坑点收集器 | 扫描21个SOP提取51条坑点，创建sop_pitfalls.json+收集器脚本，优化plan_sop.md
+R383 | 2026-06-07 | 产出 | 因子IC衰减因果推断 | 核心结论:IC+933%主因是窗口效应非因子衰减。reversal在熊市IC=+0.0525在趋势市场IC=-0.0476，momentum从牛市+0.044翻转到熊市-0.020。建议:放弃固定窗口→regime自适应+动态因子权重。67个因子中volatility_ma最强(t=4.04)
+R377 | 2026-06-07 | 产出 | 元任务治理审计 | 核心发现:88.1%报告是元任务税(16/22份)，6轮规划评审循环浪费50K+tokens。建议砍掉5条元任务类TODO，只保留直接产出代码的任务。报告存autonomous_reports/R382_元任务治理审计.md
+R376 | 2026-06-07 | 产出 | 知识外化验证器 | 16个模型方法论提取+差异化分析+盲区地图+互补性矩阵。发现3个结构性盲区(执行落地/情绪决策/中国文化语境)，6组最佳互补组合。代码存knowledge_validator.py
+R375 | 2026-06-07 | 产出6条TODO→subagent评审3次失败→主agent接管评审→5条通过(合并1条)→TODO更新完成
+R374 | 2026-06-07 | 产出 | 女娲实战 | 16选3思维模型对比测试:芒格(决策14KB)+大圣(系统5.5KB)+费曼(验证12KB)全部通过质量验证; 契合度:芒格=决策框架🥇大圣=系统架构+世界观🥇费曼=认知验证🥈
+R373 | 2026-06-07 | 产出 | 知识库RAG化 | rag_index.json(2.8MB,7443词项)+rag_search.py倒排索引; 支持中英文+类别boost; 后续可升级向量检索
+R372 | 2026-06-07 | 产出 | 记忆系统L4升级 | 从8份历史报告提炼5个模式模板+5条经验教训+工具熟练度，构建L4_procedural_memory.json(5.4KB)，记忆系统从L1-L3升级到L1-L4四层架构
+R371 | 2026-06-07 | 产出 | Self-Improvement | 8条建议审计完成(4/5完成): #1IC多窗口✅ #6reversal✅ #7删文件✅ #8数据校验✅; 选题模型v1.1更新; VIF和聚类待D:\Project解冻
+R370 | 2026-06-07 | 产出 | Skill蒸馏 | R370完成: 基于女娲SOP Phase 0A路径，从8个记忆文件(49KB语料)蒸馏GA/大圣自身思维框架，生成可运行SKILL.md(12KB)+6维调研报告+提炼报告。核心产出：6个心智模型/8条决策启发式/Agentic Protocol回答工作流/完整表达DNA规则
+R369 | 2026-06-07 | 产出 | Self-Improvement | 自主行动选题模型v1.0(评分规则+禁区+优先区) + 3套可复用模板(假设驱动/能力扩展/历史建议落地) + 8条待执行建议追踪 + 下次自主行动自动执行协议
+R368 | 2026-06-07 | 产出 | TODO规划 | R367完成: 基于用户画像深度分析(量化交易/AI工具链痴迷/自我进化系统/能力碎片化)产出8条高价值TODO：造我的Skill/因子炼丹闭环/女娲实战/能力连接器/因子健康审计/自主行动self-improvement/记忆L4升级/知识库RAG化
+R366 | 2026-06-07 | 产出 | TODO规划 | R367完成: 7条TODO经评审筛选为5条，聚焦ScoreSys模拟盘验证/nuwa-skill能力探测/procmem_scanner实测/浏览器边界测试/记忆库维护
+R1 | 2026-06-06 | 产出 | R360因子报告深度诊断 | 结论:分层逻辑无bug，核心问题是单因子5日收益弱(|r|<1%)，应聚焦多因子组合优化而非单因子筛选。reversal因子IC与分层方向矛盾需检查定义
+产出 | R360因子深度诊断 | R362完成: 分层逻辑无bug，单因子5日收益弱(|r|<1%) | 2026-06-06
+产出 | 因子冗余自动去除 | R363完成: 82因子→4组代表(alpha053/027/065/060)，成交量组最严重 | 2026-06-06
+产出 | 因子组合优化器 | R364完成: IC随窗口增长(5d→20d +933%)非衰减，spread仅0.04%/日 | 2026-06-06
+产出 | 数据质量校验 | R365完成: factor_comb_backtest仅2年且4%top=bottom; wq101仅20行; ic_real_2025仅4天 | 2026-06-06

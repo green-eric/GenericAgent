@@ -133,6 +133,92 @@ def complete_task(taskname: str, historyline: str, report_path: str) -> str:
     )
 
 
+
+
+# ═══════════════════════════════════════════════
+# 新增辅助函数 (R411)
+# ═══════════════════════════════════════════════
+
+def list_tasks():
+    """
+    解析 TODO.txt 返回结构化任务列表。
+    返回 dict: { 'total': int, 'done': int, 'pending': int, 'blocked': int,
+                  'items': [ { 'id': str, 'name': str, 'status': str, 'value': int }, ... ] }
+    """
+    if not _TODO_FILE.exists():
+        return {"total": 0, "done": 0, "pending": 0, "blocked": 0, "items": []}
+
+    tasks = []
+    done = pending = blocked = 0
+    with open(_TODO_FILE, 'r', encoding='utf-8') as f:
+        lines = f.readlines()
+
+    for line in lines:
+        line = line.strip()
+        # 匹配 [x] 或 [ ] 或 ❌ 条目标
+        m = re.search(r'\[([ xX])\]?\s*(?:[🔥🥇🥈🥉]?\s*)?(\d+|[①②③④⑤⑥⑦⑧⑨⑩])\s*[.．、]?\s*(.+?)\s*\|', line)
+        if m:
+            status_char = m.group(1).lower() if m.group(1) in ('x', ' ',) else ' '
+            id_raw = m.group(2)
+            name = m.group(3).strip()
+            # 中文数字转阿拉伯
+            cn_map = {'①':'1','②':'2','③':'3','④':'4','⑤':'5','⑥':'6','⑦':'7','⑧':'8','⑨':'9','⑩':'10'}
+            task_id = cn_map.get(id_raw, id_raw)
+            item_status = 'done' if status_char == 'x' else 'blocked' if '阻塞' in line else 'pending'
+            if item_status == 'done': done += 1
+            elif item_status == 'blocked': blocked += 1
+            else: pending += 1
+            # 提取价值
+            val_m = re.search(r'价值(\d+)', line)
+            value = int(val_m.group(1)) if val_m else 0
+            tasks.append({"id": task_id, "name": name, "status": item_status, "value": value})
+
+    return {
+        "total": len(tasks), "done": done,
+        "pending": pending, "blocked": blocked, "items": tasks
+    }
+
+
+def report_stats():
+    """
+    TODO 统计报告。返回多行字符串。
+    """
+    data = list_tasks()
+    if data['total'] == 0:
+        return "📊 TODO 统计: 无任务数据"
+    done_pct = round(data['done'] / data['total'] * 100)
+    vals = [t['value'] for t in data['items']]
+    avg_val = round(sum(vals) / len(vals), 1) if vals else 0
+    lines = [
+        f"📊 TODO 统计 ({data['total']}条)",
+        f"● 已完成: {data['done']} ({done_pct}%)",
+        f"● 待执行: {data['pending']}",
+        f"● 阻塞:   {data['blocked']}",
+        f"● 平均价值: {avg_val}",
+    ]
+    if data['pending'] > 0:
+        next_task = [t for t in data['items'] if t['status'] == 'pending']
+        if next_task:
+            lines.append(f"● 下一条: #{next_task[0]['id']} {next_task[0]['name']} (价值{next_task[0]['value']})")
+    return '\n'.join(lines)
+
+
+def get_next_todo():
+    """
+    返回下一条可执行的未完成TODO的文本行。
+    跳过阻塞/已取消/已移除/冻结/已验收/已删除条目。
+    若无未完成，返回 None。
+    """
+    if not _TODO_FILE.exists():
+        return None
+    skip_kw = ['阻塞', '已取消', '已移除', '已删除', '已验收', '冻结', '❌', '~~']
+    with open(_TODO_FILE, 'r', encoding='utf-8') as f:
+        for line in f:
+            if re.search(r'\[\s\]', line) and not any(kw in line for kw in skip_kw):
+                return line.strip()
+    return None
+
+
 # ── 快速自检 ──
 if __name__ == "__main__":
     print(f"TEMP_DIR:    {_TEMP_DIR}")
@@ -142,3 +228,9 @@ if __name__ == "__main__":
     print(f"Next R#:     R{_next_report_number()}")
     print(f"\n--- TODO ---\n{get_todo()[:200]}")
     print(f"\n--- History (5) ---\n{get_history(5)}")
+    print(f"\n--- list_tasks() ---")
+    import json; print(json.dumps(list_tasks(), ensure_ascii=False, indent=2))
+    print(f"\n--- report_stats() ---")
+    print(report_stats())
+    print(f"\n--- get_next_todo() ---")
+    print(get_next_todo())
