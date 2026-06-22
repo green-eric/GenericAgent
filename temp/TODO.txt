@@ -1,22 +1,48 @@
-# TODO List — 第十一批次（2026-06-22）
+# TODO List — 第十二批次（2026-06-22）
 
 > ⚠️ D:\Project 完全冻结
 > ⚠️ baostock可用（243行日K验证通过），akshare融资融券可用，本地61个数据文件
 > ⚠️ 费曼知识库已覆盖20个SOP（V1+V2共40文件）
+> ⚠️ 100只baostock日K已获取（data/baostock_batch/），每只242行
+> ⚠️ 因子IC分析已完成（321万行情+4344只得分，valuation最强IC=-0.07）
 
-## P0
+## P0 — 因子挖掘与Alpha信号
 
-- [x] #1 产出 | 三角决策框架实战验证器 | ✅ 3场景100%一致率 | triangle_decision_validator.py + R413
-- [x] #2 发现 | 离线数据源可用性探测 | ✅ baostock可用+akshare融资融券+61本地文件 | offline_data_probe.py + R414
-- [x] #3 产出 | 费曼知识库扩展 | ✅ 20个SOP已有V1+V2版(40文件,100+KB) | knowledge_pipeline/output/
+- [ ] #1 产出 | 多因子选股模型原型 | 用baostock日K+本地因子数据，构建简单的多因子打分模型
+  - 📋 前提：①baostock日K已获取100只 ②本地wq101因子98KB已了解 ③因子IC分析已完成
+  - 🎯 MVP：合并baostock日K+本地因子，对100只股票打分，输出Top10
+  - 💡 假设：因子IC分析中valuation最强，可单因子排序验证
+  - ✅ 验收：`multi_factor_model.py`+Top10打分结果CSV+收益曲线对比
+  - 📝 沉淀：因子权重和选股逻辑写入global_mem
 
-## P1（新发现方向）
+## P1 — 数据增强与工具链
 
-- [x] #4 产出 | 本地数据资产盘点与因子IC分析 | ✅ 321万行情+4344只得分+valuation最强IC=-0.07 | local_factor_analysis.py + R414
+- [ ] #2 产出 | akshare融资融券数据获取脚本 | akshare已验证可用，获取100只股票的融资融券余额变化
+  - 📋 前提：①akshare融资融券API已验证 ②baostock日K已获取
+  - 🎯 MVP：获取100只股票的日度融资融券余额，保存CSV
+  - 💡 假设：akshare支持批量获取融资融券数据
+  - ✅ 验收：`akshare_margin_fetch.py`+100只股票融资CSV
+  - 📝 沉淀：融资融券数据与价格数据合并分析
 
-- [x] #5 产出 | baostock全市场数据获取脚本 | ✅ 100/100成功,126s,每只242行日K | baostock_batch_fetch.py + data/baostock_batch/
+- [ ] #3 产出 | 费曼知识库质量评分器 | 已有40个费曼版SOP，自动评估记忆留存率
+  - 📋 前提：①40个费曼文件已存在 ②费曼V2已有区分度评分
+  - 🎯 MVP：对40个费曼文件做关键词覆盖率+反例完整度评分
+  - 💡 假设：费曼V2的区分度评分可自动化计算
+  - ✅ 验收：`feynman_quality_scorer.py`+评分报告（含改进建议）
+  - 📝 沉淀：评分最低的5个SOP标记为待改进
 
-## 已完成
+## P2 — 探索方向
+
+- [ ] #4 发现 | 技术指标因子挖掘 | 用baostock日K计算MA/MACD/RSI等技术指标，评估预测力
+  - 📋 前提：①baostock日K已获取 ②技术指标计算库可用（ta-lib或pandas_ta）
+  - 🎯 MVP：计算100只股票的MA5/MA20/MACD/RSI14，与未来5日收益做IC分析
+  - 💡 假设：技术指标在短期有预测力
+  - ✅ 验收：`tech_indicator_analysis.py`+IC对比报告
+  - 📝 沉淀：有效技术指标列表
+
+## 已完成（第十一批次）
 - #1 三角决策框架实战验证器 — triangle_decision_validator.py + R413
 - #2 离线数据源可用性探测 — offline_data_probe.py + R414
 - #3 费曼知识库扩展 — 已有40个费曼版SOP文件
+- #4 本地数据资产盘点与因子IC分析 — local_factor_analysis.py + R414
+- #5 baostock全市场数据获取脚本 — baostock_batch_fetch.py + data/baostock_batch/
