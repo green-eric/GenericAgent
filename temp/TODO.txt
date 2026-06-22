@@ -12,19 +12,9 @@
 
 ## P1（新发现方向）
 
-- [ ] #4 产出 | 本地数据资产盘点与因子挖掘 | 本地61个数据文件(含wq101因子98KB)+baostock可用。盘点数据资产，用baostock获取10只股票1年日K，与本地因子数据合并，做简单的因子有效性分析
-  - 📋 前提：①baostock已验证可用 ②本地因子数据格式已了解 ③D:\Project冻结不做ScoreSys集成
-  - 🎯 MVP：baostock获取5只股票日K → 与本地wq101因子合并 → 计算IC值
-  - 💡 假设：本地因子数据与baostock日K可合并，IC分析可独立于ScoreSys运行
-  - ✅ 验收：产出`local_factor_analysis.py`+IC分析报告；找到≥1个IC>0.05的因子
-  - 📝 沉淀：因子有效性结论写入global_mem
+- [x] #4 产出 | 本地数据资产盘点与因子IC分析 | ✅ 321万行情+4344只得分+valuation最强IC=-0.07 | local_factor_analysis.py + R414
 
-- [ ] #5 产出 | baostock全市场数据获取脚本 | baostock已验证，编写可复用的全市场日K获取脚本
-  - 📋 前提：①baostock登录/查询API已掌握 ②全市场约5000只股票
-  - 🎯 MVP：获取100只股票日K，保存为CSV
-  - 💡 假设：baostock支持批量获取，100只股票可在合理时间内完成
-  - ✅ 验收：`baostock_batch_fetch.py`+100只股票CSV（每只≥200行日K）
-  - 📝 沉淀：脚本参数化，后续可调整股票范围和时间段
+- [x] #5 产出 | baostock全市场数据获取脚本 | ✅ 100/100成功,126s,每只242行日K | baostock_batch_fetch.py + data/baostock_batch/
 
 ## 已完成
 - #1 三角决策框架实战验证器 — triangle_decision_validator.py + R413
